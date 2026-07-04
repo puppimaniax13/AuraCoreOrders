@@ -627,62 +627,70 @@ const REFLECTOR_PHOTOS_TEMPLATE = {
 
 const PRODUCTS = [
   {
-    sku:"AVB-RFL-FEN", name:"Fender Reflector Set", cat:"Reflectors", price:20, img:"",
+    sku:"AVB-RFL-FEN", name:"Fender Reflector Set", cat:"Reflectors", price:40, img:"",
     desc:"Precision 3D-printed fender reflector set for the 2022–2026 WRX. Drop-in replacement with factory-tight tolerances. Sold as a pair — mounting clips included.",
     photoKey:["Backing Color","Lens Type"],
     photos:{...REFLECTOR_PHOTOS_TEMPLATE},
     options:[
       {label:"LED Type", choices:[
-        {name:"No LED", price:20, sku:"AVB-RFL-FEN-NL"},
-        {name:"White LED", price:40, sku:"AVB-RFL-FEN-WL"},
-        {name:"RGBW Smart", price:75, sku:"AVB-RFL-FEN-RG"}
+        {name:"No LED", price:40, sku:"AVB-RFL-FEN-NL"},
+        {name:"White LED", price:75, sku:"AVB-RFL-FEN-WL"},
+        {name:"RGBW Smart", price:150, sku:"AVB-RFL-FEN-RG"}
       ]},
       {label:"Backing Color", choices:["White","Black"]},
       {label:"Lens Type", choices:["Clear","Frosted","Tinted"]}
     ]
   },
   {
-    sku:"AVB-RFL-RR", name:"Rear Reflector Set", cat:"Reflectors", price:20, img:"",
+    sku:"AVB-RFL-RR", name:"Rear Reflector Set", cat:"Reflectors", price:40, img:"",
     desc:"OEM-fit rear reflector set for the 2022–2026 WRX. Sold as a pair.",
     photoKey:["Backing Color","Lens Type"],
     photos:{...REFLECTOR_PHOTOS_TEMPLATE},
     options:[
       {label:"LED Type", choices:[
-        {name:"No LED", price:20, sku:"AVB-RFL-RR-NL"},
-        {name:"White LED", price:40, sku:"AVB-RFL-RR-WL"},
-        {name:"RGBW Smart", price:75, sku:"AVB-RFL-RR-RG"}
+        {name:"No LED", price:40, sku:"AVB-RFL-RR-NL"},
+        {name:"White LED", price:75, sku:"AVB-RFL-RR-WL"},
+        {name:"RGBW Smart", price:150, sku:"AVB-RFL-RR-RG"}
       ]},
       {label:"Backing Color", choices:["White","Black"]},
       {label:"Lens Type", choices:["Clear","Frosted","Tinted"]}
     ]
   },
   {
-    sku:"AVB-RFL-RV", name:"Rear Vent Set", cat:"Reflectors", price:18, img:"",
+    sku:"AVB-RFL-RV", name:"Rear Vent Set", cat:"Reflectors", price:40, img:"",
     desc:"Rear vent reflector set for the 2022–2026 WRX. Subtle factory-plus look, or full lighting.",
     photoKey:["Backing Color","Lens Type"],
     photos:{...REFLECTOR_PHOTOS_TEMPLATE},
     options:[
       {label:"LED Type", choices:[
-        {name:"No LED", price:18, sku:"AVB-RFL-RV-NL"},
-        {name:"White LED", price:38, sku:"AVB-RFL-RV-WL"},
-        {name:"RGBW Smart", price:65, sku:"AVB-RFL-RV-RG"}
+        {name:"No LED", price:40, sku:"AVB-RFL-RV-NL"},
+        {name:"White LED", price:75, sku:"AVB-RFL-RV-WL"},
+        {name:"RGBW Smart", price:150, sku:"AVB-RFL-RV-RG"}
       ]},
       {label:"Backing Color", choices:["White","Black"]},
       {label:"Lens Type", choices:["Clear","Frosted","Tinted"]}
     ]
   },
   {
-    sku:AURA_SKU, name:"AuraCore Controller", cat:"Electronics", price:35, img:"",
+    sku:AURA_SKU, name:"AuraCore Controller", cat:"Electronics", price:50, img:"",
     desc:"Custom AuraCore PCB in a 3D-printed housing. Drives all AUTOVB addressable RGBW lighting — one controller runs your whole setup.",
     requires:"Required for any RGBW Smart product."
   },
   {
-    sku:"AVB-ELC-HRN-AURA", name:"AuraCore Inline Harness", cat:"Electronics", price:15, img:"",
+    sku:"AVB-ELC-HRN-AURA", name:"AuraCore Inline Harness", cat:"Electronics", price:20, img:"",
     desc:"Plug-and-play harness that sits inline with the factory connector. Fully reversible — zero splicing, zero cutting."
   },
   {
-    sku:"AVB-ELC-HRN-REV", name:"Reverse-Light Harness", cat:"Electronics", price:15, img:"",
+    sku:"AVB-ELC-HRN-REV", name:"Reverse-Light Harness", cat:"Electronics", price:20, img:"",
     desc:"Plug-in harness for reverse-triggered white LEDs. Pin connectors included."
+  },
+  {
+    sku:"AVB-CON-2PIN", name:"2-Pin Connector", cat:"Connectors", price:3, img:"",
+    desc:"Sealed 2-pin connector for wiring runs between reflectors, harnesses, or lighting."
+  },
+  {
+    sku:"AVB-CON-3PIN", name:"3-Pin Connector", cat:"Connectors", price:3, img:"",
+    desc:"Sealed 3-pin connector for wiring runs between reflectors, harnesses, or lighting."
   },
   {
     sku:"AVB-BTN-UP", name:"3D-Printed Buttons — Upper Row", cat:"Buttons", price:15, img:"",
