@@ -8,6 +8,5 @@
 <stop offset="1" stop-color="#8b5cf6"/>
 </linearGradient>
 </defs>
-<rect width="64" height="64" rx="6" fill="#0a0c11"/>
-<text x="32" y="46" text-anchor="middle" font-family="'Saira', system-ui, sans-serif" font-weight="800" font-size="40" fill="url(#g)">A</text>
+<text x="32" y="54" text-anchor="middle" font-family="'Saira', system-ui, sans-serif" font-weight="800" font-size="62" fill="url(#g)">A</text>
 </svg>
