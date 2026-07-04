@@ -387,13 +387,13 @@
     font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;
     text-transform:uppercase;display:block;margin:14px 0 6px;color:var(--text);
   }
-  .checkout input,.checkout textarea{
+  .checkout input,.checkout textarea,.checkout select{
     width:100%;border:1px solid var(--line);border-radius:var(--radius);
     padding:11px 12px;font-family:var(--display);font-size:16px;
     background:var(--panel-2);color:var(--text);
   }
   .checkout input::placeholder,.checkout textarea::placeholder{color:#4d5566}
-  .checkout input:focus,.checkout textarea:focus{outline:2px solid var(--aura-1);outline-offset:0;border-color:var(--aura-1)}
+  .checkout input:focus,.checkout textarea:focus,.checkout select:focus{outline:2px solid var(--aura-1);outline-offset:0;border-color:var(--aura-1)}
   .checkout textarea{resize:vertical;min-height:80px}
   .statusmsg{
     margin-top:10px;font-size:13px;font-weight:600;text-align:center;display:none;
@@ -527,6 +527,13 @@
         </div>
         <div></div>
       </div>
+      <label class="formlabel" for="fPayment">Preferred payment method</label>
+      <select id="fPayment">
+        <option value="Zelle">Zelle</option>
+        <option value="Apple Cash">Apple Cash</option>
+        <option value="Venmo">Venmo</option>
+        <option value="Cash App">Cash App</option>
+      </select>
       <label class="formlabel" for="fNotes">Notes (already have an AuraCore, color questions, etc.)</label>
       <textarea id="fNotes"></textarea>
       <div style="margin-top:18px">
@@ -685,14 +692,6 @@ const PRODUCTS = [
     desc:"Plug-in harness for reverse-triggered white LEDs. Pin connectors included."
   },
   {
-    sku:"AVB-CON-2PIN", name:"2-Pin Connector", cat:"Connectors", price:3, img:"",
-    desc:"Sealed 2-pin connector for wiring runs between reflectors, harnesses, or lighting."
-  },
-  {
-    sku:"AVB-CON-3PIN", name:"3-Pin Connector", cat:"Connectors", price:3, img:"",
-    desc:"Sealed 3-pin connector for wiring runs between reflectors, harnesses, or lighting."
-  },
-  {
     sku:"AVB-BTN-UP", name:"3D-Printed Buttons — Upper Row", cat:"Buttons", price:15, img:"",
     desc:"Custom printed button housing with an illuminated LED switch, ready to install in the upper dash row.",
     options:[
@@ -723,6 +722,19 @@ const PRODUCTS = [
 const LINK_PRODUCT = {
   sku:LINK_SKU, name:"Link Two Pieces", price:5,
   desc:"We pre-connect two of your reflector sets so they run as one continuous unit — connector and install included."
+};
+
+/* Connectors — not shown in the grid; offered at checkout as an
+   add-on based on the LED Type selected on cart items. */
+const CONN_2PIN_SKU = "AVB-CON-2PIN";
+const CONN_3PIN_SKU = "AVB-CON-3PIN";
+const CONN_2PIN_PRODUCT = {
+  sku:CONN_2PIN_SKU, name:"2-Pin Connector", price:3,
+  desc:"Sealed 2-pin connector for wiring in your White LED reflector."
+};
+const CONN_3PIN_PRODUCT = {
+  sku:CONN_3PIN_SKU, name:"3-Pin Connector", price:3,
+  desc:"Sealed 3-pin connector for wiring in your RGBW Smart reflector."
 };
 
 /* ================= STATE ================= */
@@ -892,7 +904,9 @@ $("addToOrder").onclick = ()=>{
 
 /* ============ required-item logic (AuraCore) ============ */
 function isRGBW(item){ return item.options && item.options["LED Type"]==="RGBW Smart"; }
+function isWhiteLED(item){ return item.options && item.options["LED Type"]==="White LED"; }
 function cartHasRGBW(){ return cart.some(isRGBW); }
+function cartHasWhiteLED(){ return cart.some(isWhiteLED); }
 function syncRequiredItems(){
   const hasAura = cart.some(i=>i.sku===AURA_SKU);
   if(cartHasRGBW() && !hasAura){
@@ -905,6 +919,13 @@ function syncRequiredItems(){
   // Link add-on only valid with 2+ reflector sets
   if(reflectorCount() < 2){
     cart = cart.filter(i=>i.sku!==LINK_SKU);
+  }
+  // Connector add-ons only valid alongside the matching LED Type
+  if(!cartHasWhiteLED()){
+    cart = cart.filter(i=>i.sku!==CONN_2PIN_SKU);
+  }
+  if(!cartHasRGBW()){
+    cart = cart.filter(i=>i.sku!==CONN_3PIN_SKU);
   }
 }
 function reflectorCount(){
@@ -1001,23 +1022,27 @@ function renderCheckout(){
   $("coSubtotalVal").textContent = fmt(total);
   $("coSubtotalRow").style.display = "flex";
 
-  // Link Two Pieces suggestion — only with 2+ reflector sets and not already added
-  const eligible = reflectorCount() >= 2 && !cart.some(i=>i.sku===LINK_SKU);
-  $("coAddon").innerHTML = eligible ? `
+  // Add-on suggestions: Link (2+ reflector sets), connectors (matching LED Type)
+  const offers = [];
+  if(reflectorCount() >= 2 && !cart.some(i=>i.sku===LINK_SKU)) offers.push(LINK_PRODUCT);
+  if(cartHasWhiteLED() && !cart.some(i=>i.sku===CONN_2PIN_SKU)) offers.push(CONN_2PIN_PRODUCT);
+  if(cartHasRGBW() && !cart.some(i=>i.sku===CONN_3PIN_SKU)) offers.push(CONN_3PIN_PRODUCT);
+
+  $("coAddon").innerHTML = offers.map(o => `
     <div class="addon-card">
       <div>
-        <div class="t">${LINK_PRODUCT.name} — ${fmt(LINK_PRODUCT.price)}</div>
-        <div class="d">${LINK_PRODUCT.desc}</div>
+        <div class="t">${o.name} — ${fmt(o.price)}</div>
+        <div class="d">${o.desc}</div>
       </div>
-      <button class="addon-add" id="addLink">+ Add</button>
-    </div>` : "";
-  const addBtn = $("addLink");
-  if(addBtn){
-    addBtn.onclick = ()=>{
-      cart.push({ sku:LINK_SKU, name:LINK_PRODUCT.name, price:LINK_PRODUCT.price, qty:1, options:{} });
+      <button class="addon-add" data-sku="${o.sku}">+ Add</button>
+    </div>`).join("");
+  $("coAddon").querySelectorAll(".addon-add").forEach(btn=>{
+    btn.onclick = ()=>{
+      const o = offers.find(x=>x.sku===btn.dataset.sku);
+      cart.push({ sku:o.sku, name:o.name, price:o.price, qty:1, options:{} });
       updateCartCount(); renderCheckout(); renderCart();
     };
-  }
+  });
 }
 
 /* ================= SUBMIT ================= */
@@ -1047,11 +1072,13 @@ $("sendOrder").onclick = async ()=>{
     status.classList.add("err"); return;
   }
   const ig = $("fIg").value.trim(), notes = $("fNotes").value.trim();
+  const payment = $("fPayment").value;
   const address = `${addr1}${addr2 ? ", "+addr2 : ""}, ${city}, ${state} ${zip}`;
   const summary = orderText();
   const payload = {
     name, email, instagram: ig || "—",
     shipping_address: address,
+    preferred_payment: payment,
     notes: notes || "—",
     order: summary,
     _subject: `AUTOVB.WRX Order Request — ${name}`
@@ -1086,6 +1113,7 @@ $("sendOrder").onclick = async ()=>{
 Email: ${email}
 Instagram: ${ig || "—"}
 Ship to: ${address}
+Preferred payment: ${payment}
 
 ${summary}
 
