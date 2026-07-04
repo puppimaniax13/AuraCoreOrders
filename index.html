@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AUTOVB.WRX — Parts Catalog | 2022–2026 Subaru WRX</title>
 <meta name="description" content="Custom 3D-printed reflectors, buttons, and lighting for the 2022–2026 Subaru WRX (VB). Configure your parts and send an order request — we invoice directly.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -65,11 +66,6 @@
     font-weight:500;margin-top:1px;
   }
   .topnav{display:flex;align-items:center;gap:10px}
-  .iglink{
-    font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
-    text-decoration:none;color:var(--muted);padding:8px 10px;
-  }
-  .iglink:hover{color:var(--text)}
   .cartbtn{
     display:flex;align-items:center;gap:8px;
     background:var(--aura-grad);color:#0a0c11;border:none;
@@ -441,9 +437,6 @@
     .qtybox button{width:44px;height:44px}
     .qtybox span{width:48px}
   }
-  @media(max-width:440px){
-    .iglink{display:none}
-  }
 </style>
 </head>
 <body>
@@ -451,7 +444,6 @@
 <header class="topbar">
   <a class="logo" href="#" id="homeLink">AUTOVB<span class="grad">.WRX</span><span class="by">AuraCore Lighting Systems</span></a>
   <nav class="topnav">
-    <a class="iglink" href="https://instagram.com/autovb.WRX" target="_blank" rel="noopener">@autovb.WRX</a>
     <button class="cartbtn" id="openDrawer" aria-label="Open order sheet">
       Order Sheet <span class="count" id="cartCount">0</span>
     </button>
@@ -632,6 +624,12 @@ const REFLECTOR_PHOTOS_TEMPLATE = {
   "Black|Clear":"", "Black|Frosted":"", "Black|Tinted":""
 };
 
+/* Button photos: paste an image URL for each LED Color —
+   the configure window swaps the photo live as the color changes. */
+const BUTTON_PHOTOS_TEMPLATE = {
+  "Red":"", "Green":"", "Yellow":"", "Blue":"", "White":""
+};
+
 const PRODUCTS = [
   {
     sku:"AVB-RFL-FEN", name:"Fender Reflector Set", cat:"Reflectors", price:40, img:"",
@@ -694,6 +692,8 @@ const PRODUCTS = [
   {
     sku:"AVB-BTN-UP", name:"3D-Printed Buttons — Upper Row", cat:"Buttons", price:15, img:"",
     desc:"Custom printed button housing with an illuminated LED switch, ready to install in the upper dash row.",
+    photoKey:["LED Color"],
+    photos:{...BUTTON_PHOTOS_TEMPLATE},
     options:[
       {label:"LED Color", choices:["Red","Green","Yellow","Blue","White"]}
     ]
@@ -701,6 +701,8 @@ const PRODUCTS = [
   {
     sku:"AVB-BTN-LO", name:"3D-Printed Buttons — Lower Row", cat:"Buttons", price:15, img:"",
     desc:"Custom printed button housing with an illuminated LED switch, sized for the lower dash row.",
+    photoKey:["LED Color"],
+    photos:{...BUTTON_PHOTOS_TEMPLATE},
     options:[
       {label:"LED Color", choices:["Red","Green","Yellow","Blue","White"]}
     ]
@@ -872,12 +874,13 @@ function refreshModal(){
   if(current.photoKey && current.photos){
     const key = current.photoKey.map(l=>currentSel[l]).join("|");
     const url = current.photos[key];
+    const shown = current.photoKey.map(l=>currentSel[l]).join(" · ");
     $("mPhotoWrap").innerHTML = `
       <div class="mphoto">
-        ${url ? `<img src="${url}" alt="${current.name} — ${key.replace("|"," / ")}">`
-              : `<span class="ph">${key.replace("|"," backing / ")} lens<br>photo coming soon</span>`}
+        ${url ? `<img src="${url}" alt="${current.name} — ${shown}">`
+              : `<span class="ph">${shown}<br>photo coming soon</span>`}
       </div>
-      <div class="mphoto-caption">Shown: ${currentSel[current.photoKey[0]]} backing · ${currentSel[current.photoKey[1]]} lens</div>`;
+      <div class="mphoto-caption">Shown: ${shown}</div>`;
   } else {
     $("mPhotoWrap").innerHTML = "";
   }
