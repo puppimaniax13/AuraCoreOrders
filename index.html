@@ -346,6 +346,21 @@
   .sendbtn:disabled{opacity:.5;cursor:not-allowed}
   .finehint{font-size:11.5px;color:var(--muted);margin-top:10px;text-align:center}
 
+  /* ---------- toast ---------- */
+  .toast{
+    position:fixed;left:50%;bottom:24px;z-index:200;
+    transform:translate(-50%,140%);transition:transform .25s ease;
+    display:flex;align-items:center;gap:10px;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 20px;box-shadow:0 12px 40px rgba(0,0,0,.45);
+    font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--text);max-width:calc(100vw - 32px);white-space:nowrap;
+  }
+  .toast::before{
+    content:"";width:8px;height:8px;border-radius:50%;background:var(--aura-grad);flex-shrink:0;
+  }
+  .toast.show{transform:translate(-50%,0)}
+
   /* ---------- checkout page ---------- */
   .checkout{
     display:none;max-width:1100px;margin:0 auto;padding:40px 24px 80px;
@@ -670,6 +685,8 @@
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
 /* ================= CONFIG — edit these ================= */
 const CONFIG = {
@@ -971,7 +988,12 @@ $("addToOrder").onclick = ()=>{
     options:{...currentSel}
   });
   syncRequiredItems();
-  updateCartCount(); closeModal(); openDrawer();
+  updateCartCount(); closeModal();
+  if(window.matchMedia("(max-width:640px)").matches){
+    showToast("Added to order sheet");
+  } else {
+    openDrawer();
+  }
 };
 
 /* ============ required-item logic (AuraCore) ============ */
@@ -1002,6 +1024,16 @@ function syncRequiredItems(){
 }
 function reflectorCount(){
   return cart.filter(i=>i.sku.startsWith("AVB-RFL")).reduce((s,i)=>s+i.qty,0);
+}
+
+/* ================= TOAST ================= */
+let toastTimer = null;
+function showToast(msg){
+  const el = $("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> el.classList.remove("show"), 2200);
 }
 
 /* ================= DRAWER ================= */
