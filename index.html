@@ -397,6 +397,33 @@
   .statusmsg.ok{display:block;color:var(--ok)}
   .statusmsg.err{display:block;color:var(--err)}
 
+  /* ---------- guides page ---------- */
+  .guides{
+    display:none;max-width:800px;margin:0 auto;padding:40px 24px 80px;
+  }
+  .guides.open{display:block}
+  .guide-card{margin-bottom:16px}
+  .guide-card h3{
+    font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.1em;
+    text-transform:uppercase;margin-bottom:12px;color:var(--text);
+  }
+  .guide-links{display:flex;flex-wrap:wrap;gap:10px}
+  .guide-links a{
+    font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.08em;
+    text-transform:uppercase;text-decoration:none;color:var(--aura-1);
+    border:1px solid rgba(34,211,238,.4);border-radius:var(--radius);padding:8px 12px;
+  }
+  .guide-links a:hover{background:rgba(34,211,238,.1)}
+  .guide-links .muted{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:#485061;padding:8px 0;
+  }
+  .mguide{margin:-4px 0 16px}
+  .mguide a{
+    font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;text-decoration:underline;color:var(--aura-1);
+  }
+
   /* ---------- footer ---------- */
   footer{
     border-top:1px solid var(--line);padding:36px 24px 48px;
@@ -537,6 +564,15 @@
   </div>
 </section>
 
+<!-- install guides page -->
+<section class="guides" id="guides">
+  <div class="checkout-head">
+    <button class="backlink" id="backFromGuides">← Back to catalog</button>
+    <h2>Install Guides</h2>
+  </div>
+  <div id="guidesList"></div>
+</section>
+
 <footer>
   <div class="foot-inner">
     <div>
@@ -546,6 +582,7 @@
     <div class="foot-links">
       <a href="https://instagram.com/autovb.WRX" target="_blank" rel="noopener">Instagram / DM to order</a>
       <a href="#" id="footOrder">Open order sheet</a>
+      <a href="#" id="footGuides">Install guides</a>
     </div>
   </div>
 </footer>
@@ -564,6 +601,7 @@
   <div class="modal-body">
     <div id="mPhotoWrap"></div>
     <p class="desc" id="mDesc"></p>
+    <div class="mguide" id="mGuideLink"></div>
     <div id="mNotice"></div>
     <div id="mOptions"></div>
     <div class="optgroup">
@@ -709,7 +747,7 @@ const PRODUCTS = [
   },
   {
     sku:"AVB-LGT-TRUNK", name:"Trunk Light", cat:"Lighting", price:30, img:"",
-    desc:"Fully soldered trunk light kit — T10 socket extension, wire run, and LED strip. Plugs into the factory socket.",
+    desc:"Fully soldered trunk light kit — bulb extension, wire run, and LED strip. Plugs into the factory socket.",
     options:[
       {label:"Color", sections:[
         {title:"In Stock", choices:["Blue"]},
@@ -832,6 +870,8 @@ function openModal(p){
   $("mDesc").textContent = p.desc;
   $("mNotice").innerHTML = p.requires
     ? `<div class="noticebox"><b>Heads up</b>${p.requires}</div>` : "";
+  $("mGuideLink").innerHTML = `<a href="#">Install instructions &amp; video →</a>`;
+  $("mGuideLink").querySelector("a").onclick = e=>{ e.preventDefault(); showGuides(p.sku); };
   renderOptions();
   refreshModal();
   $("qtyVal").textContent = currentQty;
@@ -1003,6 +1043,7 @@ function showCheckout(){
 }
 function showShop(){
   $("checkout").classList.remove("open");
+  $("guides").classList.remove("open");
   $("shopView").style.display = "";
 }
 $("toCheckout").onclick = ()=>{
@@ -1011,6 +1052,38 @@ $("toCheckout").onclick = ()=>{
 };
 $("backToShop").onclick = showShop;
 $("homeLink").onclick = e=>{ e.preventDefault(); showShop(); window.scrollTo({top:0}); };
+
+/* ================= INSTALL GUIDES PAGE ================= */
+// Fill in { pdf: "images/guides/....pdf", video: "https://..." } per SKU as they're ready.
+const GUIDES = {};
+
+function renderGuides(){
+  $("guidesList").innerHTML = PRODUCTS.map(p=>{
+    const g = GUIDES[p.sku] || {};
+    return `
+      <div class="co-panel guide-card" id="guide-${p.sku}">
+        <h3>${p.name}</h3>
+        <div class="guide-links">
+          ${g.pdf ? `<a href="${g.pdf}" target="_blank" rel="noopener">Written guide (PDF)</a>` : `<span class="muted">Written guide coming soon</span>`}
+          ${g.video ? `<a href="${g.video}" target="_blank" rel="noopener">Watch video</a>` : `<span class="muted">Video coming soon</span>`}
+        </div>
+      </div>`;
+  }).join("");
+}
+function showGuides(sku){
+  closeModal(); closeDrawer();
+  $("checkout").classList.remove("open");
+  $("shopView").style.display = "none";
+  $("guides").classList.add("open");
+  renderGuides();
+  if(sku){
+    requestAnimationFrame(()=> document.getElementById(`guide-${sku}`)?.scrollIntoView({behavior:"smooth", block:"start"}));
+  } else {
+    window.scrollTo({top:0});
+  }
+}
+$("footGuides").onclick = e=>{ e.preventDefault(); showGuides(); };
+$("backFromGuides").onclick = showShop;
 
 function renderCheckout(){
   if(!cart.length){
