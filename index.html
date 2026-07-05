@@ -229,31 +229,19 @@
   .xbtn:hover{color:var(--text)}
   .modal-body{padding:18px 24px;overflow-y:auto;flex:1}
   .modal-body .desc{font-size:14px;color:var(--muted);margin-bottom:16px}
-  .mphoto-gallery{
-    display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
-    border:1px solid var(--line);border-radius:var(--radius);
-    margin-bottom:8px;scrollbar-width:none;
+  .mphoto{
+    aspect-ratio:16/9;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:var(--radius);overflow:hidden;margin-bottom:6px;
+    display:flex;align-items:center;justify-content:center;
   }
-  .mphoto-gallery::-webkit-scrollbar{display:none}
-  .mphoto-slide{
-    flex:0 0 100%;scroll-snap-align:start;position:relative;
-    aspect-ratio:16/9;background:var(--panel-2);
-    display:flex;align-items:center;justify-content:center;overflow:hidden;
-  }
-  .mphoto-slide img{width:100%;height:100%;object-fit:cover;display:block}
-  .mphoto-slide .ph{
+  .mphoto img{width:100%;height:100%;object-fit:cover;display:block}
+  .mphoto .ph{
     font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:#485061;
     text-transform:uppercase;text-align:center;padding:0 16px;
   }
-  .mphoto-slide-label{
-    position:absolute;left:8px;bottom:8px;
-    font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--text);background:rgba(10,12,17,.75);backdrop-filter:blur(4px);
-    padding:5px 9px;border-radius:var(--radius);
-  }
-  .mphoto-hint{
-    font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--muted);margin-bottom:16px;text-align:center;
+  .mphoto-caption{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:16px;
   }
   .optgroup{margin-bottom:18px}
   .optlabel{
@@ -704,7 +692,6 @@ const PRODUCTS = [
   {
     sku:"AVB-BTN-UP", name:"3D-Printed Buttons — Upper Row", cat:"Buttons", price:15, img:"images/btn-upper-thumb.jpg",
     desc:"Custom printed button housing with an illuminated LED switch, ready to install in the upper dash row.",
-    rawPhoto:"images/btn-upper-raw.jpg",
     photoKey:["LED Color"],
     photos:{...BUTTON_PHOTOS_TEMPLATE, "Red":"images/btn-upper-red.jpg", "Green":"images/btn-upper-green.jpg", "Yellow":"images/btn-upper-yellow.jpg", "Blue":"images/btn-upper-blue.jpg", "White":"images/btn-upper-white.jpg"},
     options:[
@@ -714,7 +701,6 @@ const PRODUCTS = [
   {
     sku:"AVB-BTN-LO", name:"3D-Printed Buttons — Lower Row", cat:"Buttons", price:15, img:"images/btn-lower-thumb.jpg",
     desc:"Custom printed button housing with an illuminated LED switch, sized for the lower dash row.",
-    rawPhoto:"images/btn-lower-raw.jpg",
     photoKey:["LED Color"],
     photos:{...BUTTON_PHOTOS_TEMPLATE, "Red":"images/btn-lower-red.jpg", "Green":"images/btn-lower-green.jpg", "Yellow":"images/btn-lower-yellow.jpg", "Blue":"images/btn-lower-blue.jpg", "White":"images/btn-lower-white.jpg"},
     options:[
@@ -884,29 +870,17 @@ function refreshModal(){
   // price + sku follow the selected variant
   $("mPrice").textContent = fmt(selectedPrice(current,currentSel) * currentQty);
   $("mSku").textContent = selectedSku(current,currentSel);
-  // variant photo gallery: color photo first, raw "as printed" photo second (swipeable)
-  let slides = "";
+  // variant photo
   if(current.photoKey && current.photos){
     const key = current.photoKey.map(l=>currentSel[l]).join("|");
     const url = current.photos[key];
     const shown = current.photoKey.map(l=>currentSel[l]).join(" · ");
-    slides += `
-      <div class="mphoto-slide">
+    $("mPhotoWrap").innerHTML = `
+      <div class="mphoto">
         ${url ? `<img src="${url}" alt="${current.name} — ${shown}">`
               : `<span class="ph">${shown}<br>photo coming soon</span>`}
-        <span class="mphoto-slide-label">Shown: ${shown}</span>
-      </div>`;
-  }
-  if(current.rawPhoto){
-    slides += `
-      <div class="mphoto-slide">
-        <img src="${current.rawPhoto}" alt="${current.name} — as printed">
-        <span class="mphoto-slide-label">As printed, before install</span>
-      </div>`;
-  }
-  if(slides){
-    $("mPhotoWrap").innerHTML = `<div class="mphoto-gallery">${slides}</div>` +
-      (current.rawPhoto ? `<div class="mphoto-hint">Swipe for the as-printed photo →</div>` : "");
+      </div>
+      <div class="mphoto-caption">Shown: ${shown}</div>`;
   } else {
     $("mPhotoWrap").innerHTML = "";
   }
