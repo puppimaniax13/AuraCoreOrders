@@ -455,6 +455,12 @@
     font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
     color:#485061;padding:7px 0;
   }
+  .guide-variants{display:flex;flex-direction:column;gap:8px}
+  .guide-variant{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .guide-variant .gvlabel{
+    font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--text);min-width:82px;
+  }
   @media(max-width:560px){
     .guide-row{flex-wrap:wrap}
     .guide-row .gthumb{width:72px}
@@ -1091,8 +1097,11 @@ $("backToShop").onclick = showShop;
 $("homeLink").onclick = e=>{ e.preventDefault(); showShop(); window.scrollTo({top:0}); };
 
 /* ================= INSTALL GUIDES PAGE ================= */
-// Fill in { pdf: "images/guides/....pdf", video: "https://..." } per SKU as they're ready.
-const GUIDES = {};
+// Products with an "LED Type" option get one guide per variant SKU (No LED / White LED / RGBW
+// Smart install differently). Everything else is keyed by its own product SKU.
+const GUIDES = {
+  "AVB-RFL-FEN-NL": { pdf: "guides/AVB-RFL-FEN-NL.pdf" },
+};
 let activeGuideCat = "All";
 let guideSearchQuery = "";
 
@@ -1115,7 +1124,27 @@ function renderGuides(){
     return;
   }
   $("guidesList").innerHTML = items.map(p=>{
-    const g = GUIDES[p.sku] || {};
+    const ledOpt = (p.options||[]).find(o=>o.label==="LED Type");
+    const linksHTML = ledOpt
+      ? `<div class="guide-variants">${ledOpt.choices.map(c=>{
+          const g = GUIDES[c.sku] || {};
+          return `
+            <div class="guide-variant">
+              <span class="gvlabel">${c.name}</span>
+              <div class="guide-links">
+                ${g.pdf ? `<a href="${g.pdf}" target="_blank" rel="noopener">Written guide (PDF)</a>` : `<span class="muted">Written guide coming soon</span>`}
+                ${g.video ? `<a href="${g.video}" target="_blank" rel="noopener">Watch video</a>` : `<span class="muted">Video coming soon</span>`}
+              </div>
+            </div>`;
+        }).join("")}</div>`
+      : (()=>{
+          const g = GUIDES[p.sku] || {};
+          return `
+            <div class="guide-links">
+              ${g.pdf ? `<a href="${g.pdf}" target="_blank" rel="noopener">Written guide (PDF)</a>` : `<span class="muted">Written guide coming soon</span>`}
+              ${g.video ? `<a href="${g.video}" target="_blank" rel="noopener">Watch video</a>` : `<span class="muted">Video coming soon</span>`}
+            </div>`;
+        })();
     return `
       <div class="guide-row">
         <div class="gthumb">
@@ -1124,10 +1153,7 @@ function renderGuides(){
         <div class="gbody">
           <h3>${p.name}</h3>
           <span class="gsku">${p.sku}</span>
-          <div class="guide-links">
-            ${g.pdf ? `<a href="${g.pdf}" target="_blank" rel="noopener">Written guide (PDF)</a>` : `<span class="muted">Written guide coming soon</span>`}
-            ${g.video ? `<a href="${g.video}" target="_blank" rel="noopener">Watch video</a>` : `<span class="muted">Video coming soon</span>`}
-          </div>
+          ${linksHTML}
         </div>
       </div>`;
   }).join("");
