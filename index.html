@@ -498,7 +498,7 @@
 <header class="topbar">
   <a class="logo" href="#" id="homeLink">AUTOVB<span class="grad">.WRX</span><span class="by">AuraCore Lighting Systems</span></a>
   <nav class="topnav">
-    <a class="navlink" href="#" id="navGuides">Guides</a>
+    <a class="navlink" href="#" id="navGuides">Installation</a>
     <button class="cartbtn" id="openDrawer" aria-label="Open order sheet">
       Order Sheet <span class="count" id="cartCount">0</span>
     </button>
@@ -596,7 +596,7 @@
 <section class="guides" id="guides">
   <div class="checkout-head">
     <button class="backlink" id="backFromGuides">← Back to catalog</button>
-    <h2>Install Guides</h2>
+    <h2>Installation Guides</h2>
   </div>
   <div class="guides-tools">
     <input class="guides-search" id="guidesSearch" type="text" placeholder="Search guides…">
@@ -614,7 +614,7 @@
     <div class="foot-links">
       <a href="https://instagram.com/autovb.WRX" target="_blank" rel="noopener">Instagram / DM to order</a>
       <a href="#" id="footOrder">Open order sheet</a>
-      <a href="#" id="footGuides">Install guides</a>
+      <a href="#" id="footGuides">Installation guides</a>
     </div>
   </div>
 </footer>
@@ -1074,6 +1074,8 @@ function showShop(){
   $("checkout").classList.remove("open");
   $("guides").classList.remove("open");
   $("shopView").style.display = "";
+  history.pushState(null, "", "/");
+  document.title = "AUTOVB.WRX — Parts Catalog | 2022–2026 Subaru WRX";
 }
 $("toCheckout").onclick = ()=>{
   if(!cart.length){ return; }
@@ -1148,6 +1150,8 @@ function showGuides(){
   renderGuideChips();
   renderGuides();
   window.scrollTo({top:0});
+  if(location.pathname !== "/install"){ history.pushState(null, "", "/install"); }
+  document.title = "Installation Guides | AUTOVB.WRX";
 }
 $("guidesSearch").oninput = e=>{ guideSearchQuery = e.target.value; renderGuides(); };
 $("footGuides").onclick = e=>{ e.preventDefault(); showGuides(); };
@@ -1273,6 +1277,12 @@ Notes: ${notes || "—"}`;
 renderFilters();
 renderGrid();
 updateCartCount();
+window.addEventListener("popstate", ()=>{
+  if(location.pathname === "/install"){ showGuides(); } else { showShop(); }
+});
+if(location.pathname === "/install" || location.hash === "#install"){
+  showGuides();
+}
 </script>
 </body>
 </html>
