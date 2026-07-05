@@ -405,34 +405,59 @@
 
   /* ---------- guides page ---------- */
   .guides{
-    display:none;max-width:800px;margin:0 auto;padding:40px 24px 80px;
+    display:none;max-width:900px;margin:0 auto;padding:40px 24px 80px;
   }
   .guides.open{display:block}
-  .guide-card{margin-bottom:16px;display:flex;gap:16px;align-items:center}
-  .guide-card .gthumb{
-    width:120px;aspect-ratio:4/3;flex-shrink:0;border-radius:var(--radius);overflow:hidden;
+  .guides-tools{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:24px;
+  }
+  .guides-search{
+    flex:1 1 220px;border:1px solid var(--line);border-radius:var(--radius);
+    padding:11px 14px;font-family:var(--display);font-size:14px;
+    background:var(--panel-2);color:var(--text);
+  }
+  .guides-search::placeholder{color:#4d5566}
+  .guides-search:focus{outline:2px solid var(--aura-1);outline-offset:0;border-color:var(--aura-1)}
+  .guides-chips{display:flex;flex-wrap:wrap;gap:8px}
+  .guide-list{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);overflow:hidden}
+  .guide-empty{padding:32px 20px;text-align:center;color:var(--muted);font-size:13px}
+  .guide-row{
+    display:flex;gap:16px;align-items:center;padding:16px 20px;
+    border-bottom:1px solid var(--line);
+  }
+  .guide-row:last-child{border-bottom:none}
+  .guide-row .gthumb{
+    width:88px;aspect-ratio:4/3;flex-shrink:0;border-radius:var(--radius);overflow:hidden;
     background:var(--panel-2);display:flex;align-items:center;justify-content:center;
   }
-  .guide-card .gthumb img{width:100%;height:100%;object-fit:cover;display:block}
-  .guide-card .gthumb .ph{
-    font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:#485061;
-    text-transform:uppercase;text-align:center;padding:0 6px;
+  .guide-row .gthumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .guide-row .gthumb .ph{
+    font-family:var(--mono);font-size:8px;letter-spacing:.06em;color:#485061;
+    text-transform:uppercase;text-align:center;padding:0 4px;
   }
-  .guide-card .gbody{flex:1;min-width:0}
-  .guide-card h3{
-    font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.1em;
-    text-transform:uppercase;margin-bottom:12px;color:var(--text);
+  .guide-row .gbody{flex:1;min-width:0}
+  .guide-row h3{
+    font-size:14.5px;font-weight:700;text-transform:uppercase;letter-spacing:.01em;
+    margin-bottom:3px;
+  }
+  .guide-row .gsku{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--muted);
+    margin-bottom:10px;display:block;
   }
   .guide-links{display:flex;flex-wrap:wrap;gap:10px}
   .guide-links a{
-    font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.08em;
+    font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.06em;
     text-transform:uppercase;text-decoration:none;color:var(--aura-1);
-    border:1px solid rgba(34,211,238,.4);border-radius:var(--radius);padding:8px 12px;
+    border:1px solid rgba(34,211,238,.4);border-radius:var(--radius);padding:7px 11px;
   }
   .guide-links a:hover{background:rgba(34,211,238,.1)}
   .guide-links .muted{
-    font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
-    color:#485061;padding:8px 0;
+    font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+    color:#485061;padding:7px 0;
+  }
+  @media(max-width:560px){
+    .guide-row{flex-wrap:wrap}
+    .guide-row .gthumb{width:72px}
   }
   /* ---------- footer ---------- */
   footer{
@@ -581,7 +606,11 @@
     <button class="backlink" id="backFromGuides">← Back to catalog</button>
     <h2>Install Guides</h2>
   </div>
-  <div id="guidesList"></div>
+  <div class="guides-tools">
+    <input class="guides-search" id="guidesSearch" type="text" placeholder="Search guides…">
+    <div class="guides-chips" id="guidesChips"></div>
+  </div>
+  <div class="guide-list" id="guidesList"></div>
 </section>
 
 <footer>
@@ -1064,17 +1093,37 @@ $("homeLink").onclick = e=>{ e.preventDefault(); showShop(); window.scrollTo({to
 /* ================= INSTALL GUIDES PAGE ================= */
 // Fill in { pdf: "images/guides/....pdf", video: "https://..." } per SKU as they're ready.
 const GUIDES = {};
+let activeGuideCat = "All";
+let guideSearchQuery = "";
 
+function renderGuideChips(){
+  $("guidesChips").innerHTML = CATEGORIES.map(c =>
+    `<button class="chip ${c===activeGuideCat?'active':''}" data-cat="${c}">${c}</button>`
+  ).join("");
+  $("guidesChips").querySelectorAll(".chip").forEach(b=>{
+    b.onclick = ()=>{ activeGuideCat = b.dataset.cat; renderGuideChips(); renderGuides(); };
+  });
+}
 function renderGuides(){
-  $("guidesList").innerHTML = PRODUCTS.map(p=>{
+  const q = guideSearchQuery.trim().toLowerCase();
+  const items = PRODUCTS.filter(p =>
+    (activeGuideCat === "All" || p.cat === activeGuideCat) &&
+    (!q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q))
+  );
+  if(!items.length){
+    $("guidesList").innerHTML = `<div class="guide-empty">No guides match your search.</div>`;
+    return;
+  }
+  $("guidesList").innerHTML = items.map(p=>{
     const g = GUIDES[p.sku] || {};
     return `
-      <div class="co-panel guide-card">
+      <div class="guide-row">
         <div class="gthumb">
           ${p.img ? `<img src="${p.img}" alt="${p.name}">` : `<span class="ph">Photo coming soon</span>`}
         </div>
         <div class="gbody">
           <h3>${p.name}</h3>
+          <span class="gsku">${p.sku}</span>
           <div class="guide-links">
             ${g.pdf ? `<a href="${g.pdf}" target="_blank" rel="noopener">Written guide (PDF)</a>` : `<span class="muted">Written guide coming soon</span>`}
             ${g.video ? `<a href="${g.video}" target="_blank" rel="noopener">Watch video</a>` : `<span class="muted">Video coming soon</span>`}
@@ -1088,9 +1137,12 @@ function showGuides(){
   $("checkout").classList.remove("open");
   $("shopView").style.display = "none";
   $("guides").classList.add("open");
+  $("guidesSearch").value = guideSearchQuery;
+  renderGuideChips();
   renderGuides();
   window.scrollTo({top:0});
 }
+$("guidesSearch").oninput = e=>{ guideSearchQuery = e.target.value; renderGuides(); };
 $("footGuides").onclick = e=>{ e.preventDefault(); showGuides(); };
 $("navGuides").onclick = e=>{ e.preventDefault(); showGuides(); };
 $("backFromGuides").onclick = showShop;
