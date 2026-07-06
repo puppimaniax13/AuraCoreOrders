@@ -806,7 +806,8 @@ const PRODUCTS = [
   },
   {
     sku:"AVB-LGT-TRUNK", name:"Trunk Light", cat:"Lighting", price:30, img:"images/trunk-blue.jpg",
-    desc:"Fully soldered trunk light kit — bulb extension, wire run, and LED strip. Plugs into the factory socket.",
+    desc:"Fully soldered trunk light kit — bulb extension, wire run, and LED strip. Plugs into the factory socket. Color photos other than Blue are AI-generated previews.",
+    promo:"Order a made-to-order color and send us a photo of it installed — we'll refund 5% of your whole order. First order of each color only.",
     photoKey:["Color"],
     photos:{
       "Blue":"images/trunk-blue.jpg",
@@ -947,8 +948,9 @@ function openModal(p){
   $("mCat").textContent = p.cat;
   $("mTitle").textContent = p.name;
   $("mDesc").textContent = p.desc;
-  $("mNotice").innerHTML = p.requires
-    ? `<div class="noticebox"><b>Heads up</b>${p.requires}</div>` : "";
+  $("mNotice").innerHTML =
+    (p.requires ? `<div class="noticebox"><b>Heads up</b>${p.requires}</div>` : "") +
+    (p.promo ? `<div class="noticebox"><b>Photo bounty — 5% off</b>${p.promo}</div>` : "");
   renderOptions();
   refreshModal();
   $("qtyVal").textContent = currentQty;
