@@ -498,11 +498,15 @@
   @media(max-width:820px){
     .checkout-cols{grid-template-columns:1fr}
   }
+  .navlink .short,.cartbtn .short{display:none}
   @media(max-width:640px){
     .grid{grid-template-columns:1fr;padding:24px 18px 60px}
     .hero{padding:56px 18px 44px}
     .filters{padding-left:18px;padding-right:18px;top:60px}
-    .topbar{padding:12px 16px}
+    .topbar{padding:12px 16px;flex-wrap:wrap}
+    .topnav{flex:1 1 100%;justify-content:space-between}
+    .navlink .full,.cartbtn .full{display:none}
+    .navlink .short,.cartbtn .short{display:inline}
     .how .step{flex:1 1 100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.14)}
     .how .step:last-child{border-bottom:none}
     .formrow{grid-template-columns:1fr}
@@ -521,9 +525,11 @@
 <header class="topbar">
   <a class="logo" href="#" id="homeLink">AUTOVB<span class="grad">.WRX</span><span class="by">AuraCore Lighting Systems</span></a>
   <nav class="topnav">
-    <a class="navlink" href="#" id="navGuides">Installation</a>
+    <a class="navlink" href="#" id="navGuides">
+      <span class="full">Installation</span><span class="short">Install</span>
+    </a>
     <button class="cartbtn" id="openDrawer" aria-label="Open order sheet">
-      Order Sheet <span class="count" id="cartCount">0</span>
+      <span class="full">Order Sheet</span><span class="short">Order</span> <span class="count" id="cartCount">0</span>
     </button>
   </nav>
 </header>
@@ -774,19 +780,6 @@ const PRODUCTS = [
     ]
   },
   {
-    sku:AURA_SKU, name:"AuraCore Controller", cat:"Electronics", price:50, img:"",
-    desc:"Custom AuraCore PCB in a 3D-printed housing. Drives all AUTOVB addressable RGBW lighting — one controller runs your whole setup.",
-    requires:"Required for any RGBW Smart product."
-  },
-  {
-    sku:"AVB-ELC-HRN-AURA", name:"AuraCore Inline Harness", cat:"Electronics", price:20, img:"",
-    desc:"Plug-and-play harness that sits inline with the factory connector. Fully reversible — zero splicing, zero cutting."
-  },
-  {
-    sku:"AVB-ELC-HRN-REV", name:"Reverse-Light Harness", cat:"Electronics", price:20, img:"",
-    desc:"Plug-in harness for reverse-triggered white LEDs. Pin connectors included."
-  },
-  {
     sku:"AVB-BTN-UP", name:"3D-Printed Buttons — Upper Row", cat:"Buttons", price:15, img:"images/btn-upper-thumb.jpg",
     desc:"Custom printed button housing with an illuminated LED switch, ready to install in the upper dash row.",
     photoKey:["LED Color"],
@@ -827,6 +820,19 @@ const PRODUCTS = [
         {title:"Made to Order", choices:["Orange","Ice Blue","Purple","Red","Green","Cool White 6000K","Natural White 4000K","Warm White 3000K","Warm White 2700K"]}
       ]}
     ]
+  },
+  {
+    sku:AURA_SKU, name:"AuraCore Controller", cat:"Electronics", price:50, img:"",
+    desc:"Custom AuraCore PCB in a 3D-printed housing. Drives all AUTOVB addressable RGBW lighting — one controller runs your whole setup.",
+    requires:"Required for any RGBW Smart product."
+  },
+  {
+    sku:"AVB-ELC-HRN-AURA", name:"AuraCore Inline Harness", cat:"Electronics", price:20, img:"",
+    desc:"Plug-and-play harness that sits inline with the factory connector. Fully reversible — zero splicing, zero cutting."
+  },
+  {
+    sku:"AVB-ELC-HRN-REV", name:"Reverse-Light Harness", cat:"Electronics", price:20, img:"",
+    desc:"Plug-in harness for reverse-triggered white LEDs. Pin connectors included."
   }
 ];
 
@@ -858,7 +864,7 @@ const HARNESS_AURA_SKU = "AVB-ELC-HRN-AURA";
 const FREE_SHIP_MIN = 100;
 
 /* ================= STATE ================= */
-const CATEGORIES = ["All", ...new Set(PRODUCTS.map(p=>p.cat))];
+const CATEGORIES = ["All", "Reflectors", "Electronics", "Buttons", "Lighting"];
 let activeCat = "All";
 let cart = [];
 let current = null;
