@@ -640,6 +640,7 @@
     <div>
       <span class="logo">AUTOVB<span class="grad">.WRX</span><span class="by">AuraCore Lighting Systems</span></span>
       <p>Small-batch parts for the 2022–2026 Subaru WRX. Orders are invoiced directly — prices and lead times confirmed before you pay anything.</p>
+      <p>Every part is 3D printed and oriented for maximum strength, so some edges won't look "perfect" up close — those edges are never visible once installed.</p>
     </div>
     <div class="foot-links">
       <a href="https://instagram.com/autovb.WRX" target="_blank" rel="noopener">Instagram / DM to order</a>
@@ -738,7 +739,7 @@ const PRODUCTS = [
     sku:"AVB-RFL-FEN", name:"Fender Reflector Set", cat:"Reflectors", price:40, img:"images/fender-thumb.jpg",
     desc:"Precision 3D-printed fender reflector set for the 2022–2026 WRX. Drop-in replacement with factory-tight tolerances. Sold as a pair — mounting clips included.",
     photoKey:["Backing Color","Lens Type"],
-    photos:{...REFLECTOR_PHOTOS_TEMPLATE},
+    photos:{...REFLECTOR_PHOTOS_TEMPLATE, "White|Frosted":"images/fender-white-frosted.jpg"},
     options:[
       {label:"LED Type", choices:[
         {name:"No LED", price:40, sku:"AVB-RFL-FEN-NL"},
@@ -765,8 +766,8 @@ const PRODUCTS = [
     ]
   },
   {
-    sku:"AVB-RFL-RV", name:"Rear Vent Set", cat:"Reflectors", price:40, img:"",
-    desc:"Rear vent reflector set for the 2022–2026 WRX. Subtle factory-plus look, or full lighting.",
+    sku:"AVB-RFL-RV", name:"Rear Vent Insert Set", cat:"Reflectors", price:40, img:"images/vent-thumb.jpg",
+    desc:"Rear vent insert set for the 2022–2026 WRX. Subtle factory-plus look, or full lighting.",
     photoKey:["Backing Color","Lens Type"],
     photos:{...REFLECTOR_PHOTOS_TEMPLATE},
     options:[
@@ -799,8 +800,8 @@ const PRODUCTS = [
   },
   {
     sku:"AVB-LGT-TRUNK", name:"Trunk Light", cat:"Lighting", price:30, img:"images/trunk-blue.jpg",
-    desc:"Fully soldered trunk light kit — bulb extension, wire run, and LED strip. Plugs into the factory socket. Color photos other than Blue are AI-generated previews.",
-    promo:"Order a made-to-order color and send us a photo of it installed — we'll refund 5% of your whole order. First order of each color only.",
+    desc:"Fully soldered trunk light kit — bulb extension, wire run, and LED strip. Plugs into the factory socket. Blue and Cool White 6000K photos are real; other colors are AI-generated previews.",
+    promo:"Order a made-to-order color and send us a photo of it installed — we'll refund $5 off your order. First order of each color only.",
     photoKey:["Color"],
     photos:{
       "Blue":"images/trunk-blue.jpg",
@@ -956,7 +957,7 @@ function openModal(p){
   $("mDesc").textContent = p.desc;
   $("mNotice").innerHTML =
     (p.requires ? `<div class="noticebox"><b>Heads up</b>${p.requires}</div>` : "") +
-    (p.promo ? `<div class="noticebox"><b>Photo bounty — 5% off</b>${p.promo}</div>` : "");
+    (p.promo ? `<div class="noticebox"><b>Photo bounty — $5 off</b>${p.promo}</div>` : "");
   renderOptions();
   refreshModal();
   $("qtyVal").textContent = currentQty;
