@@ -752,7 +752,14 @@ const PRODUCTS = [
     sku:"AVB-RFL-FEN", name:"Fender Reflector Set", cat:"Reflectors", price:40, img:"images/fender-thumb.jpg",
     desc:"Precision 3D-printed fender reflector set for the 2022–2026 WRX. Drop-in replacement with factory-tight tolerances. Sold as a pair — mounting clips included.",
     photoKey:["Backing Color","Lens Type"],
-    photos:{...REFLECTOR_PHOTOS_TEMPLATE, "White|Frosted":"images/fender-white-frosted.jpg"},
+    photos:{
+      "White|Clear":"images/fender-white-clear.jpg",
+      "White|Frosted":"images/fender-white-frosted.jpg",
+      "White|Tinted":"images/fender-white-tinted.jpg",
+      "Black|Clear":"images/fender-black-clear.jpg",
+      "Black|Frosted":"images/fender-black-frosted.jpg",
+      "Black|Tinted":"images/fender-black-tinted.jpg"
+    },
     options:[
       {label:"LED Type", choices:[
         {name:"No LED", price:40, sku:"AVB-RFL-FEN-NL"},
