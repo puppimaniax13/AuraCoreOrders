@@ -199,6 +199,10 @@
     font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
     text-transform:uppercase;color:var(--aura-1);
   }
+  .card .delayed{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
+    text-transform:uppercase;color:#e8a33d;
+  }
   .card-foot{
     display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px;
   }
@@ -369,8 +373,9 @@
 
   /* ---------- toast ---------- */
   .toast{
-    position:fixed;left:50%;bottom:24px;z-index:200;
-    transform:translate(-50%,140%);transition:transform .25s ease;
+    position:fixed;left:50%;bottom:-120px;z-index:200;
+    transform:translateX(-50%);transition:bottom .25s ease, opacity .25s ease;
+    opacity:0;pointer-events:none;
     display:flex;align-items:center;gap:10px;
     background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
     padding:14px 20px;box-shadow:0 12px 40px rgba(0,0,0,.45);
@@ -380,7 +385,7 @@
   .toast::before{
     content:"";width:8px;height:8px;border-radius:50%;background:var(--aura-grad);flex-shrink:0;
   }
-  .toast.show{transform:translate(-50%,0)}
+  .toast.show{bottom:24px;opacity:1;pointer-events:auto}
 
   /* ---------- checkout page ---------- */
   .checkout{
@@ -736,11 +741,6 @@ const LINK_SKU = "AVB-ACC-LINK";
    Reflector sets are one product each; LED Type changes price + SKU.
    photos: paste an image URL for each Backing|Lens combo —
    the configure window swaps the photo live as options change. */
-const REFLECTOR_PHOTOS_TEMPLATE = {
-  "White|Clear":"", "White|Frosted":"", "White|Tinted":"",
-  "Black|Clear":"", "Black|Frosted":"", "Black|Tinted":""
-};
-
 /* Button photos: paste an image URL for each LED Color —
    the configure window swaps the photo live as the color changes. */
 const BUTTON_PHOTOS_TEMPLATE = {
@@ -771,10 +771,17 @@ const PRODUCTS = [
     ]
   },
   {
-    sku:"AVB-RFL-RR", name:"Rear Reflector Set", cat:"Reflectors", price:40, img:"images/rear-thumb.jpg",
+    sku:"AVB-RFL-RR", name:"Rear Reflector Set", cat:"Reflectors", price:40, img:"images/rear-white-clear.jpg",
     desc:"OEM-fit rear reflector set for the 2022–2026 WRX. Sold as a pair.",
     photoKey:["Backing Color","Lens Type"],
-    photos:{...REFLECTOR_PHOTOS_TEMPLATE},
+    photos:{
+      "White|Clear":"images/rear-white-clear.jpg",
+      "White|Frosted":"images/rear-white-frosted.jpg",
+      "White|Tinted":"images/rear-white-tinted.jpg",
+      "Black|Clear":"images/rear-black-clear.jpg",
+      "Black|Frosted":"images/rear-black-frosted.jpg",
+      "Black|Tinted":"images/rear-black-tinted.jpg"
+    },
     options:[
       {label:"LED Type", choices:[
         {name:"No LED", price:40, sku:"AVB-RFL-RR-NL"},
@@ -786,10 +793,17 @@ const PRODUCTS = [
     ]
   },
   {
-    sku:"AVB-RFL-RV", name:"Rear Vent Insert Set", cat:"Reflectors", price:40, img:"images/vent-thumb.jpg",
+    sku:"AVB-RFL-RV", name:"Rear Vent Insert Set", cat:"Reflectors", price:40, img:"images/vent-white-clear.jpg",
     desc:"Rear vent insert set for the 2022–2026 WRX. Subtle factory-plus look, or full lighting.",
     photoKey:["Backing Color","Lens Type"],
-    photos:{...REFLECTOR_PHOTOS_TEMPLATE},
+    photos:{
+      "White|Clear":"images/vent-white-clear.jpg",
+      "White|Frosted":"images/vent-white-frosted.jpg",
+      "White|Tinted":"images/vent-white-tinted.jpg",
+      "Black|Clear":"images/vent-black-clear.jpg",
+      "Black|Frosted":"images/vent-black-frosted.jpg",
+      "Black|Tinted":"images/vent-black-tinted.jpg"
+    },
     options:[
       {label:"LED Type", choices:[
         {name:"No LED", price:40, sku:"AVB-RFL-RV-NL"},
@@ -845,15 +859,18 @@ const PRODUCTS = [
   {
     sku:AURA_SKU, name:"AuraCore Controller", cat:"Electronics", price:50, img:"",
     desc:"Custom AuraCore PCB in a 3D-printed housing. Drives all AUTOVB addressable RGBW lighting — one controller runs your whole setup.",
-    requires:"Required for any RGBW Smart product."
+    requires:"Required for any RGBW Smart product.",
+    delayed:"Backordered — current builds ship in about 4 weeks."
   },
   {
     sku:"AVB-ELC-HRN-AURA", name:"AuraCore Inline Harness", cat:"Electronics", price:20, img:"",
-    desc:"Plug-and-play harness that sits inline with the factory connector. Fully reversible — zero splicing, zero cutting."
+    desc:"Plug-and-play harness that sits inline with the factory connector. Fully reversible — zero splicing, zero cutting.",
+    delayed:"Backordered — current builds ship in about 4 weeks."
   },
   {
     sku:"AVB-ELC-HRN-REV", name:"Reverse-Light Harness", cat:"Electronics", price:20, img:"",
-    desc:"Plug-in harness for reverse-triggered white LEDs. Pin connectors included."
+    desc:"Plug-in harness for reverse-triggered white LEDs. Pin connectors included.",
+    delayed:"Backordered — current builds ship in about 4 weeks."
   }
 ];
 
@@ -862,19 +879,6 @@ const PRODUCTS = [
 const LINK_PRODUCT = {
   sku:LINK_SKU, name:"Link Two Pieces", price:5,
   desc:"We pre-connect two of your reflector sets so they run as one continuous unit — connector and install included."
-};
-
-/* Connectors — not shown in the grid; offered as an add-on based on
-   the LED Type selected on cart items. */
-const CONN_2PIN_SKU = "AVB-CON-2PIN";
-const CONN_3PIN_SKU = "AVB-CON-3PIN";
-const CONN_2PIN_PRODUCT = {
-  sku:CONN_2PIN_SKU, name:"2-Pin Connector", price:3,
-  desc:"Sealed 2-pin connector so your White LED reflector plugs straight in — no bare-wire hookup."
-};
-const CONN_3PIN_PRODUCT = {
-  sku:CONN_3PIN_SKU, name:"3-Pin Connector", price:3,
-  desc:"Sealed 3-pin connector so your RGBW reflector plugs straight in — no bare-wire hookup."
 };
 
 /* Harness SKUs (full products in the grid) offered as add-ons too */
@@ -955,6 +959,7 @@ function renderGrid(){
         <h3>${p.name}</h3>
         <p class="desc">${p.desc}</p>
         ${p.requires ? `<span class="req">⚡ ${p.requires}</span>` : ``}
+        ${p.delayed ? `<span class="delayed">⏳ ${p.delayed}</span>` : ``}
         <div class="card-foot">
           <span class="price">${hasVariablePrice(p) ? `<span class="from">from</span>` : ``}${fmt(minPrice(p))}</span>
           <button class="configure" data-sku="${p.sku}">${p.options ? "Configure" : "Add"}</button>
@@ -977,6 +982,7 @@ function openModal(p){
   $("mDesc").textContent = p.desc;
   $("mNotice").innerHTML =
     (p.requires ? `<div class="noticebox"><b>Heads up</b>${p.requires}</div>` : "") +
+    (p.delayed ? `<div class="noticebox"><b>Backordered</b>${p.delayed}</div>` : "") +
     (p.promo ? `<div class="noticebox"><b>Photo bounty — $5 off</b>${p.promo}</div>` : "");
   renderOptions();
   refreshModal();
@@ -1074,13 +1080,6 @@ function syncRequiredItems(){
   if(reflectorCount() < 2){
     cart = cart.filter(i=>i.sku!==LINK_SKU);
   }
-  // Connector add-ons only valid alongside the matching LED Type
-  if(!cartHasWhiteLED()){
-    cart = cart.filter(i=>i.sku!==CONN_2PIN_SKU);
-  }
-  if(!cartHasRGBW()){
-    cart = cart.filter(i=>i.sku!==CONN_3PIN_SKU);
-  }
 }
 function reflectorCount(){
   return cart.filter(i=>i.sku.startsWith("AVB-RFL")).reduce((s,i)=>s+i.qty,0);
@@ -1155,8 +1154,8 @@ function renderShipNote(el){
 }
 
 /* ---- add-on suggestions (drawer + checkout) ----
-   Link (2+ reflector sets); White LED → reverse harness + 2-pin connector;
-   RGBW → AuraCore inline harness + 3-pin connector. */
+   Link (2+ reflector sets); White LED → reverse harness;
+   RGBW → AuraCore inline harness. */
 function getAddonOffers(){
   const offers = [];
   if(reflectorCount() >= 2 && !cart.some(i=>i.sku===LINK_SKU)) offers.push(LINK_PRODUCT);
@@ -1166,7 +1165,6 @@ function getAddonOffers(){
       offers.push({ sku:h.sku, name:h.name, price:h.price,
         desc:"Plug-in trigger so your White LED lights up in reverse — no splicing." });
     }
-    if(!cart.some(i=>i.sku===CONN_2PIN_SKU)) offers.push(CONN_2PIN_PRODUCT);
   }
   if(cartHasRGBW()){
     if(!cart.some(i=>i.sku===HARNESS_AURA_SKU)){
@@ -1174,7 +1172,6 @@ function getAddonOffers(){
       offers.push({ sku:h.sku, name:h.name, price:h.price,
         desc:"Plug-and-play power for your AuraCore — sits inline with the factory connector, fully reversible." });
     }
-    if(!cart.some(i=>i.sku===CONN_3PIN_SKU)) offers.push(CONN_3PIN_PRODUCT);
   }
   return offers;
 }
