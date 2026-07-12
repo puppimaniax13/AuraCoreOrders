@@ -895,7 +895,17 @@ const FREE_SHIP_MIN = 100;
 /* ================= STATE ================= */
 const CATEGORIES = ["All", "Reflectors", "Electronics", "Buttons", "Lighting"];
 let activeCat = "All";
-let cart = [];
+const CART_STORAGE_KEY = "autovb_cart";
+function loadCart(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(CART_STORAGE_KEY));
+    return Array.isArray(saved) ? saved : [];
+  }catch{ return []; }
+}
+function saveCart(){
+  try{ localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); }catch{}
+}
+let cart = loadCart();
 let current = null;
 let currentSel = {};
 let currentQty = 1;
@@ -1119,6 +1129,7 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeModal(); cl
 
 function updateCartCount(){
   $("cartCount").textContent = cart.reduce((s,i)=>s+i.qty,0);
+  saveCart();
 }
 function lineItemHTML(i, idx){
   const opts = Object.entries(i.options).map(([k,v])=>`${k}: ${v}`).join(" · ");
