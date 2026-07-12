@@ -624,11 +624,14 @@
       </div>
       <label class="formlabel" for="fPayment">Preferred payment method</label>
       <select id="fPayment">
-        <option value="Zelle">Zelle</option>
+        <option value="Zelle">Zelle (preferred)</option>
         <option value="Apple Cash">Apple Cash</option>
         <option value="Venmo">Venmo</option>
         <option value="Cash App">Cash App</option>
       </select>
+      <label class="formlabel" for="fPaymentHandle" id="fPaymentHandleLabel">Zelle (phone or email) *</label>
+      <input id="fPaymentHandle" type="text" placeholder="e.g. (555) 555-5555 or you@email.com" required>
+      <p class="finehint" style="margin-top:-6px">So we can send your invoice/payment request to the right place.</p>
       <label class="formlabel" for="fNotes">Notes (already have an AuraCore, color questions, etc.)</label>
       <textarea id="fNotes"></textarea>
       <div style="margin-top:18px">
@@ -771,7 +774,7 @@ const PRODUCTS = [
     ]
   },
   {
-    sku:"AVB-RFL-RR", name:"Rear Reflector Set", cat:"Reflectors", price:40, img:"images/rear-white-clear.jpg",
+    sku:"AVB-RFL-RR", name:"Rear Reflector Set", cat:"Reflectors", price:40, img:"images/rear-thumb.jpg",
     desc:"OEM-fit rear reflector set for the 2022–2026 WRX. Sold as a pair.",
     photoKey:["Backing Color","Lens Type"],
     photos:{
@@ -793,7 +796,7 @@ const PRODUCTS = [
     ]
   },
   {
-    sku:"AVB-RFL-RV", name:"Rear Vent Insert Set", cat:"Reflectors", price:40, img:"images/vent-white-clear.jpg",
+    sku:"AVB-RFL-RV", name:"Rear Vent Insert Set", cat:"Reflectors", price:40, img:"images/vent-thumb.jpg",
     desc:"Rear vent insert set for the 2022–2026 WRX. Subtle factory-plus look, or full lighting.",
     photoKey:["Backing Color","Lens Type"],
     photos:{
@@ -1326,6 +1329,21 @@ function renderCheckout(){
   renderAddonOffers($("coAddon"));
 }
 
+/* ---- payment handle field: label/placeholder swap per method ---- */
+const PAYMENT_META = {
+  "Zelle":      { label:"Zelle (phone or email) *",   placeholder:"e.g. (555) 555-5555 or you@email.com" },
+  "Apple Cash": { label:"Apple Cash (phone number) *", placeholder:"e.g. (555) 555-5555" },
+  "Venmo":      { label:"Venmo username *",            placeholder:"@yourusername" },
+  "Cash App":   { label:"Cash App $Cashtag *",         placeholder:"$yourcashtag" }
+};
+function updatePaymentHandleField(){
+  const meta = PAYMENT_META[$("fPayment").value] || PAYMENT_META["Zelle"];
+  $("fPaymentHandleLabel").textContent = meta.label;
+  $("fPaymentHandle").placeholder = meta.placeholder;
+}
+$("fPayment").onchange = updatePaymentHandleField;
+updatePaymentHandleField();
+
 /* ================= SUBMIT ================= */
 function orderText(){
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
@@ -1355,12 +1373,18 @@ $("sendOrder").onclick = async ()=>{
   }
   const ig = $("fIg").value.trim(), notes = $("fNotes").value.trim();
   const payment = $("fPayment").value;
+  const paymentHandle = $("fPaymentHandle").value.trim();
+  if(!paymentHandle){
+    status.textContent = `Please include your ${payment} info so we can send the payment request.`;
+    status.classList.add("err"); return;
+  }
   const address = `${addr1}${addr2 ? ", "+addr2 : ""}, ${city}, ${state} ${zip}`;
   const summary = orderText();
   const payload = {
     name, email, instagram: ig || "—",
     shipping_address: address,
     preferred_payment: payment,
+    payment_handle: paymentHandle,
     notes: notes || "—",
     order: summary,
     _subject: `AUTOVB.WRX Order Request — ${name}`
@@ -1379,7 +1403,7 @@ $("sendOrder").onclick = async ()=>{
         status.textContent = "Order request sent! We'll email you an invoice soon.";
         status.classList.add("ok");
         cart = []; updateCartCount(); renderCheckout(); renderCart();
-        $("fNotes").value = "";
+        $("fNotes").value = ""; $("fPaymentHandle").value = "";
       } else { throw new Error(); }
     }catch{
       status.textContent = "Couldn't send — try again, or DM us on Instagram.";
@@ -1395,7 +1419,7 @@ $("sendOrder").onclick = async ()=>{
 Email: ${email}
 Instagram: ${ig || "—"}
 Ship to: ${address}
-Preferred payment: ${payment}
+Preferred payment: ${payment} — ${paymentHandle}
 
 ${summary}
 
