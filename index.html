@@ -28,7 +28,7 @@
 <body>
 
 <header class="topbar">
-  <a class="logo" href="index.html" id="homeLink">AURA<span class="lt">CORE</span></a>
+  <a class="logo" href="index.html" id="homeLink">AUTOVB<span class="grad">.WRX</span></a>
   <nav class="topnav">
     <button class="navlink" id="navProducts">Products</button>
     <button class="navlink hide-sm" id="navSystem">The System</button>
@@ -71,7 +71,7 @@
         <h3>Orders over $100 ship free.</h3>
         <p>Contiguous U.S. — no codes, no checkout fees. We confirm your order and invoice you directly.</p>
       </div>
-      <a class="btn-dark" href="#lineup">Build your order →</a>
+      <button class="btn-wrb" id="buildOrder">Build your order →</button>
     </div>
 
     <section class="block" id="interior">
@@ -91,6 +91,18 @@
     </section>
   </div>
 </div>
+
+<!-- shop all page -->
+<section class="shopall" id="shopall">
+  <div class="wrap">
+    <div class="checkout-head">
+      <button class="backlink" id="backFromShopall">← Back to home</button>
+      <h2>Shop All Parts</h2>
+      <p>Every AURACORE part for your build, in one place.</p>
+    </div>
+    <div class="grid" id="gridAll"></div>
+  </div>
+</section>
 
 <!-- checkout page -->
 <section class="checkout" id="checkout">
@@ -179,13 +191,13 @@
 <footer>
   <div class="foot-inner">
     <div>
-      <span class="logo">AURA<span class="lt">CORE</span></span>
+      <span class="logo">AUTOVB<span class="grad">.WRX</span></span>
       <p>Small-batch 3D-printed parts and lighting for Subaru, by AUTOVB. Orders are invoiced directly — prices and lead times confirmed before you pay anything.</p>
       <p>Every part is printed and oriented for maximum strength, so some edges won't look "perfect" up close — those edges are never visible once installed.</p>
     </div>
     <div class="foot-links">
       <h4>Links</h4>
-      <a href="https://instagram.com/autovb.WRX" target="_blank" rel="noopener">Instagram — DM to order</a>
+      <a href="https://instagram.com/autovb.WRX" target="_blank" rel="noopener">Instagram</a>
       <a href="#" id="footOrder">Your order</a>
       <a href="#" id="footGuides">Instructions database</a>
     </div>
@@ -226,16 +238,18 @@ function cardHTML(p){
         ${p.img ? `<img src="${p.img}" alt="${p.name}" loading="lazy">`
                 : `<span class="ph">Photo coming soon</span>`}
       </div>
-      <span class="fits">${p.fits}</span>
-      <div class="card-title">
-        <h3>${p.name}</h3>
-        <span class="arrowbtn" aria-hidden="true">→</span>
-      </div>
-      <p class="desc">${p.desc}</p>
-      ${p.requires ? `<span class="note req">${p.requires}</span>` : ``}
-      ${p.delayed ? `<span class="note delayed">${p.delayed}</span>` : ``}
-      <div class="price-line">
-        ${hasVariablePrice(p) ? `<span class="from">From </span>` : ``}${fmt(minPrice(p))}${p.unit ? ` <span class="unit">/ ${p.unit}</span>` : ``}
+      <div class="card-body">
+        <span class="fits">${p.fits}</span>
+        <div class="card-title">
+          <h3>${p.name}</h3>
+          <span class="arrowbtn" aria-hidden="true">→</span>
+        </div>
+        <p class="desc">${p.desc}</p>
+        ${p.requires ? `<span class="note req">${p.requires}</span>` : ``}
+        ${p.delayed ? `<span class="note delayed">${p.delayed}</span>` : ``}
+        <div class="price-line">
+          ${hasVariablePrice(p) ? `<span class="from">From </span>` : ``}${fmt(minPrice(p))}${p.unit ? ` <span class="unit">/ ${p.unit}</span>` : ``}
+        </div>
       </div>
     </a>`;
 }
@@ -245,25 +259,42 @@ function renderSections(){
   $("gridInterior").innerHTML = bySection("interior");
   $("gridSystem").innerHTML = bySection("system");
 }
+function renderAll(){
+  $("gridAll").innerHTML = PRODUCTS.map(cardHTML).join("");
+}
 
 /* ================= VIEW ROUTING ================= */
 function showCheckout(){
   closeDrawer();
   $("shopView").style.display = "none";
+  $("shopall").classList.remove("open");
   $("guides").classList.remove("open");
   $("checkout").classList.add("open");
   renderCheckout();
   window.scrollTo({top:0});
 }
+function showShopAll(){
+  closeDrawer();
+  $("shopView").style.display = "none";
+  $("checkout").classList.remove("open");
+  $("guides").classList.remove("open");
+  $("shopall").classList.add("open");
+  renderAll();
+  window.scrollTo({top:0});
+  document.title = "Shop All — AUTOVB.WRX";
+}
 function showShop(){
   $("checkout").classList.remove("open");
   $("guides").classList.remove("open");
+  $("shopall").classList.remove("open");
   $("shopView").style.display = "";
-  document.title = "AURACORE — Precision 3D-Printed Lighting & Hardware for Subaru";
+  document.title = "AUTOVB.WRX — Precision 3D-Printed Lighting & Hardware for Subaru";
 }
 $("backToShop").onclick = ()=>{ showShop(); history.pushState(null,"","index.html"); };
+$("backFromShopall").onclick = ()=>{ showShop(); history.pushState(null,"","index.html"); };
+$("buildOrder").onclick = ()=>{ showShopAll(); history.pushState(null,"","index.html?view=shop"); };
 $("homeLink").onclick = e=>{ e.preventDefault(); showShop(); history.pushState(null,"","index.html"); window.scrollTo({top:0}); };
-$("navProducts").onclick = ()=>{ showShop(); document.getElementById("lineup").scrollIntoView(); };
+$("navProducts").onclick = ()=>{ showShopAll(); history.pushState(null,"","index.html?view=shop"); };
 $("navSystem").onclick = ()=>{ showShop(); document.getElementById("system").scrollIntoView(); };
 
 /* ================= INSTRUCTIONS DATABASE ================= */
@@ -309,6 +340,7 @@ function renderGuides(){
 function showGuides(){
   closeDrawer();
   $("checkout").classList.remove("open");
+  $("shopall").classList.remove("open");
   $("shopView").style.display = "none";
   $("guides").classList.add("open");
   $("guidesSearch").value = guideSearchQuery;
@@ -447,6 +479,7 @@ renderSections();
   const view = params.get("view");
   if(view === "checkout" && cart.length){ showCheckout(); }
   else if(view === "install"){ showGuides(); }
+  else if(view === "shop"){ showShopAll(); }
 })();
 </script>
 </body>
