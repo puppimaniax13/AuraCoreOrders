@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AUTOVB.WRX — Parts for the 2022–2026 Subaru WRX</title>
-<meta name="description" content="Custom 3D-printed reflectors, lighting, and interior upgrades for the 2022–2026 Subaru WRX (VB). Designed, printed, and tested on a real VB. Free U.S. shipping over $100.">
-<meta property="og:title" content="AUTOVB.WRX — Parts for the 2022–2026 Subaru WRX">
-<meta property="og:description" content="Custom 3D-printed reflectors, lighting, and interior upgrades for the 2022–2026 Subaru WRX (VB). Designed, printed, and tested on a real VB.">
+<title>AURACORE — Precision 3D-Printed Lighting &amp; Hardware for Subaru</title>
+<meta name="description" content="Precision 3D-printed reflectors, lighting, and interior hardware for Subaru. Configure your parts and send an order request — we invoice directly. Free U.S. shipping over $100.">
+<meta property="og:title" content="AURACORE — Precision 3D-Printed Lighting &amp; Hardware for Subaru">
+<meta property="og:description" content="Precision 3D-printed reflectors, lighting, and interior hardware for Subaru. Configure your parts and send an order request — we invoice directly.">
 <meta property="og:image" content="https://autovb.shop/images/fender-thumb.jpg">
 <meta property="og:url" content="https://autovb.shop/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AUTOVB.WRX — Parts for the 2022–2026 Subaru WRX">
-<meta name="twitter:description" content="Custom 3D-printed reflectors, lighting, and interior upgrades for the 2022–2026 Subaru WRX (VB).">
+<meta name="twitter:title" content="AURACORE — Precision 3D-Printed Lighting &amp; Hardware for Subaru">
+<meta name="twitter:description" content="Precision 3D-printed reflectors, lighting, and interior hardware for Subaru.">
 <meta name="twitter:image" content="https://autovb.shop/images/fender-thumb.jpg">
-<meta name="theme-color" content="#15181d">
+<meta name="theme-color" content="#ffffff">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
@@ -22,664 +22,74 @@
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --ink:#15181d;        /* header / footer */
-    --ink-2:#1e232b;
-    --bg:#f4f5f7;         /* page background */
-    --card:#ffffff;
-    --line:#e2e5ea;
-    --line-dark:#2c333d;
-    --text:#1b1f26;
-    --muted:#5d6673;
-    --blue:#0f5cc4;       /* WR-blue accent */
-    --blue-dark:#0b4899;
-    --blue-tint:#eaf1fb;
-    --ok:#118647;
-    --ok-tint:#e9f6ee;
-    --warn:#9a6608;
-    --warn-tint:#fdf3df;
-    --err:#c53030;
-    --radius:10px;
-    --radius-sm:7px;
-    --head:'Barlow Condensed',system-ui,sans-serif;
-    --body:'Inter',system-ui,sans-serif;
-    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
-    --shadow:0 1px 3px rgba(20,24,31,.06),0 1px 2px rgba(20,24,31,.04);
-    --shadow-lift:0 10px 28px rgba(20,24,31,.12);
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  @media(prefers-reduced-motion:reduce){
-    html{scroll-behavior:auto}
-    *,*::before,*::after{animation:none!important;transition:none!important}
-  }
-  body{
-    font-family:var(--body);
-    color:var(--text);
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
-    background:var(--bg);
-  }
-  a{color:inherit}
-  button{font-family:inherit;cursor:pointer}
-  :focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-  img{display:block}
-
-  /* ---------- announcement bar ---------- */
-  .annbar{
-    background:var(--blue);color:#fff;text-align:center;
-    font-size:12.5px;font-weight:600;letter-spacing:.02em;
-    padding:8px 16px;
-  }
-  .annbar b{font-weight:800}
-
-  /* ---------- header ---------- */
-  .topbar{
-    position:sticky;top:0;z-index:50;
-    display:flex;align-items:center;justify-content:space-between;gap:16px;
-    padding:0 24px;height:64px;
-    background:var(--ink);
-    border-bottom:3px solid var(--blue);
-  }
-  .logo{
-    font-family:var(--head);font-weight:800;font-size:24px;letter-spacing:.02em;
-    text-decoration:none;white-space:nowrap;color:#fff;line-height:1.05;
-  }
-  .logo .grad{color:#4b93f0}
-  .logo .by{
-    display:block;font-family:var(--body);font-size:9.5px;font-weight:600;
-    letter-spacing:.14em;color:#8b95a3;text-transform:uppercase;
-  }
-  .topnav{display:flex;align-items:center;gap:6px}
-  .navlink{
-    font-family:var(--head);font-size:16px;font-weight:600;letter-spacing:.04em;
-    text-transform:uppercase;text-decoration:none;color:#c9d1dc;padding:8px 12px;
-    white-space:nowrap;border-radius:var(--radius-sm);
-  }
-  .navlink:hover{color:#fff;background:var(--ink-2)}
-  .cartbtn{
-    display:flex;align-items:center;gap:8px;
-    background:var(--blue);color:#fff;border:none;
-    font-family:var(--head);font-size:16px;font-weight:700;letter-spacing:.05em;
-    text-transform:uppercase;
-    padding:9px 16px;border-radius:var(--radius-sm);
-    transition:background .15s;
-  }
-  .cartbtn:hover{background:var(--blue-dark)}
-  .cartbtn .count{
-    font-family:var(--body);background:#fff;color:var(--blue);
-    min-width:20px;height:20px;border-radius:10px;
-    display:inline-flex;align-items:center;justify-content:center;
-    font-size:11.5px;font-weight:800;padding:0 6px;
-  }
-
-  /* ---------- hero ---------- */
-  .hero{padding:52px 24px 44px;background:linear-gradient(180deg,#fff, var(--bg))}
-  .hero-inner{
-    max-width:1200px;margin:0 auto;
-    display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center;
-  }
-  .eyebrow{
-    display:inline-flex;align-items:center;gap:8px;
-    background:var(--blue-tint);color:var(--blue);
-    font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-    padding:6px 12px;border-radius:99px;margin-bottom:16px;
-  }
-  .hero h1{
-    font-family:var(--head);font-weight:800;text-transform:uppercase;
-    font-size:clamp(38px,5vw,60px);line-height:.98;letter-spacing:.005em;
-  }
-  .hero h1 .accent{color:var(--blue)}
-  .hero p{margin-top:16px;color:var(--muted);font-size:16.5px;max-width:520px}
-  .hero-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
-  .btn-primary{
-    background:var(--blue);color:#fff;border:none;text-decoration:none;
-    font-family:var(--head);font-size:18px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
-    padding:13px 28px;border-radius:var(--radius-sm);transition:background .15s;
-    display:inline-block;
-  }
-  .btn-primary:hover{background:var(--blue-dark)}
-  .btn-ghost{
-    background:#fff;color:var(--text);border:1.5px solid var(--line);text-decoration:none;
-    font-family:var(--head);font-size:18px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
-    padding:13px 28px;border-radius:var(--radius-sm);transition:border-color .15s,color .15s;
-    display:inline-block;
-  }
-  .btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
-  .hero-photo{position:relative}
-  .hero-photo img{
-    width:100%;border-radius:var(--radius);
-    box-shadow:var(--shadow-lift);
-    aspect-ratio:16/10;object-fit:cover;
-  }
-  .hero-photo .tag{
-    position:absolute;left:14px;bottom:14px;
-    background:rgba(21,24,29,.85);color:#fff;backdrop-filter:blur(4px);
-    font-size:11.5px;font-weight:600;letter-spacing:.04em;
-    padding:6px 12px;border-radius:99px;
-  }
-
-  /* ---------- trust bar ---------- */
-  .trust{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff}
-  .trust-inner{
-    max-width:1200px;margin:0 auto;padding:18px 24px;
-    display:grid;grid-template-columns:repeat(4,1fr);gap:18px;
-  }
-  .trust-item{display:flex;align-items:center;gap:12px}
-  .trust-item svg{flex-shrink:0;width:26px;height:26px;stroke:var(--blue)}
-  .trust-item b{display:block;font-size:13.5px;font-weight:700;line-height:1.3}
-  .trust-item span{font-size:12px;color:var(--muted);line-height:1.35}
-
-  /* ---------- section headers ---------- */
-  .section-head{max-width:1200px;margin:0 auto;padding:44px 24px 6px}
-  .section-head h2{
-    font-family:var(--head);font-weight:800;text-transform:uppercase;
-    font-size:clamp(26px,3.4vw,36px);letter-spacing:.01em;line-height:1.05;
-  }
-  .section-head p{color:var(--muted);font-size:14.5px;margin-top:4px}
-
-  /* ---------- filters ---------- */
-  .filters{
-    padding:14px 24px 4px;
-    position:sticky;top:64px;z-index:40;
-    background:linear-gradient(180deg,var(--bg) 82%,rgba(244,245,247,0));
-  }
-  .filters-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;flex-wrap:wrap;gap:8px}
-  .chip{
-    background:#fff;border:1.5px solid var(--line);border-radius:99px;
-    font-size:13px;font-weight:600;
-    padding:8px 18px;color:var(--muted);transition:all .12s;
-  }
-  .chip:hover{border-color:var(--blue);color:var(--blue)}
-  .chip.active{background:var(--ink);border-color:var(--ink);color:#fff}
-
-  /* ---------- grid ---------- */
-  .grid{
-    max-width:1200px;margin:0 auto;padding:20px 24px 64px;
-    display:grid;grid-template-columns:repeat(3,1fr);gap:22px;
-  }
-  .card{
-    border:1px solid var(--line);border-radius:var(--radius);
-    display:flex;flex-direction:column;overflow:hidden;
-    background:var(--card);box-shadow:var(--shadow);
-    transition:box-shadow .18s, transform .18s;
-  }
-  .card:hover{box-shadow:var(--shadow-lift);transform:translateY(-3px)}
-  .thumb{
-    aspect-ratio:4/3;background:#eceef1;position:relative;overflow:hidden;
-    display:flex;align-items:center;justify-content:center;
-  }
-  .thumb img{width:100%;height:100%;object-fit:cover}
-  .thumb .ph{
-    font-size:12.5px;font-weight:600;color:#9aa2ad;text-align:center;padding:0 12px;
-  }
-  .card-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:7px;flex:1}
-  .card .cat{
-    font-size:11px;font-weight:700;letter-spacing:.1em;
-    text-transform:uppercase;color:var(--blue);
-  }
-  .card h3{
-    font-family:var(--head);font-size:22px;font-weight:700;line-height:1.1;
-    text-transform:uppercase;letter-spacing:.01em;
-  }
-  .card .desc{font-size:13px;color:var(--muted);flex:1}
-  .badge{
-    display:inline-flex;align-items:center;gap:6px;width:fit-content;
-    font-size:11.5px;font-weight:700;border-radius:99px;padding:4px 11px;
-  }
-  .badge.req{background:var(--blue-tint);color:var(--blue)}
-  .badge.delayed{background:var(--warn-tint);color:var(--warn)}
-  .card-foot{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;
-  }
-  .price{font-weight:800;font-size:19px}
-  .price .from{font-weight:500;font-size:12px;color:var(--muted);margin-right:3px}
-  .configure{
-    background:var(--blue);border:none;color:#fff;
-    font-family:var(--head);font-size:15.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
-    padding:9px 18px;border-radius:var(--radius-sm);transition:background .12s;
-  }
-  .configure:hover{background:var(--blue-dark)}
-  .sku{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:#a2a9b3}
-
-  /* ---------- how it works ---------- */
-  .how-section{background:#fff;border-top:1px solid var(--line);padding:52px 24px 60px}
-  .how-inner{max-width:1200px;margin:0 auto}
-  .how-inner h2{
-    font-family:var(--head);font-weight:800;text-transform:uppercase;
-    font-size:clamp(26px,3.4vw,36px);margin-bottom:6px;
-  }
-  .how-inner > p{color:var(--muted);font-size:14.5px;margin-bottom:28px}
-  .how-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-  .how-step{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
-  .how-step .num{
-    width:36px;height:36px;border-radius:50%;background:var(--blue);color:#fff;
-    font-family:var(--head);font-size:19px;font-weight:700;
-    display:flex;align-items:center;justify-content:center;margin-bottom:14px;
-  }
-  .how-step b{font-family:var(--head);font-size:19px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;display:block;margin-bottom:4px}
-  .how-step p{font-size:13.5px;color:var(--muted)}
-
-  /* ---------- modal ---------- */
-  .overlay{
-    position:fixed;inset:0;background:rgba(15,18,23,.55);z-index:90;
-    opacity:0;pointer-events:none;transition:opacity .18s;
-  }
-  .overlay.open{opacity:1;pointer-events:auto}
-  .modal{
-    position:fixed;z-index:100;inset:0;margin:auto;
-    width:min(580px,calc(100vw - 32px));max-height:min(780px,calc(100vh - 48px));
-    background:var(--card);border-radius:14px;
-    display:none;flex-direction:column;overflow:hidden;
-    box-shadow:0 24px 70px rgba(10,14,20,.35);
-  }
-  .modal.open{display:flex}
-  .modal-head{
-    padding:20px 24px 14px;border-bottom:1px solid var(--line);
-    display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
-  }
-  .modal-head h2{font-family:var(--head);font-size:26px;font-weight:700;text-transform:uppercase;line-height:1.08}
-  .modal-head .cat{
-    font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--blue);display:block;margin-bottom:3px;
-  }
-  .xbtn{
-    background:var(--bg);border:none;font-size:20px;line-height:1;color:var(--muted);
-    width:34px;height:34px;border-radius:50%;flex-shrink:0;
-  }
-  .xbtn:hover{background:var(--line);color:var(--text)}
-  .modal-body{padding:18px 24px;overflow-y:auto;flex:1}
-  .modal-body .desc{font-size:14px;color:var(--muted);margin-bottom:16px}
-  .mphoto{
-    aspect-ratio:16/9;background:#eceef1;border:1px solid var(--line);
-    border-radius:var(--radius);overflow:hidden;margin-bottom:6px;
-    display:flex;align-items:center;justify-content:center;
-  }
-  .mphoto img{width:100%;height:100%;object-fit:cover}
-  .mphoto .ph{font-size:12.5px;font-weight:600;color:#9aa2ad;text-align:center;padding:0 16px}
-  .mphoto-caption{font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:16px}
-  .optgroup{margin-bottom:18px}
-  .optlabel{
-    font-size:12px;font-weight:700;letter-spacing:.07em;
-    text-transform:uppercase;margin-bottom:8px;display:block;
-  }
-  .optsub{
-    font-size:11px;font-weight:700;letter-spacing:.06em;
-    text-transform:uppercase;color:var(--muted);margin:8px 0 6px;display:block;
-  }
-  .optrow{display:flex;flex-wrap:wrap;gap:8px}
-  .optbtn{
-    background:#fff;border:1.5px solid var(--line);border-radius:var(--radius-sm);
-    font-size:13px;font-weight:600;
-    padding:10px 16px;flex:1 1 auto;min-width:90px;transition:all .12s;color:var(--text);
-  }
-  .optbtn small{display:block;font-weight:600;font-size:11.5px;margin-top:1px;color:var(--muted)}
-  .optbtn.sel{background:var(--blue);border-color:var(--blue);color:#fff}
-  .optbtn.sel small{color:rgba(255,255,255,.8)}
-  .optbtn:hover:not(.sel){border-color:var(--blue);color:var(--blue)}
-  .noticebox{
-    background:var(--blue-tint);border:1px solid #c8dbf5;
-    border-radius:var(--radius-sm);
-    padding:12px 14px;font-size:13px;color:var(--muted);margin-bottom:14px;
-  }
-  .noticebox b{
-    color:var(--blue);font-size:12px;letter-spacing:.05em;
-    text-transform:uppercase;display:block;margin-bottom:2px;
-  }
-  .noticebox.warn{background:var(--warn-tint);border-color:#efd9a8}
-  .noticebox.warn b{color:var(--warn)}
-  .noticebox.promo{background:var(--ok-tint);border-color:#bfe4cd}
-  .noticebox.promo b{color:var(--ok)}
-  .qtyrow{display:flex;align-items:center;gap:12px}
-  .qtybox{display:flex;border:1.5px solid var(--line);border-radius:var(--radius-sm);overflow:hidden}
-  .qtybox button{background:#fff;border:none;width:40px;height:40px;font-size:17px;font-weight:700;color:var(--text)}
-  .qtybox button:hover{background:var(--bg)}
-  .qtybox span{
-    width:46px;display:flex;align-items:center;justify-content:center;
-    font-weight:700;border-left:1.5px solid var(--line);border-right:1.5px solid var(--line);
-    background:#fff;
-  }
-  .modal-foot{
-    padding:16px 24px;border-top:1px solid var(--line);
-    display:flex;align-items:center;justify-content:space-between;gap:14px;
-    background:var(--card);
-  }
-  .modal-foot .price{font-size:24px}
-  .addbtn{
-    background:var(--blue);color:#fff;border:none;
-    font-family:var(--head);font-size:17px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
-    padding:13px 24px;border-radius:var(--radius-sm);flex:1;max-width:300px;
-    transition:background .15s;
-  }
-  .addbtn:hover{background:var(--blue-dark)}
-
-  /* ---------- order drawer ---------- */
-  .drawer{
-    position:fixed;top:0;right:0;bottom:0;z-index:100;
-    width:min(440px,100vw);background:var(--card);border-left:1px solid var(--line);
-    transform:translateX(100%);transition:transform .22s ease;
-    display:flex;flex-direction:column;
-  }
-  .drawer.open{transform:translateX(0)}
-  .drawer-head{
-    padding:18px 24px;border-bottom:1px solid var(--line);
-    display:flex;justify-content:space-between;align-items:center;
-  }
-  .drawer-head h2{font-family:var(--head);font-size:23px;font-weight:700;text-transform:uppercase}
-  .drawer-body{flex:1;overflow-y:auto;padding:18px 24px;background:var(--bg)}
-  .empty{color:var(--muted);font-size:14px;text-align:center;padding:40px 10px}
-  .line-item{
-    border:1px solid var(--line);border-radius:var(--radius-sm);
-    padding:13px 15px;margin-bottom:10px;display:flex;justify-content:space-between;gap:12px;
-    background:#fff;
-  }
-  .line-item .n{font-weight:700;font-size:14px}
-  .line-item .o{font-size:12px;color:var(--muted);margin-top:1px}
-  .line-item .p{font-weight:800;font-size:14.5px;white-space:nowrap}
-  .li-controls{display:flex;align-items:center;gap:12px;margin-top:9px}
-  .li-qty{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:var(--radius-sm);overflow:hidden}
-  .li-qty button{
-    background:#fff;border:none;width:28px;height:28px;font-size:14px;font-weight:700;color:var(--text);
-    display:flex;align-items:center;justify-content:center;
-  }
-  .li-qty button:hover{background:var(--bg)}
-  .li-qty button:disabled{color:#c3c9d1;cursor:default;background:#fff}
-  .li-qty span{
-    min-width:32px;text-align:center;font-size:13px;font-weight:700;
-    border-left:1.5px solid var(--line);border-right:1.5px solid var(--line);
-    line-height:28px;background:#fff;
-  }
-  .line-item .rm{
-    background:none;border:none;color:var(--muted);font-size:12px;font-weight:600;padding:2px 0;
-    text-decoration:underline;text-underline-offset:2px;
-  }
-  .line-item .rm:hover{color:var(--err)}
-  .line-item .lock{
-    font-size:11.5px;color:var(--blue);font-weight:600;margin-top:8px;display:block;
-  }
-  .subtotal{
-    display:flex;justify-content:space-between;padding:14px 2px;
-    font-weight:800;font-size:16.5px;border-top:2px solid var(--line);margin-top:10px;
-  }
-  .drawer-foot{padding:16px 24px;border-top:1px solid var(--line);background:#fff}
-  .sendbtn{
-    width:100%;background:var(--blue);color:#fff;border:none;
-    font-family:var(--head);font-size:18px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
-    padding:14px;border-radius:var(--radius-sm);transition:background .15s;
-  }
-  .sendbtn:hover{background:var(--blue-dark)}
-  .sendbtn:disabled{opacity:.5;cursor:not-allowed}
-  .finehint{font-size:12px;color:var(--muted);margin-top:10px;text-align:center}
-  .fieldhint{font-size:12px;color:var(--muted);margin:6px 0 0}
-  .shipnote{
-    display:none;margin-top:10px;padding:10px 12px;text-align:center;
-    font-size:12.5px;font-weight:700;color:var(--muted);
-    border:1.5px dashed var(--line);border-radius:var(--radius-sm);background:#fff;
-  }
-  .shipnote.on{display:block}
-  .shipnote.unlocked{color:var(--ok);border-color:#9ed4b4;background:var(--ok-tint)}
-
-  /* ---------- toast ---------- */
-  .toast{
-    position:fixed;left:50%;bottom:-120px;z-index:200;
-    transform:translateX(-50%);transition:bottom .25s ease, opacity .25s ease;
-    opacity:0;pointer-events:none;
-    display:flex;align-items:center;gap:10px;
-    background:var(--ink);border-radius:99px;
-    padding:13px 22px;box-shadow:0 12px 40px rgba(10,14,20,.35);
-    font-size:13.5px;font-weight:600;
-    color:#fff;max-width:calc(100vw - 32px);white-space:nowrap;
-  }
-  .toast::before{
-    content:"✓";width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;
-    display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;
-  }
-  .toast.show{bottom:24px;opacity:1;pointer-events:auto}
-
-  /* ---------- checkout page ---------- */
-  .checkout{display:none;max-width:1100px;margin:0 auto;padding:36px 24px 80px}
-  .checkout.open{display:block}
-  .checkout-head{margin-bottom:24px}
-  .backlink{
-    background:none;border:none;font-size:13px;font-weight:600;color:var(--muted);
-    padding:4px 0;margin-bottom:10px;
-  }
-  .backlink:hover{color:var(--blue)}
-  .checkout-head h2{
-    font-family:var(--head);font-size:clamp(30px,4vw,44px);font-weight:800;text-transform:uppercase;line-height:1;
-  }
-  .checkout-head p{color:var(--muted);font-size:14px;margin-top:6px}
-  .checkout-cols{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
-  .co-panel{
-    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-    padding:24px;box-shadow:var(--shadow);
-  }
-  .co-panel h3{
-    font-family:var(--head);font-size:20px;font-weight:700;letter-spacing:.03em;
-    text-transform:uppercase;margin-bottom:14px;
-    padding-bottom:10px;border-bottom:2px solid var(--line);
-  }
-  .addon-card{
-    border:1.5px dashed #b9d1f2;border-radius:var(--radius-sm);
-    padding:14px;margin-top:14px;background:var(--blue-tint);
-    display:flex;justify-content:space-between;align-items:center;gap:12px;
-  }
-  .addon-card .t{font-size:13.5px;font-weight:700}
-  .addon-card .d{font-size:12px;color:var(--muted);margin-top:2px}
-  .addon-add{
-    background:var(--blue);color:#fff;border:none;
-    font-size:12.5px;font-weight:700;
-    padding:9px 14px;border-radius:var(--radius-sm);white-space:nowrap;
-    transition:background .15s;
-  }
-  .addon-add:hover{background:var(--blue-dark)}
-  .formrow{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
-  .formlabel{
-    font-size:12.5px;font-weight:700;display:block;margin:14px 0 6px;color:var(--text);
-  }
-  .checkout input,.checkout textarea,.checkout select{
-    width:100%;border:1.5px solid var(--line);border-radius:var(--radius-sm);
-    padding:11px 12px;font-family:var(--body);font-size:16px;
-    background:#fff;color:var(--text);
-  }
-  .checkout input::placeholder,.checkout textarea::placeholder{color:#a7aeb8}
-  .checkout input:focus,.checkout textarea:focus,.checkout select:focus{
-    outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(15,92,196,.15);
-  }
-  .checkout textarea{resize:vertical;min-height:80px}
-  .statusmsg{margin-top:10px;font-size:13.5px;font-weight:600;text-align:center;display:none}
-  .statusmsg.ok{display:block;color:var(--ok)}
-  .statusmsg.err{display:block;color:var(--err)}
-
-  /* ---------- guides page ---------- */
-  .guides{display:none;max-width:960px;margin:0 auto;padding:36px 24px 80px}
-  .guides.open{display:block}
-  .guides .checkout-head p{max-width:560px}
-  .guides-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:22px}
-  .guides-search{
-    flex:1 1 220px;border:1.5px solid var(--line);border-radius:var(--radius-sm);
-    padding:11px 14px;font-family:var(--body);font-size:14.5px;
-    background:#fff;color:var(--text);
-  }
-  .guides-search::placeholder{color:#a7aeb8}
-  .guides-search:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(15,92,196,.15)}
-  .guides-chips{display:flex;flex-wrap:wrap;gap:8px}
-  .guide-list{display:flex;flex-direction:column;gap:14px}
-  .guide-empty{
-    padding:36px 20px;text-align:center;color:var(--muted);font-size:13.5px;
-    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
-  }
-  .guide-row{
-    padding:18px 22px;background:#fff;
-    border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
-  }
-  .guide-row h3{
-    font-family:var(--head);font-size:22px;font-weight:700;text-transform:uppercase;
-    line-height:1.1;margin-bottom:1px;
-  }
-  .guide-row .gsku{
-    font-family:var(--mono);font-size:10.5px;color:#a2a9b3;margin-bottom:12px;display:block;
-  }
-  .guide-links{display:flex;flex-wrap:wrap;gap:8px}
-  .guide-links a{
-    display:inline-flex;align-items:center;gap:7px;
-    font-size:12.5px;font-weight:700;text-decoration:none;color:var(--blue);
-    border:1.5px solid #b9d1f2;background:var(--blue-tint);
-    border-radius:var(--radius-sm);padding:8px 13px;transition:all .12s;
-  }
-  .guide-links a:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
-  .guide-links .muted{
-    font-size:12.5px;font-weight:600;color:#adb4be;padding:8px 4px;
-  }
-  .guide-variants{display:flex;flex-direction:column;gap:10px}
-  .guide-variant{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  .guide-variant .gvlabel{
-    font-size:12px;font-weight:700;min-width:92px;
-    color:var(--text);
-  }
-
-  /* ---------- footer ---------- */
-  footer{background:var(--ink);color:#c9d1dc;padding:44px 24px 40px;margin-top:8px}
-  .foot-inner{
-    max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;gap:36px;
-    justify-content:space-between;align-items:flex-start;
-  }
-  footer .logo{font-size:22px}
-  footer p{font-size:13px;color:#8b95a3;max-width:420px;margin-top:10px}
-  .foot-links{display:flex;flex-direction:column;gap:9px}
-  .foot-links h4{
-    font-family:var(--head);font-size:15px;font-weight:700;letter-spacing:.06em;
-    text-transform:uppercase;color:#fff;margin-bottom:2px;
-  }
-  .foot-links a{font-size:13px;color:#8b95a3;text-decoration:none}
-  .foot-links a:hover{color:#fff}
-  .foot-bottom{
-    max-width:1200px;margin:32px auto 0;padding-top:18px;
-    border-top:1px solid var(--line-dark);
-    font-size:12px;color:#6c7683;
-  }
-
-  @media(max-width:980px){
-    .grid{grid-template-columns:repeat(2,1fr)}
-    .hero-inner{grid-template-columns:1fr;gap:28px}
-    .trust-inner{grid-template-columns:repeat(2,1fr)}
-    .how-steps{grid-template-columns:1fr}
-  }
-  @media(max-width:820px){
-    .checkout-cols{grid-template-columns:1fr}
-  }
-  .navlink .short,.cartbtn .short{display:none}
-  @media(max-width:640px){
-    .grid{grid-template-columns:1fr;padding:16px 18px 48px}
-    .hero{padding:36px 18px 32px}
-    .filters{padding-left:18px;padding-right:18px;top:60px}
-    .topbar{padding:0 14px;height:60px}
-    .logo{font-size:20px}
-    .navlink{font-size:15px;padding:8px 8px}
-    .cartbtn{font-size:15px;padding:8px 12px}
-    .navlink .full,.cartbtn .full{display:none}
-    .navlink .short,.cartbtn .short{display:inline}
-    .trust-inner{grid-template-columns:1fr;gap:14px}
-    .formrow{grid-template-columns:1fr}
-    .modal{
-      width:100vw;height:100dvh;max-height:100dvh;
-      inset:0;margin:0;border:none;border-radius:0;
-    }
-    .qtybox button{width:44px;height:44px}
-    .qtybox span{width:48px}
-  }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div class="annbar">🚚 <b>Free U.S. shipping on orders $100+</b> &nbsp;·&nbsp; No checkout fees — we invoice you directly</div>
-
 <header class="topbar">
-  <a class="logo" href="#" id="homeLink">AUTOVB<span class="grad">.WRX</span><span class="by">AuraCore Lighting Systems</span></a>
+  <a class="logo" href="index.html" id="homeLink">AURA<span class="lt">CORE</span></a>
   <nav class="topnav">
-    <a class="navlink" href="#" id="navGuides">
-      <span class="full">Install Guides</span><span class="short">Install</span>
-    </a>
+    <button class="navlink" id="navProducts">Products</button>
+    <button class="navlink hide-sm" id="navSystem">The System</button>
+    <button class="navlink" id="navGuides">Install Guides</button>
     <button class="cartbtn" id="openDrawer" aria-label="Open your order">
-      <span class="full">Your Order</span><span class="short">Order</span> <span class="count" id="cartCount">0</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span class="count" id="cartCount">0</span>
     </button>
   </nav>
 </header>
 
 <div id="shopView">
   <section class="hero">
+    <img class="bgimg" src="images/hero.jpg" alt="AURACORE parts on a Subaru WRX"
+         onerror="this.onerror=null;this.src='images/rear-white-clear.jpg'">
     <div class="hero-inner">
       <div>
-        <span class="eyebrow">Fits 2022–2026 Subaru WRX (VB)</span>
-        <h1>Parts built for your WRX,<br><span class="accent">by a WRX owner</span></h1>
-        <p>Custom 3D-printed reflectors, addressable lighting, and interior upgrades — every part designed, printed, and test-fitted on our own VB before it ships to you.</p>
-        <div class="hero-ctas">
-          <a class="btn-primary" href="#grid">Shop parts</a>
-          <a class="btn-ghost" href="#" id="heroGuides">Install guides</a>
-        </div>
+        <span class="eyebrow-lt">Precision 3D Printed · Designed for Subaru</span>
+        <h1>Define<br><span class="lt">Your</span><br>Aura</h1>
       </div>
-      <div class="hero-photo">
-        <img src="images/rear-white-clear.jpg" alt="Custom rear reflector installed on a WR Blue 2022+ Subaru WRX">
-        <span class="tag">Rear reflector set — installed on our shop car</span>
+      <div class="hero-side">
+        <p>Precision-engineered reflector modules and lighting for the generation that demands more.</p>
+        <div class="cta"><a class="btn-line" href="#lineup">Explore the lineup →</a></div>
       </div>
     </div>
   </section>
 
-  <div class="trust">
-    <div class="trust-inner">
-      <div class="trust-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        <div><b>Designed on a real VB</b><span>Test-fitted before anything ships</span></div>
+  <div class="wrap">
+    <section class="block" id="lineup">
+      <div class="s-head">
+        <span class="eyebrow">The Lineup</span>
+        <h2><b>Three Pairs.</b>Infinite Configurations.</h2>
       </div>
-      <div class="trust-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11" rx="1"/><path d="M15 10h4l3 3v4h-7z"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="19" r="2"/></svg>
-        <div><b>Free shipping over $100</b><span>Contiguous U.S. orders</span></div>
+      <div class="grid" id="gridLineup"></div>
+    </section>
+
+    <div class="offerbox">
+      <div>
+        <span class="eyebrow">Shipping</span>
+        <h3>Orders over $100 ship free.</h3>
+        <p>Contiguous U.S. — no codes, no checkout fees. We confirm your order and invoice you directly.</p>
       </div>
-      <div class="trust-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-        <div><b>No checkout fees</b><span>We confirm your order, then invoice you directly</span></div>
-      </div>
-      <div class="trust-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        <div><b>Install guides included</b><span>Written PDFs, videos on the way</span></div>
-      </div>
+      <a class="btn-dark" href="#lineup">Build your order →</a>
     </div>
-  </div>
 
-  <div class="section-head">
-    <h2>Shop the catalog</h2>
-    <p>Every part is made to order in small batches. Pick your options and add it to your order.</p>
-  </div>
-
-  <div class="filters"><div class="filters-inner" id="filters" role="tablist" aria-label="Filter by category"></div></div>
-
-  <main class="grid" id="grid"></main>
-
-  <section class="how-section">
-    <div class="how-inner">
-      <h2>How ordering works</h2>
-      <p>No payment info on this site, ever — you send a request, we handle the rest personally.</p>
-      <div class="how-steps">
-        <div class="how-step">
-          <div class="num">1</div>
-          <b>Build your order</b>
-          <p>Pick your parts and options — colors, lenses, LEDs — and add them to your order. Change quantities anytime.</p>
-        </div>
-        <div class="how-step">
-          <div class="num">2</div>
-          <b>Send the request</b>
-          <p>Check out with your shipping info and preferred payment method. Takes about a minute.</p>
-        </div>
-        <div class="how-step">
-          <div class="num">3</div>
-          <b>We confirm &amp; invoice</b>
-          <p>We double-check your build, confirm lead times, and send an invoice. You only pay once everything's confirmed.</p>
-        </div>
+    <section class="block" id="interior">
+      <div class="s-head">
+        <span class="eyebrow">Interior &amp; Lighting</span>
+        <h2><b>Small Details.</b>Big Difference.</h2>
       </div>
-    </div>
-  </section>
+      <div class="grid" id="gridInterior"></div>
+    </section>
+
+    <section class="block" id="system">
+      <div class="s-head">
+        <span class="eyebrow">The System</span>
+        <h2><b>One Controller.</b>Every Light.</h2>
+      </div>
+      <div class="grid" id="gridSystem"></div>
+    </section>
+  </div>
 </div>
 
 <!-- checkout page -->
@@ -755,74 +165,39 @@
   </div>
 </section>
 
-<!-- install guides page -->
+<!-- instructions database -->
 <section class="guides" id="guides">
   <div class="checkout-head">
     <button class="backlink" id="backFromGuides">← Back to catalog</button>
-    <h2>Installation guides</h2>
-    <p>Step-by-step written guides for every part, with videos on the way. Guides are split by LED type where the install differs.</p>
+    <h2>Instructions Database</h2>
+    <p>Download install instructions for every AURACORE part. Guides are split by LED type where the install differs.</p>
   </div>
-  <div class="guides-tools">
-    <input class="guides-search" id="guidesSearch" type="text" placeholder="Search by part name or SKU…">
-    <div class="guides-chips" id="guidesChips"></div>
-  </div>
-  <div class="guide-list" id="guidesList"></div>
+  <input class="guides-search" id="guidesSearch" type="text" placeholder="Search by part name or SKU…">
+  <div id="guidesList"></div>
 </section>
 
 <footer>
   <div class="foot-inner">
     <div>
-      <span class="logo">AUTOVB<span class="grad">.WRX</span><span class="by">AuraCore Lighting Systems</span></span>
-      <p>Small-batch parts for the 2022–2026 Subaru WRX, made by an owner who drives one every day. Orders are invoiced directly — prices and lead times confirmed before you pay anything.</p>
-      <p>Every part is 3D printed and oriented for maximum strength, so some edges won't look "perfect" up close — those edges are never visible once installed.</p>
+      <span class="logo">AURA<span class="lt">CORE</span></span>
+      <p>Small-batch 3D-printed parts and lighting for Subaru, by AUTOVB. Orders are invoiced directly — prices and lead times confirmed before you pay anything.</p>
+      <p>Every part is printed and oriented for maximum strength, so some edges won't look "perfect" up close — those edges are never visible once installed.</p>
     </div>
     <div class="foot-links">
-      <h4>Quick links</h4>
+      <h4>Links</h4>
       <a href="https://instagram.com/autovb.WRX" target="_blank" rel="noopener">Instagram — DM to order</a>
       <a href="#" id="footOrder">Your order</a>
-      <a href="#" id="footGuides">Installation guides</a>
+      <a href="#" id="footGuides">Instructions database</a>
     </div>
   </div>
-  <div class="foot-bottom">© AUTOVB.WRX · Not affiliated with Subaru Corporation. WRX is a trademark of its respective owner.</div>
+  <div class="foot-bottom">© AURACORE / AUTOVB.WRX · Not affiliated with Subaru Corporation.</div>
 </footer>
 
-<!-- product modal -->
-<div class="overlay" id="overlay"></div>
-<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
-  <div class="modal-head">
-    <div>
-      <span class="cat" id="mCat"></span>
-      <h2 id="mTitle"></h2>
-      <span class="sku" id="mSku"></span>
-    </div>
-    <button class="xbtn" id="closeModal" aria-label="Close">×</button>
-  </div>
-  <div class="modal-body">
-    <div id="mPhotoWrap"></div>
-    <p class="desc" id="mDesc"></p>
-    <div id="mNotice"></div>
-    <div id="mOptions"></div>
-    <div class="optgroup">
-      <span class="optlabel">Quantity</span>
-      <div class="qtyrow">
-        <div class="qtybox">
-          <button id="qtyMinus" aria-label="Decrease quantity">−</button>
-          <span id="qtyVal">1</span>
-          <button id="qtyPlus" aria-label="Increase quantity">+</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="modal-foot">
-    <span class="price" id="mPrice"></span>
-    <button class="addbtn" id="addToOrder">Add to order</button>
-  </div>
-</div>
-
 <!-- order drawer -->
+<div class="overlay" id="overlay"></div>
 <div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle">
   <div class="drawer-head">
-    <h2 id="dTitle">Your order</h2>
+    <h2 id="dTitle">Your Order</h2>
     <button class="xbtn" id="closeDrawer" aria-label="Close">×</button>
   </div>
   <div class="drawer-body">
@@ -841,527 +216,41 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="app.js"></script>
 <script>
-/* ================= CONFIG — edit these ================= */
-const CONFIG = {
-  // 1) Sign up free at formspree.io, create a form, paste its endpoint here:
-  //    e.g. "https://formspree.io/f/abcdwxyz"
-  formspree: "https://formspree.io/f/xvzjdraz",
-  // 2) Fallback email — used for a pre-filled mailto if Formspree isn't set:
-  email: "becker.gei21@outlook.com",
-  instagram: "https://instagram.com/autovb.WRX"
-};
-
-const AURA_SKU = "AVB-ELC-AURA";
-const LINK_SKU = "AVB-ACC-LINK";
-
-/* ================= PRODUCT DATA =================
-   Reflector sets are one product each; LED Type changes price + SKU.
-   photos: paste an image URL for each Backing|Lens combo —
-   the configure window swaps the photo live as options change. */
-/* Button photos: paste an image URL for each LED Color —
-   the configure window swaps the photo live as the color changes. */
-const BUTTON_PHOTOS_TEMPLATE = {
-  "Red":"", "Green":"", "Yellow":"", "Blue":"", "White":""
-};
-
-const PRODUCTS = [
-  {
-    sku:"AVB-RFL-FEN", name:"Fender Reflector Set", cat:"Reflectors", price:40, img:"images/fender-thumb.jpg",
-    desc:"Precision 3D-printed fender reflector set for the 2022–2026 WRX. Drop-in replacement with factory-tight tolerances. Sold as a pair — mounting clips included.",
-    photoKey:["Backing Color","Lens Type"],
-    photos:{
-      "White|Clear":"images/fender-white-clear.jpg",
-      "White|Frosted":"images/fender-white-frosted.jpg",
-      "White|Tinted":"images/fender-white-tinted.jpg",
-      "Black|Clear":"images/fender-black-clear.jpg",
-      "Black|Frosted":"images/fender-black-frosted.jpg",
-      "Black|Tinted":"images/fender-black-tinted.jpg"
-    },
-    options:[
-      {label:"LED Type", choices:[
-        {name:"No LED", price:40, sku:"AVB-RFL-FEN-NL"},
-        {name:"White LED", price:75, sku:"AVB-RFL-FEN-WL"},
-        {name:"RGBW Smart", price:150, sku:"AVB-RFL-FEN-RG"}
-      ]},
-      {label:"Backing Color", choices:["White","Black"]},
-      {label:"Lens Type", choices:["Clear","Frosted","Tinted"]}
-    ]
-  },
-  {
-    sku:"AVB-RFL-RR", name:"Rear Reflector Set", cat:"Reflectors", price:40, img:"images/rear-thumb.jpg",
-    desc:"OEM-fit rear reflector set for the 2022–2026 WRX. Sold as a pair.",
-    photoKey:["Backing Color","Lens Type"],
-    photos:{
-      "White|Clear":"images/rear-white-clear.jpg",
-      "White|Frosted":"images/rear-white-frosted.jpg",
-      "White|Tinted":"images/rear-white-tinted.jpg",
-      "Black|Clear":"images/rear-black-clear.jpg",
-      "Black|Frosted":"images/rear-black-frosted.jpg",
-      "Black|Tinted":"images/rear-black-tinted.jpg"
-    },
-    options:[
-      {label:"LED Type", choices:[
-        {name:"No LED", price:40, sku:"AVB-RFL-RR-NL"},
-        {name:"White LED", price:75, sku:"AVB-RFL-RR-WL"},
-        {name:"RGBW Smart", price:150, sku:"AVB-RFL-RR-RG"}
-      ]},
-      {label:"Backing Color", choices:["White","Black"]},
-      {label:"Lens Type", choices:["Clear","Frosted","Tinted"]}
-    ]
-  },
-  {
-    sku:"AVB-RFL-RV", name:"Rear Vent Insert Set", cat:"Reflectors", price:40, img:"images/vent-thumb.jpg",
-    desc:"Rear vent insert set for the 2022–2026 WRX. Subtle factory-plus look, or full lighting.",
-    photoKey:["Backing Color","Lens Type"],
-    photos:{
-      "White|Clear":"images/vent-white-clear.jpg",
-      "White|Frosted":"images/vent-white-frosted.jpg",
-      "White|Tinted":"images/vent-white-tinted.jpg",
-      "Black|Clear":"images/vent-black-clear.jpg",
-      "Black|Frosted":"images/vent-black-frosted.jpg",
-      "Black|Tinted":"images/vent-black-tinted.jpg"
-    },
-    options:[
-      {label:"LED Type", choices:[
-        {name:"No LED", price:40, sku:"AVB-RFL-RV-NL"},
-        {name:"White LED", price:75, sku:"AVB-RFL-RV-WL"},
-        {name:"RGBW Smart", price:150, sku:"AVB-RFL-RV-RG"}
-      ]},
-      {label:"Backing Color", choices:["White","Black"]},
-      {label:"Lens Type", choices:["Clear","Frosted","Tinted"]}
-    ]
-  },
-  {
-    sku:"AVB-BTN-UP", name:"3D-Printed Buttons — Upper Row", cat:"Buttons", price:15, img:"images/btn-upper-thumb.jpg",
-    desc:"Custom printed button housing with an illuminated LED switch, ready to install in the upper dash row.",
-    photoKey:["LED Color"],
-    photos:{...BUTTON_PHOTOS_TEMPLATE, "Red":"images/btn-upper-red.jpg", "Green":"images/btn-upper-green.jpg", "Yellow":"images/btn-upper-yellow.jpg", "Blue":"images/btn-upper-blue.jpg", "White":"images/btn-upper-white.jpg"},
-    options:[
-      {label:"LED Color", choices:["Red","Green","Yellow","Blue","White"]}
-    ]
-  },
-  {
-    sku:"AVB-BTN-LO", name:"3D-Printed Buttons — Lower Row", cat:"Buttons", price:15, img:"images/btn-lower-thumb.jpg",
-    desc:"Custom printed button housing with an illuminated LED switch, sized for the lower dash row.",
-    photoKey:["LED Color"],
-    photos:{...BUTTON_PHOTOS_TEMPLATE, "Red":"images/btn-lower-red.jpg", "Green":"images/btn-lower-green.jpg", "Yellow":"images/btn-lower-yellow.jpg", "Blue":"images/btn-lower-blue.jpg", "White":"images/btn-lower-white.jpg"},
-    options:[
-      {label:"LED Color", choices:["Red","Green","Yellow","Blue","White"]}
-    ]
-  },
-  {
-    sku:"AVB-LGT-TRUNK", name:"Trunk Light", cat:"Lighting", price:30, img:"images/trunk-cool-white-6000k.jpg",
-    desc:"Fully soldered trunk light kit — bulb extension, wire run, and LED strip. Plugs into the factory socket. Cool White 6000K photo is real; other colors are AI-generated previews.",
-    promo:"Order a made-to-order color and send us a photo of it installed — we'll refund $5 off your order. First order of each color only.",
-    photoKey:["Color"],
-    photos:{
-      "Blue":"images/trunk-blue.jpg",
-      "Orange":"images/trunk-orange.jpg",
-      "Ice Blue":"images/trunk-ice-blue.jpg",
-      "Purple":"images/trunk-purple.jpg",
-      "Red":"images/trunk-red.jpg",
-      "Green":"images/trunk-green.jpg",
-      "Cool White 6000K":"images/trunk-cool-white-6000k.jpg",
-      "Natural White 4000K":"images/trunk-natural-white-4000k.jpg",
-      "Warm White 3000K":"images/trunk-warm-white-3000k.jpg",
-      "Warm White 2700K":"images/trunk-warm-white-2700k.jpg"
-    },
-    options:[
-      {label:"Color", sections:[
-        {title:"In Stock", choices:["Blue"]},
-        {title:"Made to Order", choices:["Orange","Ice Blue","Purple","Red","Green","Cool White 6000K","Natural White 4000K","Warm White 3000K","Warm White 2700K"]}
-      ]}
-    ]
-  },
-  {
-    sku:AURA_SKU, name:"AuraCore Controller", cat:"Electronics", price:50, img:"",
-    desc:"Custom AuraCore PCB in a 3D-printed housing. Drives all AUTOVB addressable RGBW lighting — one controller runs your whole setup.",
-    requires:"Required for any RGBW Smart product.",
-    delayed:"Backordered — current builds ship in about 4 weeks."
-  },
-  {
-    sku:"AVB-ELC-HRN-AURA", name:"AuraCore Inline Harness", cat:"Electronics", price:20, img:"",
-    desc:"Plug-and-play harness that sits inline with the factory connector. Fully reversible — zero splicing, zero cutting.",
-    delayed:"Backordered — current builds ship in about 4 weeks."
-  },
-  {
-    sku:"AVB-ELC-HRN-REV", name:"Reverse-Light Harness", cat:"Electronics", price:20, img:"",
-    desc:"Plug-in harness for reverse-triggered white LEDs. Pin connectors included.",
-    delayed:"Backordered — current builds ship in about 4 weeks."
-  }
-];
-
-/* Link Two Pieces — not shown in the grid; offered at checkout
-   when the order has 2+ reflector sets. */
-const LINK_PRODUCT = {
-  sku:LINK_SKU, name:"Link Two Pieces", price:5,
-  desc:"We pre-connect two of your reflector sets so they run as one continuous unit — connector and install included."
-};
-
-/* Harness SKUs (full products in the grid) offered as add-ons too */
-const HARNESS_REV_SKU = "AVB-ELC-HRN-REV";
-const HARNESS_AURA_SKU = "AVB-ELC-HRN-AURA";
-
-/* Free shipping threshold */
-const FREE_SHIP_MIN = 100;
-
-/* ================= STATE ================= */
-const CATEGORIES = ["All", "Reflectors", "Electronics", "Buttons", "Lighting"];
-let activeCat = "All";
-const CART_STORAGE_KEY = "autovb_cart";
-function loadCart(){
-  try{
-    const saved = JSON.parse(localStorage.getItem(CART_STORAGE_KEY));
-    return Array.isArray(saved) ? saved : [];
-  }catch{ return []; }
-}
-function saveCart(){
-  try{ localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); }catch{}
-}
-let cart = loadCart();
-let current = null;
-let currentSel = {};
-let currentQty = 1;
-
-const $ = id => document.getElementById(id);
-const fmt = n => "$" + n.toFixed(2);
-
-/* --- option helpers (choices can be strings or {name,price,sku}) --- */
-function optionChoiceList(opt){
-  if(opt.sections) return opt.sections.flatMap(s=>s.choices);
-  return opt.choices;
-}
-function choiceName(c){ return typeof c === "string" ? c : c.name; }
-function findChoice(product, label, name){
-  const opt = (product.options||[]).find(o=>o.label===label);
-  if(!opt) return null;
-  return optionChoiceList(opt).find(c=>choiceName(c)===name) || null;
-}
-function selectedPrice(p, sel){
-  for(const label in sel){
-    const c = findChoice(p, label, sel[label]);
-    if(c && typeof c === "object" && c.price != null) return c.price;
-  }
-  return p.price;
-}
-function selectedSku(p, sel){
-  for(const label in sel){
-    const c = findChoice(p, label, sel[label]);
-    if(c && typeof c === "object" && c.sku) return c.sku;
-  }
-  return p.sku;
-}
-function minPrice(p){
-  let prices = [p.price];
-  (p.options||[]).forEach(o=>optionChoiceList(o).forEach(c=>{
-    if(typeof c === "object" && c.price != null) prices.push(c.price);
-  }));
-  return Math.min(...prices);
-}
-function hasVariablePrice(p){
-  return (p.options||[]).some(o=>optionChoiceList(o).some(c=>typeof c==="object" && c.price!=null));
-}
-
-/* ================= FILTERS ================= */
-function renderFilters(){
-  $("filters").innerHTML = CATEGORIES.map(c =>
-    `<button class="chip ${c===activeCat?'active':''}" data-cat="${c}" role="tab" aria-selected="${c===activeCat}">${c}</button>`
-  ).join("");
-  $("filters").querySelectorAll(".chip").forEach(b=>{
-    b.onclick = ()=>{ activeCat = b.dataset.cat; renderFilters(); renderGrid(); };
-  });
-}
-
-/* ================= GRID ================= */
-function renderGrid(){
-  const items = PRODUCTS.filter(p => activeCat==="All" || p.cat===activeCat);
-  $("grid").innerHTML = items.map(p => `
-    <article class="card">
+/* ================= CATALOG (editorial sections) ================= */
+function cardHTML(p){
+  return `
+    <a class="card" href="${productHref(p)}" aria-label="${p.name}">
       <div class="thumb">
         ${p.img ? `<img src="${p.img}" alt="${p.name}" loading="lazy">`
                 : `<span class="ph">Photo coming soon</span>`}
       </div>
-      <div class="card-body">
-        <span class="cat">${p.cat}</span>
+      <span class="fits">${p.fits}</span>
+      <div class="card-title">
         <h3>${p.name}</h3>
-        <p class="desc">${p.desc}</p>
-        ${p.requires ? `<span class="badge req">⚡ ${p.requires}</span>` : ``}
-        ${p.delayed ? `<span class="badge delayed">⏳ ${p.delayed}</span>` : ``}
-        <div class="card-foot">
-          <span class="price">${hasVariablePrice(p) ? `<span class="from">from</span>` : ``}${fmt(minPrice(p))}</span>
-          <button class="configure" data-sku="${p.sku}">${p.options ? "Configure" : "Add"}</button>
-        </div>
-        <span class="sku">${p.sku}</span>
+        <span class="arrowbtn" aria-hidden="true">→</span>
       </div>
-    </article>
-  `).join("");
-  $("grid").querySelectorAll(".configure").forEach(b=>{
-    b.onclick = ()=> openModal(PRODUCTS.find(p=>p.sku===b.dataset.sku));
-  });
-}
-
-/* ================= MODAL ================= */
-function openModal(p){
-  current = p; currentQty = 1; currentSel = {};
-  (p.options||[]).forEach(o => currentSel[o.label] = choiceName(optionChoiceList(o)[0]));
-  $("mCat").textContent = p.cat;
-  $("mTitle").textContent = p.name;
-  $("mDesc").textContent = p.desc;
-  $("mNotice").innerHTML =
-    (p.requires ? `<div class="noticebox"><b>Heads up</b>${p.requires}</div>` : "") +
-    (p.delayed ? `<div class="noticebox warn"><b>Backordered</b>${p.delayed}</div>` : "") +
-    (p.promo ? `<div class="noticebox promo"><b>Photo bounty — $5 off</b>${p.promo}</div>` : "");
-  renderOptions();
-  refreshModal();
-  $("qtyVal").textContent = currentQty;
-  $("overlay").classList.add("open");
-  $("modal").classList.add("open");
-  document.body.style.overflow = "hidden";
-}
-function renderOptions(){
-  $("mOptions").innerHTML = (current.options||[]).map(o=>{
-    const rows = o.sections
-      ? o.sections.map(s=>`
-          <span class="optsub">${s.title}</span>
-          <div class="optrow">${s.choices.map(c=>optBtn(o,c)).join("")}</div>`).join("")
-      : `<div class="optrow">${o.choices.map(c=>optBtn(o,c)).join("")}</div>`;
-    return `<div class="optgroup"><span class="optlabel">${o.label}</span>${rows}</div>`;
-  }).join("");
-  $("mOptions").querySelectorAll(".optbtn").forEach(b=>{
-    b.onclick = ()=>{
-      currentSel[b.dataset.group] = b.dataset.choice;
-      // Picking an LED variant defaults the lens to Frosted.
-      // No LED leaves the lens as-is, and any lens can still be clicked after.
-      if(b.dataset.group === "LED Type" && "Lens Type" in currentSel && b.dataset.choice !== "No LED"){
-        currentSel["Lens Type"] = "Frosted";
-      }
-      renderOptions(); refreshModal();
-    };
-  });
-}
-function optBtn(o, c){
-  const name = choiceName(c);
-  const priceTag = (typeof c==="object" && c.price!=null) ? `<small>${fmt(c.price)}</small>` : "";
-  return `<button class="optbtn ${currentSel[o.label]===name?'sel':''}"
-            data-group="${o.label}" data-choice="${name}">${name}${priceTag}</button>`;
-}
-function refreshModal(){
-  // price + sku follow the selected variant
-  $("mPrice").textContent = fmt(selectedPrice(current,currentSel) * currentQty);
-  $("mSku").textContent = selectedSku(current,currentSel);
-  // variant photo
-  if(current.photoKey && current.photos){
-    const key = current.photoKey.map(l=>currentSel[l]).join("|");
-    const url = current.photos[key];
-    const shown = current.photoKey.map(l=>currentSel[l]).join(" · ");
-    $("mPhotoWrap").innerHTML = `
-      <div class="mphoto">
-        ${url ? `<img src="${url}" alt="${current.name} — ${shown}">`
-              : `<span class="ph">${shown}<br>photo coming soon</span>`}
+      <p class="desc">${p.desc}</p>
+      ${p.requires ? `<span class="note req">${p.requires}</span>` : ``}
+      ${p.delayed ? `<span class="note delayed">${p.delayed}</span>` : ``}
+      <div class="price-line">
+        ${hasVariablePrice(p) ? `<span class="from">From </span>` : ``}${fmt(minPrice(p))}${p.unit ? ` <span class="unit">/ ${p.unit}</span>` : ``}
       </div>
-      <div class="mphoto-caption">Shown: ${shown}</div>`;
-  } else {
-    $("mPhotoWrap").innerHTML = "";
-  }
+    </a>`;
 }
-function closeModal(){
-  $("overlay").classList.remove("open");
-  $("modal").classList.remove("open");
-  document.body.style.overflow = "";
-}
-$("closeModal").onclick = closeModal;
-$("qtyPlus").onclick = ()=>{ currentQty=Math.min(20,currentQty+1); $("qtyVal").textContent=currentQty; refreshModal(); };
-$("qtyMinus").onclick = ()=>{ currentQty=Math.max(1,currentQty-1); $("qtyVal").textContent=currentQty; refreshModal(); };
-$("addToOrder").onclick = ()=>{
-  cart.push({
-    sku:selectedSku(current,currentSel),
-    name:current.name,
-    price:selectedPrice(current,currentSel),
-    qty:currentQty,
-    options:{...currentSel}
-  });
-  syncRequiredItems();
-  updateCartCount(); closeModal();
-  if(window.matchMedia("(max-width:640px)").matches){
-    showToast("Added to your order");
-  } else {
-    openDrawer();
-  }
-};
-
-/* ============ required-item logic (AuraCore) ============ */
-function isRGBW(item){ return item.options && item.options["LED Type"]==="RGBW Smart"; }
-function isWhiteLED(item){ return item.options && item.options["LED Type"]==="White LED"; }
-function cartHasRGBW(){ return cart.some(isRGBW); }
-function cartHasWhiteLED(){ return cart.some(isWhiteLED); }
-function syncRequiredItems(){
-  const hasAura = cart.some(i=>i.sku===AURA_SKU);
-  if(cartHasRGBW() && !hasAura){
-    const aura = PRODUCTS.find(p=>p.sku===AURA_SKU);
-    cart.push({ sku:aura.sku, name:aura.name, price:aura.price, qty:1, options:{}, auto:true });
-  }
-  if(!cartHasRGBW()){
-    cart = cart.filter(i=>!(i.sku===AURA_SKU && i.auto));
-  }
-  // Link add-on only valid with 2+ reflector sets
-  if(reflectorCount() < 2){
-    cart = cart.filter(i=>i.sku!==LINK_SKU);
-  }
-}
-function reflectorCount(){
-  return cart.filter(i=>i.sku.startsWith("AVB-RFL")).reduce((s,i)=>s+i.qty,0);
+function renderSections(){
+  const bySection = id => PRODUCTS.filter(p=>p.section===id).map(cardHTML).join("");
+  $("gridLineup").innerHTML = bySection("lineup");
+  $("gridInterior").innerHTML = bySection("interior");
+  $("gridSystem").innerHTML = bySection("system");
 }
 
-/* ================= TOAST ================= */
-let toastTimer = null;
-function showToast(msg){
-  const el = $("toast");
-  el.textContent = msg;
-  el.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=> el.classList.remove("show"), 2200);
-}
-
-/* ================= DRAWER ================= */
-function openDrawer(){
-  renderCart();
-  $("overlay").classList.add("open");
-  $("drawer").classList.add("open");
-  document.body.style.overflow = "hidden";
-}
-function closeDrawer(){
-  $("overlay").classList.remove("open");
-  $("drawer").classList.remove("open");
-  document.body.style.overflow = "";
-}
-$("openDrawer").onclick = openDrawer;
-$("footOrder").onclick = e=>{ e.preventDefault(); openDrawer(); };
-$("closeDrawer").onclick = closeDrawer;
-$("overlay").onclick = ()=>{ closeModal(); closeDrawer(); };
-document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeModal(); closeDrawer(); } });
-
-function updateCartCount(){
-  $("cartCount").textContent = cart.reduce((s,i)=>s+i.qty,0);
-  saveCart();
-}
-function lineItemHTML(i, idx){
-  const opts = Object.entries(i.options).map(([k,v])=>`${k}: ${v}`).join(" · ");
-  const locked = i.sku===AURA_SKU && cartHasRGBW();
-  return `
-    <div class="line-item">
-      <div>
-        <div class="n">${i.name}</div>
-        <div class="o">${opts || "—"}</div>
-        ${locked
-          ? `<span class="lock">Required for RGBW items — already have one? Say so in notes.</span>`
-          : `<div class="li-controls">
-              <div class="li-qty">
-                <button data-act="dec" data-idx="${idx}" aria-label="Decrease quantity" ${i.qty<=1?"disabled":""}>−</button>
-                <span>${i.qty}</span>
-                <button data-act="inc" data-idx="${idx}" aria-label="Increase quantity" ${i.qty>=20?"disabled":""}>+</button>
-              </div>
-              <button class="rm" data-idx="${idx}">Remove</button>
-            </div>`}
-      </div>
-      <div class="p">${fmt(i.price*i.qty)}</div>
-    </div>`;
-}
-function bindLineItems(container){
-  container.querySelectorAll(".rm").forEach(b=>{
-    b.onclick = ()=>{
-      cart.splice(+b.dataset.idx,1);
-      syncRequiredItems();
-      updateCartCount(); renderCart(); renderCheckout();
-    };
-  });
-  container.querySelectorAll(".li-qty button").forEach(b=>{
-    b.onclick = ()=>{
-      const item = cart[+b.dataset.idx];
-      if(!item) return;
-      if(b.dataset.act === "inc") item.qty = Math.min(20, item.qty + 1);
-      else item.qty = Math.max(1, item.qty - 1);
-      syncRequiredItems();
-      updateCartCount(); renderCart(); renderCheckout();
-    };
-  });
-}
-/* ---- free shipping note (drawer + checkout) ---- */
-function renderShipNote(el){
-  if(!cart.length){ el.className = "shipnote"; el.textContent = ""; return; }
-  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  if(total >= FREE_SHIP_MIN){
-    el.className = "shipnote on unlocked";
-    el.textContent = "✓ Free shipping unlocked";
-  } else {
-    el.className = "shipnote on";
-    el.textContent = `Add ${fmt(FREE_SHIP_MIN - total)} more for free shipping`;
-  }
-}
-
-/* ---- add-on suggestions (drawer + checkout) ----
-   Link (2+ reflector sets); White LED → reverse harness;
-   RGBW → AuraCore inline harness. */
-function getAddonOffers(){
-  const offers = [];
-  if(reflectorCount() >= 2 && !cart.some(i=>i.sku===LINK_SKU)) offers.push(LINK_PRODUCT);
-  if(cartHasWhiteLED()){
-    if(!cart.some(i=>i.sku===HARNESS_REV_SKU)){
-      const h = PRODUCTS.find(p=>p.sku===HARNESS_REV_SKU);
-      offers.push({ sku:h.sku, name:h.name, price:h.price,
-        desc:"Plug-in trigger so your White LED lights up in reverse — no splicing." });
-    }
-  }
-  if(cartHasRGBW()){
-    if(!cart.some(i=>i.sku===HARNESS_AURA_SKU)){
-      const h = PRODUCTS.find(p=>p.sku===HARNESS_AURA_SKU);
-      offers.push({ sku:h.sku, name:h.name, price:h.price,
-        desc:"Plug-and-play power for your AuraCore — sits inline with the factory connector, fully reversible." });
-    }
-  }
-  return offers;
-}
-function renderAddonOffers(container){
-  const offers = getAddonOffers();
-  container.innerHTML = offers.map(o => `
-    <div class="addon-card">
-      <div>
-        <div class="t">${o.name} — ${fmt(o.price)}</div>
-        <div class="d">${o.desc}</div>
-      </div>
-      <button class="addon-add" data-sku="${o.sku}">+ Add</button>
-    </div>`).join("");
-  container.querySelectorAll(".addon-add").forEach(btn=>{
-    btn.onclick = ()=>{
-      const o = offers.find(x=>x.sku===btn.dataset.sku);
-      cart.push({ sku:o.sku, name:o.name, price:o.price, qty:1, options:{} });
-      syncRequiredItems();
-      updateCartCount(); renderCheckout(); renderCart();
-    };
-  });
-}
-
-function renderCart(){
-  if(!cart.length){
-    $("cartItems").innerHTML = `<div class="empty">Your order is empty.<br>Add parts from the catalog to get started.</div>`;
-    $("subtotalRow").style.display = "none";
-    renderShipNote($("shipNote"));
-    $("cartAddon").innerHTML = "";
-    return;
-  }
-  $("cartItems").innerHTML = cart.map((i,idx)=>lineItemHTML(i,idx)).join("");
-  bindLineItems($("cartItems"));
-  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  $("subtotalVal").textContent = fmt(total);
-  $("subtotalRow").style.display = "flex";
-  renderShipNote($("shipNote"));
-  renderAddonOffers($("cartAddon"));
-}
-
-/* ================= CHECKOUT PAGE ================= */
+/* ================= VIEW ROUTING ================= */
 function showCheckout(){
   closeDrawer();
   $("shopView").style.display = "none";
+  $("guides").classList.remove("open");
   $("checkout").classList.add("open");
   renderCheckout();
   window.scrollTo({top:0});
@@ -1370,92 +259,69 @@ function showShop(){
   $("checkout").classList.remove("open");
   $("guides").classList.remove("open");
   $("shopView").style.display = "";
-  history.pushState(null, "", "/");
-  document.title = "AUTOVB.WRX — Parts for the 2022–2026 Subaru WRX";
+  document.title = "AURACORE — Precision 3D-Printed Lighting & Hardware for Subaru";
 }
-$("toCheckout").onclick = ()=>{
-  if(!cart.length){ return; }
-  showCheckout();
-};
-$("backToShop").onclick = showShop;
-$("homeLink").onclick = e=>{ e.preventDefault(); showShop(); window.scrollTo({top:0}); };
+$("backToShop").onclick = ()=>{ showShop(); history.pushState(null,"","index.html"); };
+$("homeLink").onclick = e=>{ e.preventDefault(); showShop(); history.pushState(null,"","index.html"); window.scrollTo({top:0}); };
+$("navProducts").onclick = ()=>{ showShop(); document.getElementById("lineup").scrollIntoView(); };
+$("navSystem").onclick = ()=>{ showShop(); document.getElementById("system").scrollIntoView(); };
 
-/* ================= INSTALL GUIDES PAGE ================= */
-// Products with an "LED Type" option get one guide per variant SKU (No LED / White LED / RGBW
-// Smart install differently). Everything else is keyed by its own product SKU.
+/* ================= INSTRUCTIONS DATABASE ================= */
+// Products with an "LED Type" option get one guide per variant SKU. Everything
+// else is keyed by its own product SKU. Add a { video:"url" } to a SKU to also
+// list an install video for it (videos only appear once you add them).
 const GUIDES = {
   "AVB-RFL-FEN-NL": { pdf: "guides/AVB-RFL-FEN-NL.pdf" },
   "AVB-RFL-FEN-WL": { pdf: "guides/AVB-RFL-FEN-WL.pdf" },
 };
-let activeGuideCat = "All";
 let guideSearchQuery = "";
 
-function renderGuideChips(){
-  $("guidesChips").innerHTML = CATEGORIES.map(c =>
-    `<button class="chip ${c===activeGuideCat?'active':''}" data-cat="${c}">${c}</button>`
-  ).join("");
-  $("guidesChips").querySelectorAll(".chip").forEach(b=>{
-    b.onclick = ()=>{ activeGuideCat = b.dataset.cat; renderGuideChips(); renderGuides(); };
-  });
+function guideLinkItems(g, label){
+  const items = [];
+  if(g.pdf) items.push(`<li><a href="${g.pdf}" target="_blank" rel="noopener">${label} Install Instructions (PDF)</a></li>`);
+  else items.push(`<li class="muted"><span class="muted">${label} instructions — coming soon</span></li>`);
+  if(g.video) items.push(`<li><a href="${g.video}" target="_blank" rel="noopener">${label} Install Video</a></li>`);
+  return items.join("");
 }
 function renderGuides(){
   const q = guideSearchQuery.trim().toLowerCase();
   const items = PRODUCTS.filter(p =>
-    (activeGuideCat === "All" || p.cat === activeGuideCat) &&
-    (!q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q))
+    (!q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.fits.toLowerCase().includes(q))
   );
   if(!items.length){
-    $("guidesList").innerHTML = `<div class="guide-empty">No guides match your search.</div>`;
+    $("guidesList").innerHTML = `<div class="guide-empty">No instructions match your search.</div>`;
     return;
   }
   $("guidesList").innerHTML = items.map(p=>{
     const ledOpt = (p.options||[]).find(o=>o.label==="LED Type");
+    const skuLine = ledOpt ? ledOpt.choices.map(c=>c.sku).join(", ") : p.sku;
     const linksHTML = ledOpt
-      ? `<div class="guide-variants">${ledOpt.choices.map(c=>{
-          const g = GUIDES[c.sku] || {};
-          return `
-            <div class="guide-variant">
-              <span class="gvlabel">${c.name}</span>
-              <div class="guide-links">
-                ${g.pdf ? `<a href="${g.pdf}" target="_blank" rel="noopener">📄 Written guide (PDF)</a>` : `<span class="muted">Written guide coming soon</span>`}
-                ${g.video ? `<a href="${g.video}" target="_blank" rel="noopener">▶ Watch video</a>` : `<span class="muted">Video coming soon</span>`}
-              </div>
-            </div>`;
-        }).join("")}</div>`
-      : (()=>{
-          const g = GUIDES[p.sku] || {};
-          return `
-            <div class="guide-links">
-              ${g.pdf ? `<a href="${g.pdf}" target="_blank" rel="noopener">📄 Written guide (PDF)</a>` : `<span class="muted">Written guide coming soon</span>`}
-              ${g.video ? `<a href="${g.video}" target="_blank" rel="noopener">▶ Watch video</a>` : `<span class="muted">Video coming soon</span>`}
-            </div>`;
-        })();
+      ? `<ul class="guide-links">${ledOpt.choices.map(c=>guideLinkItems(GUIDES[c.sku]||{}, c.name)).join("")}</ul>`
+      : `<ul class="guide-links">${guideLinkItems(GUIDES[p.sku]||{}, p.name)}</ul>`;
     return `
       <div class="guide-row">
-        <h3>${p.name}</h3>
-        <span class="gsku">${p.sku}</span>
+        <h3>${p.name} — ${p.fits}</h3>
+        <span class="gsku">${skuLine}</span>
         ${linksHTML}
       </div>`;
   }).join("");
 }
 function showGuides(){
-  closeModal(); closeDrawer();
+  closeDrawer();
   $("checkout").classList.remove("open");
   $("shopView").style.display = "none";
   $("guides").classList.add("open");
   $("guidesSearch").value = guideSearchQuery;
-  renderGuideChips();
   renderGuides();
   window.scrollTo({top:0});
-  if(location.pathname !== "/install"){ history.pushState(null, "", "/install"); }
-  document.title = "Installation Guides | AUTOVB.WRX";
+  document.title = "Instructions Database | AURACORE";
 }
 $("guidesSearch").oninput = e=>{ guideSearchQuery = e.target.value; renderGuides(); };
-$("footGuides").onclick = e=>{ e.preventDefault(); showGuides(); };
-$("navGuides").onclick = e=>{ e.preventDefault(); showGuides(); };
-$("heroGuides").onclick = e=>{ e.preventDefault(); showGuides(); };
-$("backFromGuides").onclick = showShop;
+$("footGuides").onclick = e=>{ e.preventDefault(); showGuides(); history.pushState(null,"","index.html?view=install"); };
+$("navGuides").onclick = ()=>{ showGuides(); history.pushState(null,"","index.html?view=install"); };
+$("backFromGuides").onclick = ()=>{ showShop(); history.pushState(null,"","index.html"); };
 
+/* ================= CHECKOUT ================= */
 function renderCheckout(){
   if(!cart.length){
     $("coItems").innerHTML = `<div class="empty">Nothing here yet — head back to the catalog.</div>`;
@@ -1531,7 +397,7 @@ $("sendOrder").onclick = async ()=>{
     payment_handle: paymentHandle,
     notes: notes || "—",
     order: summary,
-    _subject: `AUTOVB.WRX Order Request — ${name}`
+    _subject: `AURACORE Order Request — ${name}`
   };
 
   if(CONFIG.formspree){
@@ -1557,7 +423,6 @@ $("sendOrder").onclick = async ()=>{
       $("sendOrder").textContent = "Send order request";
     }
   } else {
-    // mailto fallback until Formspree is configured
     const body =
 `Order request from ${name}
 Email: ${email}
@@ -1568,22 +433,21 @@ Preferred payment: ${payment} — ${paymentHandle}
 ${summary}
 
 Notes: ${notes || "—"}`;
-    location.href = `mailto:${CONFIG.email}?subject=${encodeURIComponent("AUTOVB.WRX Order Request — "+name)}&body=${encodeURIComponent(body)}`;
+    location.href = `mailto:${CONFIG.email}?subject=${encodeURIComponent("AURACORE Order Request — "+name)}&body=${encodeURIComponent(body)}`;
     status.textContent = "Opening your email app with the order pre-filled…";
     status.classList.add("ok");
   }
 };
 
 /* ================= INIT ================= */
-renderFilters();
-renderGrid();
-updateCartCount();
-window.addEventListener("popstate", ()=>{
-  if(location.pathname === "/install"){ showGuides(); } else { showShop(); }
-});
-if(location.pathname === "/install" || location.hash === "#install"){
-  showGuides();
-}
+wireShared();
+renderSections();
+(function initView(){
+  const params = new URLSearchParams(location.search);
+  const view = params.get("view");
+  if(view === "checkout" && cart.length){ showCheckout(); }
+  else if(view === "install"){ showGuides(); }
+})();
 </script>
 </body>
 </html>
