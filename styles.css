@@ -42,20 +42,30 @@ html{scroll-padding-top:80px}
 body{padding-top:64px}          /* fixed-header offset on interior pages */
 body.has-hero{padding-top:0}    /* hero sits full-bleed under the header */
 
-/* ---------- header ---------- */
+/* ---------- header ----------
+   Two stacked background layers cross-fade (white ⟷ dark scrim) so the
+   bar transitions smoothly instead of snapping between a gradient and a
+   solid color. */
 .topbar{
-  position:fixed;top:0;left:0;right:0;z-index:50;
+  position:fixed;top:0;left:0;right:0;z-index:50;isolation:isolate;
   display:flex;align-items:center;justify-content:space-between;gap:24px;
   padding:0 40px;height:64px;
-  background:rgba(255,255,255,.94);backdrop-filter:blur(8px);
   border-bottom:1px solid var(--line);
-  transition:background .25s ease, border-color .25s ease;
+  transition:border-color .4s ease;
 }
-/* transparent over the hero at the top of the home page */
-.topbar.over-hero{
+.topbar::before{  /* solid white layer (visible when scrolled) */
+  content:"";position:absolute;inset:0;z-index:-2;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(8px);
+  opacity:1;transition:opacity .4s ease;
+}
+.topbar::after{   /* dark scrim (visible over the hero) */
+  content:"";position:absolute;inset:0;z-index:-1;
   background:linear-gradient(180deg, rgba(10,12,16,.55), rgba(10,12,16,0));
-  border-bottom-color:transparent;backdrop-filter:none;
+  opacity:0;transition:opacity .4s ease;
 }
+.topbar.over-hero{border-bottom-color:transparent}
+.topbar.over-hero::before{opacity:0}
+.topbar.over-hero::after{opacity:1}
 .topbar.over-hero .logo{color:#fff}
 .topbar.over-hero .navlink{color:rgba(255,255,255,.92)}
 .topbar.over-hero .navlink:hover{border-bottom-color:#fff}
@@ -63,6 +73,7 @@ body.has-hero{padding-top:0}    /* hero sits full-bleed under the header */
 .logo{
   font-size:16px;font-weight:800;letter-spacing:.14em;
   text-decoration:none;white-space:nowrap;color:var(--text);
+  transition:color .4s ease;
 }
 .logo .lt{font-weight:300;color:var(--gray)}
 .logo .grad{color:var(--wrb)}
@@ -71,7 +82,7 @@ body.has-hero{padding-top:0}    /* hero sits full-bleed under the header */
   font-size:12px;font-weight:500;letter-spacing:.18em;
   text-transform:uppercase;text-decoration:none;color:var(--text);
   padding:6px 0;background:none;border:none;white-space:nowrap;
-  border-bottom:1px solid transparent;transition:border-color .15s,color .25s;
+  border-bottom:1px solid transparent;transition:border-color .15s,color .4s ease;
 }
 .navlink:hover{border-bottom-color:var(--text)}
 .navlink.active{border-bottom-color:var(--wrb);color:var(--wrb)}
@@ -79,6 +90,7 @@ body.has-hero{padding-top:0}    /* hero sits full-bleed under the header */
 .cartbtn{
   position:relative;background:none;border:none;padding:8px;
   display:flex;align-items:center;color:var(--text);
+  transition:color .4s ease;
 }
 .cartbtn svg{width:22px;height:22px;stroke:currentColor}
 .cartbtn .count{
