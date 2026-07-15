@@ -248,6 +248,33 @@ function hasVariablePrice(p){
   return (p.options||[]).some(o=>optionChoiceList(o).some(c=>typeof c==="object" && c.price!=null));
 }
 
+/* ================= PRODUCT CARD (shared across catalog pages) ================= */
+function cardHTML(p){
+  return `
+    <a class="card" href="${productHref(p)}" aria-label="${p.name}">
+      <div class="thumb">
+        ${p.img ? `<img src="${p.img}" alt="${p.name}" loading="lazy">`
+                : `<span class="ph">Photo coming soon</span>`}
+      </div>
+      <div class="card-body">
+        <span class="fits">${p.fits}</span>
+        <div class="card-title">
+          <h3>${p.name}</h3>
+          <span class="arrowbtn" aria-hidden="true">→</span>
+        </div>
+        <p class="desc">${p.desc}</p>
+        ${p.requires ? `<span class="note req">${p.requires}</span>` : ``}
+        ${p.delayed ? `<span class="note delayed">${p.delayed}</span>` : ``}
+        <div class="price-line">
+          ${hasVariablePrice(p) ? `<span class="from">From </span>` : ``}${fmt(minPrice(p))}${p.unit ? ` <span class="unit">/ ${p.unit}</span>` : ``}
+        </div>
+      </div>
+    </a>`;
+}
+function renderGrid(el, products){
+  if(el) el.innerHTML = products.map(cardHTML).join("");
+}
+
 /* ================= CART STATE ================= */
 const CART_STORAGE_KEY = "autovb_cart";
 function loadCart(){
@@ -435,20 +462,85 @@ if(typeof window.renderCheckout !== "function"){
 /* ================= SHARED HEADER / DRAWER WIRING ================= */
 function goToCheckout(){
   if(!cart.length) return;
-  if(document.getElementById("checkout") && typeof window.showCheckout === "function"){
-    window.showCheckout();
-  } else {
-    location.href = "index.html?view=checkout";
-  }
+  location.href = "checkout.html";
 }
 function wireShared(){
   if($("openDrawer")) $("openDrawer").onclick = openDrawer;
   if($("closeDrawer")) $("closeDrawer").onclick = closeDrawer;
   if($("footOrder")) $("footOrder").onclick = e=>{ e.preventDefault(); openDrawer(); };
-  if($("overlay")) $("overlay").onclick = ()=>{ if(typeof closeModal==="function") closeModal(); closeDrawer(); };
+  if($("overlay")) $("overlay").onclick = ()=>{ closeDrawer(); };
   if($("toCheckout")) $("toCheckout").onclick = goToCheckout;
-  document.addEventListener("keydown", e=>{
-    if(e.key==="Escape"){ if(typeof closeModal==="function") closeModal(); closeDrawer(); }
-  });
+  document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeDrawer(); } });
   updateCartCount();
+}
+
+/* ================= SHARED CHROME (header / footer / drawer) =================
+   Injected on every page so the nav, cart, and footer stay identical. */
+const NAV_LINKS = [
+  {label:"Products",      href:"shop.html"},
+  {label:"The System",    href:"system.html", hideSm:true},
+  {label:"Install Guides",href:"guides.html"}
+];
+const CART_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`;
+
+function headerHTML(active){
+  return `<header class="topbar" id="siteHeader">
+    <a class="logo" href="index.html">AUTOVB<span class="grad">.WRX</span></a>
+    <nav class="topnav">
+      ${NAV_LINKS.map(n=>`<a class="navlink${n.hideSm?' hide-sm':''}${active===n.href?' active':''}" href="${n.href}">${n.label}</a>`).join("")}
+      <button class="cartbtn" id="openDrawer" aria-label="Open your order">${CART_ICON}<span class="count" id="cartCount">0</span></button>
+    </nav>
+  </header>`;
+}
+function footerHTML(){
+  return `<footer>
+    <div class="foot-inner">
+      <div>
+        <span class="logo">AUTOVB<span class="grad">.WRX</span></span>
+        <p>Small-batch 3D-printed parts and lighting for Subaru, by AUTOVB. Orders are invoiced directly — prices and lead times confirmed before you pay anything.</p>
+        <p>Every part is printed and oriented for maximum strength, so some edges won't look "perfect" up close — those edges are never visible once installed.</p>
+      </div>
+      <div class="foot-links">
+        <h4>Links</h4>
+        <a href="shop.html">Shop all parts</a>
+        <a href="system.html">The System</a>
+        <a href="guides.html">Instructions database</a>
+        <a href="https://instagram.com/autovb.WRX" target="_blank" rel="noopener">Instagram</a>
+        <a href="#" id="footOrder">Your order</a>
+      </div>
+    </div>
+    <div class="foot-bottom">© AUTOVB.WRX · Not affiliated with Subaru Corporation.</div>
+  </footer>`;
+}
+function chromeHTML(){
+  return `<div class="overlay" id="overlay"></div>
+  <div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle">
+    <div class="drawer-head"><h2 id="dTitle">Your Order</h2><button class="xbtn" id="closeDrawer" aria-label="Close">×</button></div>
+    <div class="drawer-body">
+      <div id="cartItems"></div>
+      <div class="subtotal" id="subtotalRow" style="display:none"><span>Estimated total</span><span id="subtotalVal"></span></div>
+      <div class="shipnote" id="shipNote"></div>
+      <div id="cartAddon"></div>
+    </div>
+    <div class="drawer-foot"><button class="sendbtn" id="toCheckout">Continue to checkout</button><p class="finehint">Shipping info collected at checkout. Invoice sent after we confirm.</p></div>
+  </div>
+  <div class="toast" id="toast"></div>`;
+}
+function initHeaderScroll(){
+  const header = $("siteHeader");
+  if(!header || !document.body.classList.contains("has-hero")) return;
+  const hero = document.querySelector(".hero");
+  const apply = ()=>{
+    const threshold = hero ? Math.max(60, hero.offsetHeight - 80) : 60;
+    header.classList.toggle("over-hero", window.scrollY < threshold);
+  };
+  apply();
+  window.addEventListener("scroll", apply, {passive:true});
+  window.addEventListener("resize", apply);
+}
+function mountChrome(active){
+  document.body.insertAdjacentHTML("afterbegin", headerHTML(active));
+  document.body.insertAdjacentHTML("beforeend", footerHTML() + chromeHTML());
+  wireShared();
+  initHeaderScroll();
 }

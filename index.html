@@ -3,484 +3,84 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AURACORE — Precision 3D-Printed Lighting &amp; Hardware for Subaru</title>
+<title>AUTOVB.WRX — Precision 3D-Printed Lighting &amp; Hardware for Subaru</title>
 <meta name="description" content="Precision 3D-printed reflectors, lighting, and interior hardware for Subaru. Configure your parts and send an order request — we invoice directly. Free U.S. shipping over $100.">
-<meta property="og:title" content="AURACORE — Precision 3D-Printed Lighting &amp; Hardware for Subaru">
+<meta property="og:title" content="AUTOVB.WRX — Precision 3D-Printed Lighting &amp; Hardware for Subaru">
 <meta property="og:description" content="Precision 3D-printed reflectors, lighting, and interior hardware for Subaru. Configure your parts and send an order request — we invoice directly.">
-<meta property="og:image" content="https://autovb.shop/images/fender-thumb.jpg">
+<meta property="og:image" content="https://autovb.shop/images/hero.jpg">
 <meta property="og:url" content="https://autovb.shop/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AURACORE — Precision 3D-Printed Lighting &amp; Hardware for Subaru">
-<meta name="twitter:description" content="Precision 3D-printed reflectors, lighting, and interior hardware for Subaru.">
-<meta name="twitter:image" content="https://autovb.shop/images/fender-thumb.jpg">
+<meta name="twitter:title" content="AUTOVB.WRX — Precision 3D-Printed Lighting &amp; Hardware for Subaru">
+<meta name="twitter:image" content="https://autovb.shop/images/hero.jpg">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
-<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="has-hero">
 
-<header class="topbar">
-  <a class="logo" href="index.html" id="homeLink">AUTOVB<span class="grad">.WRX</span></a>
-  <nav class="topnav">
-    <button class="navlink" id="navProducts">Products</button>
-    <button class="navlink hide-sm" id="navSystem">The System</button>
-    <button class="navlink" id="navGuides">Install Guides</button>
-    <button class="cartbtn" id="openDrawer" aria-label="Open your order">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-      <span class="count" id="cartCount">0</span>
-    </button>
-  </nav>
-</header>
-
-<div id="shopView">
-  <section class="hero">
-    <img class="bgimg" src="images/hero.jpg" alt="AURACORE parts on a Subaru WRX"
-         onerror="this.onerror=null;this.src='images/rear-white-clear.jpg'">
-    <div class="hero-inner">
-      <div>
-        <span class="eyebrow-lt">Precision 3D Printed · Designed for Subaru</span>
-        <h1>Define<br><span class="lt">Your</span><br>Aura</h1>
-      </div>
-      <div class="hero-side">
-        <p>Precision-engineered reflector modules and lighting for the generation that demands more.</p>
-        <div class="cta"><a class="btn-line" href="#lineup">Explore the lineup →</a></div>
-      </div>
+<section class="hero">
+  <img class="bgimg" src="images/hero.jpg" alt="Light-blue Subaru WRX parked on a tree-lined driveway"
+       onerror="this.onerror=null;this.src='images/rear-white-clear.jpg'">
+  <div class="hero-inner">
+    <div>
+      <span class="eyebrow-lt">Precision 3D Printed · Designed for Subaru</span>
+      <h1>Define<br><span class="lt">Your</span><br>Aura</h1>
     </div>
+    <div class="hero-side">
+      <p>Precision-engineered reflector modules and lighting for the generation that demands more.</p>
+      <div class="cta"><a class="btn-line" href="shop.html">Explore the lineup →</a></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="block" id="lineup">
+    <div class="s-head">
+      <span class="eyebrow">The Lineup</span>
+      <h2><b>Three Pairs.</b>Infinite Configurations.</h2>
+    </div>
+    <div class="grid" id="gridLineup"></div>
   </section>
 
-  <div class="wrap">
-    <section class="block" id="lineup">
-      <div class="s-head">
-        <span class="eyebrow">The Lineup</span>
-        <h2><b>Three Pairs.</b>Infinite Configurations.</h2>
-      </div>
-      <div class="grid" id="gridLineup"></div>
-    </section>
-
-    <div class="offerbox">
-      <div>
-        <span class="eyebrow">Shipping</span>
-        <h3>Orders over $100 ship free.</h3>
-        <p>Contiguous U.S. — no codes, no checkout fees. We confirm your order and invoice you directly.</p>
-      </div>
-      <button class="btn-wrb" id="buildOrder">Build your order →</button>
-    </div>
-
-    <section class="block" id="interior">
-      <div class="s-head">
-        <span class="eyebrow">Interior &amp; Lighting</span>
-        <h2><b>Small Details.</b>Big Difference.</h2>
-      </div>
-      <div class="grid" id="gridInterior"></div>
-    </section>
-
-    <section class="block" id="system">
-      <div class="s-head">
-        <span class="eyebrow">The System</span>
-        <h2><b>One Controller.</b>Every Light.</h2>
-      </div>
-      <div class="grid" id="gridSystem"></div>
-    </section>
-  </div>
-</div>
-
-<!-- shop all page -->
-<section class="shopall" id="shopall">
-  <div class="wrap">
-    <div class="checkout-head">
-      <button class="backlink" id="backFromShopall">← Back to home</button>
-      <h2>Shop All Parts</h2>
-      <p>Every AURACORE part for your build, in one place.</p>
-    </div>
-    <div class="grid" id="gridAll"></div>
-  </div>
-</section>
-
-<!-- checkout page -->
-<section class="checkout" id="checkout">
-  <div class="checkout-head">
-    <button class="backlink" id="backToShop">← Back to catalog</button>
-    <h2>Send your order request</h2>
-    <p>No payment here — we'll confirm your order and email an invoice with shipping.</p>
-  </div>
-  <div class="checkout-cols">
-    <div class="co-panel">
-      <h3>Your items</h3>
-      <div id="coItems"></div>
-      <div id="coAddon"></div>
-      <div class="subtotal" id="coSubtotalRow" style="display:none">
-        <span>Estimated total</span><span id="coSubtotalVal"></span>
-      </div>
-      <div class="shipnote" id="coShipNote"></div>
-    </div>
-    <div class="co-panel">
-      <h3>Contact &amp; shipping</h3>
-      <div class="formrow">
-        <div>
-          <label class="formlabel" for="fName">Name *</label>
-          <input id="fName" type="text" autocomplete="name" required>
-        </div>
-        <div>
-          <label class="formlabel" for="fEmail">Email *</label>
-          <input id="fEmail" type="email" autocomplete="email" required>
-        </div>
-      </div>
-      <label class="formlabel" for="fIg">Instagram handle (optional)</label>
-      <input id="fIg" type="text" placeholder="@yourhandle">
-      <label class="formlabel" for="fAddr1">Street address *</label>
-      <input id="fAddr1" type="text" autocomplete="address-line1" required>
-      <label class="formlabel" for="fAddr2">Apt / suite (optional)</label>
-      <input id="fAddr2" type="text" autocomplete="address-line2">
-      <div class="formrow">
-        <div>
-          <label class="formlabel" for="fCity">City *</label>
-          <input id="fCity" type="text" autocomplete="address-level2" required>
-        </div>
-        <div>
-          <label class="formlabel" for="fState">State *</label>
-          <input id="fState" type="text" autocomplete="address-level1" required>
-        </div>
-      </div>
-      <div class="formrow">
-        <div>
-          <label class="formlabel" for="fZip">ZIP *</label>
-          <input id="fZip" type="text" inputmode="numeric" autocomplete="postal-code" required>
-        </div>
-        <div></div>
-      </div>
-      <label class="formlabel" for="fPayment">Preferred payment method</label>
-      <select id="fPayment">
-        <option value="Zelle">Zelle (preferred)</option>
-        <option value="Apple Cash">Apple Cash</option>
-        <option value="Venmo">Venmo</option>
-        <option value="Cash App">Cash App</option>
-      </select>
-      <label class="formlabel" for="fPaymentHandle" id="fPaymentHandleLabel">Zelle (phone or email) *</label>
-      <input id="fPaymentHandle" type="text" placeholder="e.g. (555) 555-5555 or you@email.com" required>
-      <p class="fieldhint">So we can send your invoice/payment request to the right place.</p>
-      <label class="formlabel" for="fNotes">Notes (already have an AuraCore, color questions, etc.)</label>
-      <textarea id="fNotes"></textarea>
-      <div style="margin-top:18px">
-        <button class="sendbtn" id="sendOrder">Send order request</button>
-        <div class="statusmsg" id="statusMsg"></div>
-        <p class="finehint">We usually reply within a day. Questions first? DM us on Instagram.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- instructions database -->
-<section class="guides" id="guides">
-  <div class="checkout-head">
-    <button class="backlink" id="backFromGuides">← Back to catalog</button>
-    <h2>Instructions Database</h2>
-    <p>Download install instructions for every AURACORE part. Guides are split by LED type where the install differs.</p>
-  </div>
-  <input class="guides-search" id="guidesSearch" type="text" placeholder="Search by part name or SKU…">
-  <div id="guidesList"></div>
-</section>
-
-<footer>
-  <div class="foot-inner">
+  <div class="offerbox">
     <div>
-      <span class="logo">AUTOVB<span class="grad">.WRX</span></span>
-      <p>Small-batch 3D-printed parts and lighting for Subaru, by AUTOVB. Orders are invoiced directly — prices and lead times confirmed before you pay anything.</p>
-      <p>Every part is printed and oriented for maximum strength, so some edges won't look "perfect" up close — those edges are never visible once installed.</p>
+      <span class="eyebrow">Shipping</span>
+      <h3>Orders over $100 ship free.</h3>
+      <p>Contiguous U.S. — no codes, no checkout fees. We confirm your order and invoice you directly.</p>
     </div>
-    <div class="foot-links">
-      <h4>Links</h4>
-      <a href="https://instagram.com/autovb.WRX" target="_blank" rel="noopener">Instagram</a>
-      <a href="#" id="footOrder">Your order</a>
-      <a href="#" id="footGuides">Instructions database</a>
-    </div>
+    <a class="btn-wrb" href="shop.html">Build your order →</a>
   </div>
-  <div class="foot-bottom">© AURACORE / AUTOVB.WRX · Not affiliated with Subaru Corporation.</div>
-</footer>
 
-<!-- order drawer -->
-<div class="overlay" id="overlay"></div>
-<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle">
-  <div class="drawer-head">
-    <h2 id="dTitle">Your Order</h2>
-    <button class="xbtn" id="closeDrawer" aria-label="Close">×</button>
-  </div>
-  <div class="drawer-body">
-    <div id="cartItems"></div>
-    <div class="subtotal" id="subtotalRow" style="display:none">
-      <span>Estimated total</span><span id="subtotalVal"></span>
+  <section class="block" id="interior">
+    <div class="s-head">
+      <span class="eyebrow">Interior &amp; Lighting</span>
+      <h2><b>Small Details.</b>Big Difference.</h2>
     </div>
-    <div class="shipnote" id="shipNote"></div>
-    <div id="cartAddon"></div>
-  </div>
-  <div class="drawer-foot">
-    <button class="sendbtn" id="toCheckout">Continue to checkout</button>
-    <p class="finehint">Shipping info collected at checkout. Invoice sent after we confirm.</p>
+    <div class="grid" id="gridInterior"></div>
+  </section>
+
+  <div class="teaser">
+    <div>
+      <span class="eyebrow">The System</span>
+      <h3>One controller runs every light.</h3>
+      <p>AURACORE addressable RGBW lighting is one connected system — plug-and-play, fully reversible, and driven by a single controller. See how it works.</p>
+    </div>
+    <a class="btn-dark" href="system.html">How it works →</a>
   </div>
 </div>
-
-<div class="toast" id="toast"></div>
 
 <script src="app.js"></script>
 <script>
-/* ================= CATALOG (editorial sections) ================= */
-function cardHTML(p){
-  return `
-    <a class="card" href="${productHref(p)}" aria-label="${p.name}">
-      <div class="thumb">
-        ${p.img ? `<img src="${p.img}" alt="${p.name}" loading="lazy">`
-                : `<span class="ph">Photo coming soon</span>`}
-      </div>
-      <div class="card-body">
-        <span class="fits">${p.fits}</span>
-        <div class="card-title">
-          <h3>${p.name}</h3>
-          <span class="arrowbtn" aria-hidden="true">→</span>
-        </div>
-        <p class="desc">${p.desc}</p>
-        ${p.requires ? `<span class="note req">${p.requires}</span>` : ``}
-        ${p.delayed ? `<span class="note delayed">${p.delayed}</span>` : ``}
-        <div class="price-line">
-          ${hasVariablePrice(p) ? `<span class="from">From </span>` : ``}${fmt(minPrice(p))}${p.unit ? ` <span class="unit">/ ${p.unit}</span>` : ``}
-        </div>
-      </div>
-    </a>`;
-}
-function renderSections(){
-  const bySection = id => PRODUCTS.filter(p=>p.section===id).map(cardHTML).join("");
-  $("gridLineup").innerHTML = bySection("lineup");
-  $("gridInterior").innerHTML = bySection("interior");
-  $("gridSystem").innerHTML = bySection("system");
-}
-function renderAll(){
-  $("gridAll").innerHTML = PRODUCTS.map(cardHTML).join("");
-}
-
-/* ================= VIEW ROUTING ================= */
-function showCheckout(){
-  closeDrawer();
-  $("shopView").style.display = "none";
-  $("shopall").classList.remove("open");
-  $("guides").classList.remove("open");
-  $("checkout").classList.add("open");
-  renderCheckout();
-  window.scrollTo({top:0});
-}
-function showShopAll(){
-  closeDrawer();
-  $("shopView").style.display = "none";
-  $("checkout").classList.remove("open");
-  $("guides").classList.remove("open");
-  $("shopall").classList.add("open");
-  renderAll();
-  window.scrollTo({top:0});
-  document.title = "Shop All — AUTOVB.WRX";
-}
-function showShop(){
-  $("checkout").classList.remove("open");
-  $("guides").classList.remove("open");
-  $("shopall").classList.remove("open");
-  $("shopView").style.display = "";
-  document.title = "AUTOVB.WRX — Precision 3D-Printed Lighting & Hardware for Subaru";
-}
-$("backToShop").onclick = ()=>{ showShop(); history.pushState(null,"","index.html"); };
-$("backFromShopall").onclick = ()=>{ showShop(); history.pushState(null,"","index.html"); };
-$("buildOrder").onclick = ()=>{ showShopAll(); history.pushState(null,"","index.html?view=shop"); };
-$("homeLink").onclick = e=>{ e.preventDefault(); showShop(); history.pushState(null,"","index.html"); window.scrollTo({top:0}); };
-$("navProducts").onclick = ()=>{ showShopAll(); history.pushState(null,"","index.html?view=shop"); };
-$("navSystem").onclick = ()=>{ showShop(); document.getElementById("system").scrollIntoView(); };
-
-/* ================= INSTRUCTIONS DATABASE ================= */
-// Products with an "LED Type" option get one guide per variant SKU. Everything
-// else is keyed by its own product SKU. Add a { video:"url" } to a SKU to also
-// list an install video for it (videos only appear once you add them).
-const GUIDES = {
-  "AVB-RFL-FEN-NL": { pdf: "guides/AVB-RFL-FEN-NL.pdf" },
-  "AVB-RFL-FEN-WL": { pdf: "guides/AVB-RFL-FEN-WL.pdf" },
-};
-let guideSearchQuery = "";
-
-function guideLinkItems(g, label){
-  const items = [];
-  if(g.pdf) items.push(`<li><a href="${g.pdf}" target="_blank" rel="noopener">${label} Install Instructions (PDF)</a></li>`);
-  else items.push(`<li class="muted"><span class="muted">${label} instructions — coming soon</span></li>`);
-  if(g.video) items.push(`<li><a href="${g.video}" target="_blank" rel="noopener">${label} Install Video</a></li>`);
-  return items.join("");
-}
-function renderGuides(){
-  const q = guideSearchQuery.trim().toLowerCase();
-  const items = PRODUCTS.filter(p =>
-    (!q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.fits.toLowerCase().includes(q))
-  );
-  if(!items.length){
-    $("guidesList").innerHTML = `<div class="guide-empty">No instructions match your search.</div>`;
-    return;
-  }
-  $("guidesList").innerHTML = items.map(p=>{
-    const ledOpt = (p.options||[]).find(o=>o.label==="LED Type");
-    const skuLine = ledOpt ? ledOpt.choices.map(c=>c.sku).join(", ") : p.sku;
-    const linksHTML = ledOpt
-      ? `<ul class="guide-links">${ledOpt.choices.map(c=>guideLinkItems(GUIDES[c.sku]||{}, c.name)).join("")}</ul>`
-      : `<ul class="guide-links">${guideLinkItems(GUIDES[p.sku]||{}, p.name)}</ul>`;
-    return `
-      <div class="guide-row">
-        <h3>${p.name} — ${p.fits}</h3>
-        <span class="gsku">${skuLine}</span>
-        ${linksHTML}
-      </div>`;
-  }).join("");
-}
-function showGuides(){
-  closeDrawer();
-  $("checkout").classList.remove("open");
-  $("shopall").classList.remove("open");
-  $("shopView").style.display = "none";
-  $("guides").classList.add("open");
-  $("guidesSearch").value = guideSearchQuery;
-  renderGuides();
-  window.scrollTo({top:0});
-  document.title = "Instructions Database | AURACORE";
-}
-$("guidesSearch").oninput = e=>{ guideSearchQuery = e.target.value; renderGuides(); };
-$("footGuides").onclick = e=>{ e.preventDefault(); showGuides(); history.pushState(null,"","index.html?view=install"); };
-$("navGuides").onclick = ()=>{ showGuides(); history.pushState(null,"","index.html?view=install"); };
-$("backFromGuides").onclick = ()=>{ showShop(); history.pushState(null,"","index.html"); };
-
-/* ================= CHECKOUT ================= */
-function renderCheckout(){
-  if(!cart.length){
-    $("coItems").innerHTML = `<div class="empty">Nothing here yet — head back to the catalog.</div>`;
-    $("coSubtotalRow").style.display = "none";
-    $("coAddon").innerHTML = "";
-    renderShipNote($("coShipNote"));
-    return;
-  }
-  $("coItems").innerHTML = cart.map((i,idx)=>lineItemHTML(i,idx)).join("");
-  bindLineItems($("coItems"));
-  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  $("coSubtotalVal").textContent = fmt(total);
-  $("coSubtotalRow").style.display = "flex";
-  renderShipNote($("coShipNote"));
-  renderAddonOffers($("coAddon"));
-}
-
-/* ---- payment handle field: label/placeholder swap per method ---- */
-const PAYMENT_META = {
-  "Zelle":      { label:"Zelle (phone or email) *",   placeholder:"e.g. (555) 555-5555 or you@email.com" },
-  "Apple Cash": { label:"Apple Cash (phone number) *", placeholder:"e.g. (555) 555-5555" },
-  "Venmo":      { label:"Venmo username *",            placeholder:"@yourusername" },
-  "Cash App":   { label:"Cash App $Cashtag *",         placeholder:"$yourcashtag" }
-};
-function updatePaymentHandleField(){
-  const meta = PAYMENT_META[$("fPayment").value] || PAYMENT_META["Zelle"];
-  $("fPaymentHandleLabel").textContent = meta.label;
-  $("fPaymentHandle").placeholder = meta.placeholder;
-}
-$("fPayment").onchange = updatePaymentHandleField;
-updatePaymentHandleField();
-
-/* ================= SUBMIT ================= */
-function orderText(){
-  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const lines = cart.map(i=>{
-    const opts = Object.entries(i.options).map(([k,v])=>`${k}: ${v}`).join(", ");
-    return `• ${i.name} [${i.sku}] x${i.qty}${opts ? " — "+opts : ""} — ${fmt(i.price*i.qty)}`;
-  });
-  const ship = total >= FREE_SHIP_MIN ? " (qualifies for free shipping)" : "";
-  return lines.join("\n") + `\n\nEstimated total: ${fmt(total)}${ship}`;
-}
-
-$("sendOrder").onclick = async ()=>{
-  const status = $("statusMsg");
-  status.className = "statusmsg";
-  if(!cart.length){ status.textContent="Add at least one item first."; status.classList.add("err"); return; }
-
-  const name = $("fName").value.trim(), email = $("fEmail").value.trim();
-  const addr1 = $("fAddr1").value.trim(), addr2 = $("fAddr2").value.trim();
-  const city = $("fCity").value.trim(), state = $("fState").value.trim(), zip = $("fZip").value.trim();
-  if(!name || !email || !email.includes("@")){
-    status.textContent = "Please fill in your name and a valid email.";
-    status.classList.add("err"); return;
-  }
-  if(!addr1 || !city || !state || !zip){
-    status.textContent = "Please complete the shipping address.";
-    status.classList.add("err"); return;
-  }
-  const ig = $("fIg").value.trim(), notes = $("fNotes").value.trim();
-  const payment = $("fPayment").value;
-  const paymentHandle = $("fPaymentHandle").value.trim();
-  if(!paymentHandle){
-    status.textContent = `Please include your ${payment} info so we can send the payment request.`;
-    status.classList.add("err"); return;
-  }
-  const address = `${addr1}${addr2 ? ", "+addr2 : ""}, ${city}, ${state} ${zip}`;
-  const summary = orderText();
-  const payload = {
-    name, email, instagram: ig || "—",
-    shipping_address: address,
-    preferred_payment: payment,
-    payment_handle: paymentHandle,
-    notes: notes || "—",
-    order: summary,
-    _subject: `AURACORE Order Request — ${name}`
-  };
-
-  if(CONFIG.formspree){
-    $("sendOrder").disabled = true;
-    $("sendOrder").textContent = "Sending…";
-    try{
-      const r = await fetch(CONFIG.formspree, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
-        body: JSON.stringify(payload)
-      });
-      if(r.ok){
-        status.textContent = "Order request sent! We'll email you an invoice soon.";
-        status.classList.add("ok");
-        cart = []; updateCartCount(); renderCheckout(); renderCart();
-        $("fNotes").value = ""; $("fPaymentHandle").value = "";
-      } else { throw new Error(); }
-    }catch{
-      status.textContent = "Couldn't send — try again, or DM us on Instagram.";
-      status.classList.add("err");
-    }finally{
-      $("sendOrder").disabled = false;
-      $("sendOrder").textContent = "Send order request";
-    }
-  } else {
-    const body =
-`Order request from ${name}
-Email: ${email}
-Instagram: ${ig || "—"}
-Ship to: ${address}
-Preferred payment: ${payment} — ${paymentHandle}
-
-${summary}
-
-Notes: ${notes || "—"}`;
-    location.href = `mailto:${CONFIG.email}?subject=${encodeURIComponent("AURACORE Order Request — "+name)}&body=${encodeURIComponent(body)}`;
-    status.textContent = "Opening your email app with the order pre-filled…";
-    status.classList.add("ok");
-  }
-};
-
-/* ================= INIT ================= */
-wireShared();
-renderSections();
-(function initView(){
-  const params = new URLSearchParams(location.search);
-  const view = params.get("view");
-  if(view === "checkout" && cart.length){ showCheckout(); }
-  else if(view === "install"){ showGuides(); }
-  else if(view === "shop"){ showShopAll(); }
-})();
+mountChrome("index.html");
+renderGrid($("gridLineup"),   PRODUCTS.filter(p=>p.section==="lineup"));
+renderGrid($("gridInterior"), PRODUCTS.filter(p=>p.section==="interior"));
 </script>
 </body>
 </html>

@@ -31,15 +31,28 @@ a{color:inherit}
 button{font-family:inherit;cursor:pointer}
 :focus-visible{outline:2px solid var(--wrb);outline-offset:2px}
 img{display:block}
+html{scroll-padding-top:80px}
+body{padding-top:64px}          /* fixed-header offset on interior pages */
+body.has-hero{padding-top:0}    /* hero sits full-bleed under the header */
 
 /* ---------- header ---------- */
 .topbar{
-  position:sticky;top:0;z-index:50;
+  position:fixed;top:0;left:0;right:0;z-index:50;
   display:flex;align-items:center;justify-content:space-between;gap:24px;
   padding:0 40px;height:64px;
   background:rgba(255,255,255,.94);backdrop-filter:blur(8px);
   border-bottom:1px solid var(--line);
+  transition:background .25s ease, border-color .25s ease;
 }
+/* transparent over the hero at the top of the home page */
+.topbar.over-hero{
+  background:linear-gradient(180deg, rgba(10,12,16,.55), rgba(10,12,16,0));
+  border-bottom-color:transparent;backdrop-filter:none;
+}
+.topbar.over-hero .logo{color:#fff}
+.topbar.over-hero .navlink{color:rgba(255,255,255,.92)}
+.topbar.over-hero .navlink:hover{border-bottom-color:#fff}
+.topbar.over-hero .cartbtn{color:#fff}
 .logo{
   font-size:16px;font-weight:800;letter-spacing:.14em;
   text-decoration:none;white-space:nowrap;color:var(--text);
@@ -51,9 +64,11 @@ img{display:block}
   font-size:12px;font-weight:500;letter-spacing:.18em;
   text-transform:uppercase;text-decoration:none;color:var(--text);
   padding:6px 0;background:none;border:none;white-space:nowrap;
-  border-bottom:1px solid transparent;transition:border-color .15s;
+  border-bottom:1px solid transparent;transition:border-color .15s,color .25s;
 }
 .navlink:hover{border-bottom-color:var(--text)}
+.navlink.active{border-bottom-color:var(--wrb);color:var(--wrb)}
+.topbar.over-hero .navlink.active{border-bottom-color:#fff;color:#fff}
 .cartbtn{
   position:relative;background:none;border:none;padding:8px;
   display:flex;align-items:center;color:var(--text);
@@ -73,7 +88,7 @@ img{display:block}
   display:flex;align-items:flex-end;
 }
 .hero img.bgimg{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 56%;
 }
 .hero::after{
   content:"";position:absolute;inset:0;
@@ -183,10 +198,48 @@ section.block{padding:88px 0 8px}
 }
 .btn-wrb:hover{background:#0b4899;border-color:#0b4899}
 
-/* ---------- shop all view ---------- */
-.shopall{display:none}
-.shopall.open{display:block}
-.shopall .wrap{padding-top:44px;padding-bottom:40px}
+/* ---------- interior page heads ---------- */
+.page-wrap{max-width:1280px;margin:0 auto;padding:0 40px}
+.page-head{padding:48px 0 30px}
+.page-head .backlink{margin-bottom:14px}
+.page-head h1{font-size:clamp(30px,4.4vw,48px);font-weight:800;letter-spacing:-.01em;line-height:1.03}
+.page-head p{color:var(--gray);font-size:14.5px;margin-top:8px;max-width:640px}
+
+/* ---------- system explainer page ---------- */
+.sys-intro{padding:56px 0 8px}
+.sys-intro .eyebrow{margin-bottom:14px}
+.sys-intro h1{font-size:clamp(34px,5.4vw,64px);font-weight:800;letter-spacing:-.015em;line-height:1;max-width:14ch}
+.sys-intro h1 .accent{color:var(--wrb)}
+.sys-intro .lead{font-size:16.5px;color:var(--gray);max-width:620px;margin-top:18px}
+.sys-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin:44px 0 12px}
+.sys-step{border:1px solid var(--line);padding:26px 24px;background:#fff}
+.sys-step .n{
+  font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--wrb);
+  display:block;margin-bottom:12px;
+}
+.sys-step h3{font-size:19px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px}
+.sys-step p{font-size:13.5px;color:var(--gray)}
+.sys-points{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 40px;margin:8px 0 8px;max-width:900px}
+.sys-point{display:flex;gap:12px;font-size:14px}
+.sys-point b{display:block;margin-bottom:1px}
+.sys-point span{color:var(--gray)}
+.sys-point .dot{flex-shrink:0;width:8px;height:8px;border-radius:50%;background:var(--wrb);margin-top:8px}
+.sys-band{
+  border:1px solid var(--line-dark);padding:34px 38px;margin:36px 0 0;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+}
+.sys-band h3{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.sys-band p{font-size:13.5px;color:var(--gray);margin-top:4px}
+
+/* ---------- home: system teaser band ---------- */
+.teaser{
+  border:1px solid var(--line-dark);padding:38px 40px;
+  display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap;
+  margin-bottom:88px;
+}
+.teaser .eyebrow{margin-bottom:8px}
+.teaser h3{font-size:26px;font-weight:800;letter-spacing:-.01em;max-width:16ch}
+.teaser p{font-size:14px;color:var(--gray);margin-top:6px;max-width:52ch}
 
 /* ---------- product detail page ---------- */
 .pp{max-width:1180px;margin:0 auto;padding:26px 40px 96px}
@@ -501,12 +554,19 @@ footer p{font-size:13px;color:var(--gray);max-width:440px;margin-top:12px}
   .hero-inner{padding-bottom:44px}
   .pp-grid{grid-template-columns:1fr;gap:32px}
   .pp-gallery{grid-template-columns:repeat(2,1fr)}
+  .sys-steps{grid-template-columns:1fr}
+  .sys-points{grid-template-columns:1fr}
 }
 @media(max-width:820px){
   .checkout-cols{grid-template-columns:1fr}
 }
 @media(max-width:640px){
   .topbar{padding:0 18px;height:58px}
+  body{padding-top:58px}
+  .page-wrap{padding:0 18px}
+  .page-head{padding:32px 0 22px}
+  .sys-intro{padding:40px 0 8px}
+  .teaser,.sys-band{padding:26px 22px}
   .logo{font-size:13px;letter-spacing:.06em}
   .topnav{gap:16px}
   .navlink{font-size:10.5px;letter-spacing:.12em}

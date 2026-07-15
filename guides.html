@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instructions Database — AUTOVB.WRX</title>
+<meta name="description" content="Download install instructions for every AURACORE part. Guides are split by LED type where the install differs.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<section class="guides open">
+  <div class="checkout-head">
+    <h2>Instructions Database</h2>
+    <p>Download install instructions for every AURACORE part. Guides are split by LED type where the install differs.</p>
+  </div>
+  <input class="guides-search" id="guidesSearch" type="text" placeholder="Search by part name or SKU…">
+  <div id="guidesList"></div>
+</section>
+
+<script src="app.js"></script>
+<script>
+mountChrome("guides.html");
+
+// Products with an "LED Type" option get one guide per variant SKU. Everything
+// else is keyed by its own product SKU. Add a { video:"url" } to a SKU to also
+// list an install video for it (videos only appear once you add them).
+const GUIDES = {
+  "AVB-RFL-FEN-NL": { pdf: "guides/AVB-RFL-FEN-NL.pdf" },
+  "AVB-RFL-FEN-WL": { pdf: "guides/AVB-RFL-FEN-WL.pdf" },
+};
+let guideSearchQuery = "";
+
+function guideLinkItems(g, label){
+  const items = [];
+  if(g.pdf) items.push(`<li><a href="${g.pdf}" target="_blank" rel="noopener">${label} Install Instructions (PDF)</a></li>`);
+  else items.push(`<li class="muted"><span class="muted">${label} instructions — coming soon</span></li>`);
+  if(g.video) items.push(`<li><a href="${g.video}" target="_blank" rel="noopener">${label} Install Video</a></li>`);
+  return items.join("");
+}
+function renderGuides(){
+  const q = guideSearchQuery.trim().toLowerCase();
+  const items = PRODUCTS.filter(p =>
+    (!q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.fits.toLowerCase().includes(q))
+  );
+  if(!items.length){
+    $("guidesList").innerHTML = `<div class="guide-empty">No instructions match your search.</div>`;
+    return;
+  }
+  $("guidesList").innerHTML = items.map(p=>{
+    const ledOpt = (p.options||[]).find(o=>o.label==="LED Type");
+    const skuLine = ledOpt ? ledOpt.choices.map(c=>c.sku).join(", ") : p.sku;
+    const linksHTML = ledOpt
+      ? `<ul class="guide-links">${ledOpt.choices.map(c=>guideLinkItems(GUIDES[c.sku]||{}, c.name)).join("")}</ul>`
+      : `<ul class="guide-links">${guideLinkItems(GUIDES[p.sku]||{}, p.name)}</ul>`;
+    return `
+      <div class="guide-row">
+        <h3>${p.name} — ${p.fits}</h3>
+        <span class="gsku">${skuLine}</span>
+        ${linksHTML}
+      </div>`;
+  }).join("");
+}
+$("guidesSearch").oninput = e=>{ guideSearchQuery = e.target.value; renderGuides(); };
+renderGuides();
+</script>
+</body>
+</html>

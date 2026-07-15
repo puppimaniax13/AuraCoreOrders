@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Send Your Order — AUTOVB.WRX</title>
+<meta name="description" content="Send your AURACORE order request. No payment here — we confirm your order and email an invoice with shipping.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<section class="checkout open">
+  <div class="checkout-head">
+    <a class="backlink" href="shop.html">← Back to catalog</a>
+    <h2>Send your order request</h2>
+    <p>No payment here — we'll confirm your order and email an invoice with shipping.</p>
+  </div>
+  <div class="checkout-cols">
+    <div class="co-panel">
+      <h3>Your items</h3>
+      <div id="coItems"></div>
+      <div id="coAddon"></div>
+      <div class="subtotal" id="coSubtotalRow" style="display:none">
+        <span>Estimated total</span><span id="coSubtotalVal"></span>
+      </div>
+      <div class="shipnote" id="coShipNote"></div>
+    </div>
+    <div class="co-panel">
+      <h3>Contact &amp; shipping</h3>
+      <div class="formrow">
+        <div>
+          <label class="formlabel" for="fName">Name *</label>
+          <input id="fName" type="text" autocomplete="name" required>
+        </div>
+        <div>
+          <label class="formlabel" for="fEmail">Email *</label>
+          <input id="fEmail" type="email" autocomplete="email" required>
+        </div>
+      </div>
+      <label class="formlabel" for="fIg">Instagram handle (optional)</label>
+      <input id="fIg" type="text" placeholder="@yourhandle">
+      <label class="formlabel" for="fAddr1">Street address *</label>
+      <input id="fAddr1" type="text" autocomplete="address-line1" required>
+      <label class="formlabel" for="fAddr2">Apt / suite (optional)</label>
+      <input id="fAddr2" type="text" autocomplete="address-line2">
+      <div class="formrow">
+        <div>
+          <label class="formlabel" for="fCity">City *</label>
+          <input id="fCity" type="text" autocomplete="address-level2" required>
+        </div>
+        <div>
+          <label class="formlabel" for="fState">State *</label>
+          <input id="fState" type="text" autocomplete="address-level1" required>
+        </div>
+      </div>
+      <div class="formrow">
+        <div>
+          <label class="formlabel" for="fZip">ZIP *</label>
+          <input id="fZip" type="text" inputmode="numeric" autocomplete="postal-code" required>
+        </div>
+        <div></div>
+      </div>
+      <label class="formlabel" for="fPayment">Preferred payment method</label>
+      <select id="fPayment">
+        <option value="Zelle">Zelle (preferred)</option>
+        <option value="Apple Cash">Apple Cash</option>
+        <option value="Venmo">Venmo</option>
+        <option value="Cash App">Cash App</option>
+      </select>
+      <label class="formlabel" for="fPaymentHandle" id="fPaymentHandleLabel">Zelle (phone or email) *</label>
+      <input id="fPaymentHandle" type="text" placeholder="e.g. (555) 555-5555 or you@email.com" required>
+      <p class="fieldhint">So we can send your invoice/payment request to the right place.</p>
+      <label class="formlabel" for="fNotes">Notes (already have an AuraCore, color questions, etc.)</label>
+      <textarea id="fNotes"></textarea>
+      <div style="margin-top:18px">
+        <button class="sendbtn" id="sendOrder">Send order request</button>
+        <div class="statusmsg" id="statusMsg"></div>
+        <p class="finehint">We usually reply within a day. Questions first? DM us on Instagram.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="app.js"></script>
+<script>
+mountChrome("checkout.html");
+
+function renderCheckout(){
+  if(!cart.length){
+    $("coItems").innerHTML = `<div class="empty">Your order is empty.<br><a href="shop.html" style="color:var(--wrb)">Head to the catalog →</a></div>`;
+    $("coSubtotalRow").style.display = "none";
+    $("coAddon").innerHTML = "";
+    renderShipNote($("coShipNote"));
+    return;
+  }
+  $("coItems").innerHTML = cart.map((i,idx)=>lineItemHTML(i,idx)).join("");
+  bindLineItems($("coItems"));
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  $("coSubtotalVal").textContent = fmt(total);
+  $("coSubtotalRow").style.display = "flex";
+  renderShipNote($("coShipNote"));
+  renderAddonOffers($("coAddon"));
+}
+
+/* ---- payment handle field: label/placeholder swap per method ---- */
+const PAYMENT_META = {
+  "Zelle":      { label:"Zelle (phone or email) *",   placeholder:"e.g. (555) 555-5555 or you@email.com" },
+  "Apple Cash": { label:"Apple Cash (phone number) *", placeholder:"e.g. (555) 555-5555" },
+  "Venmo":      { label:"Venmo username *",            placeholder:"@yourusername" },
+  "Cash App":   { label:"Cash App $Cashtag *",         placeholder:"$yourcashtag" }
+};
+function updatePaymentHandleField(){
+  const meta = PAYMENT_META[$("fPayment").value] || PAYMENT_META["Zelle"];
+  $("fPaymentHandleLabel").textContent = meta.label;
+  $("fPaymentHandle").placeholder = meta.placeholder;
+}
+$("fPayment").onchange = updatePaymentHandleField;
+updatePaymentHandleField();
+
+function orderText(){
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const lines = cart.map(i=>{
+    const opts = Object.entries(i.options).map(([k,v])=>`${k}: ${v}`).join(", ");
+    return `• ${i.name} [${i.sku}] x${i.qty}${opts ? " — "+opts : ""} — ${fmt(i.price*i.qty)}`;
+  });
+  const ship = total >= FREE_SHIP_MIN ? " (qualifies for free shipping)" : "";
+  return lines.join("\n") + `\n\nEstimated total: ${fmt(total)}${ship}`;
+}
+
+$("sendOrder").onclick = async ()=>{
+  const status = $("statusMsg");
+  status.className = "statusmsg";
+  if(!cart.length){ status.textContent="Add at least one item first."; status.classList.add("err"); return; }
+
+  const name = $("fName").value.trim(), email = $("fEmail").value.trim();
+  const addr1 = $("fAddr1").value.trim(), addr2 = $("fAddr2").value.trim();
+  const city = $("fCity").value.trim(), state = $("fState").value.trim(), zip = $("fZip").value.trim();
+  if(!name || !email || !email.includes("@")){
+    status.textContent = "Please fill in your name and a valid email.";
+    status.classList.add("err"); return;
+  }
+  if(!addr1 || !city || !state || !zip){
+    status.textContent = "Please complete the shipping address.";
+    status.classList.add("err"); return;
+  }
+  const ig = $("fIg").value.trim(), notes = $("fNotes").value.trim();
+  const payment = $("fPayment").value;
+  const paymentHandle = $("fPaymentHandle").value.trim();
+  if(!paymentHandle){
+    status.textContent = `Please include your ${payment} info so we can send the payment request.`;
+    status.classList.add("err"); return;
+  }
+  const address = `${addr1}${addr2 ? ", "+addr2 : ""}, ${city}, ${state} ${zip}`;
+  const summary = orderText();
+  const payload = {
+    name, email, instagram: ig || "—",
+    shipping_address: address,
+    preferred_payment: payment,
+    payment_handle: paymentHandle,
+    notes: notes || "—",
+    order: summary,
+    _subject: `AURACORE Order Request — ${name}`
+  };
+
+  if(CONFIG.formspree){
+    $("sendOrder").disabled = true;
+    $("sendOrder").textContent = "Sending…";
+    try{
+      const r = await fetch(CONFIG.formspree, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
+        body: JSON.stringify(payload)
+      });
+      if(r.ok){
+        status.textContent = "Order request sent! We'll email you an invoice soon.";
+        status.classList.add("ok");
+        cart = []; updateCartCount(); renderCheckout(); renderCart();
+        $("fNotes").value = ""; $("fPaymentHandle").value = "";
+      } else { throw new Error(); }
+    }catch{
+      status.textContent = "Couldn't send — try again, or DM us on Instagram.";
+      status.classList.add("err");
+    }finally{
+      $("sendOrder").disabled = false;
+      $("sendOrder").textContent = "Send order request";
+    }
+  } else {
+    const body =
+`Order request from ${name}
+Email: ${email}
+Instagram: ${ig || "—"}
+Ship to: ${address}
+Preferred payment: ${payment} — ${paymentHandle}
+
+${summary}
+
+Notes: ${notes || "—"}`;
+    location.href = `mailto:${CONFIG.email}?subject=${encodeURIComponent("AURACORE Order Request — "+name)}&body=${encodeURIComponent(body)}`;
+    status.textContent = "Opening your email app with the order pre-filled…";
+    status.classList.add("ok");
+  }
+};
+
+renderCheckout();
+</script>
+</body>
+</html>
