@@ -21,13 +21,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body class="has-hero">
 
 <section class="hero">
-  <img class="bgimg" src="images/hero.jpg" alt="Light-blue Subaru WRX parked on a tree-lined driveway"
-       onerror="this.onerror=null;this.src='images/rear-white-clear.jpg'">
+  <!-- slideshow images are injected here by the script below -->
   <div class="hero-inner">
     <div>
       <span class="eyebrow-lt">Precision 3D Printed · Designed for Subaru</span>
@@ -42,14 +41,14 @@
 
 <div class="wrap">
   <section class="block" id="lineup">
-    <div class="s-head">
+    <div class="s-head reveal">
       <span class="eyebrow">The Lineup</span>
       <h2><b>Three Pairs.</b>Infinite Configurations.</h2>
     </div>
     <div class="grid" id="gridLineup"></div>
   </section>
 
-  <div class="offerbox">
+  <div class="offerbox reveal">
     <div>
       <span class="eyebrow">Shipping</span>
       <h3>Orders over $100 ship free.</h3>
@@ -59,14 +58,14 @@
   </div>
 
   <section class="block" id="interior">
-    <div class="s-head">
+    <div class="s-head reveal">
       <span class="eyebrow">Interior &amp; Lighting</span>
       <h2><b>Small Details.</b>Big Difference.</h2>
     </div>
     <div class="grid" id="gridInterior"></div>
   </section>
 
-  <div class="teaser">
+  <div class="teaser reveal">
     <div>
       <span class="eyebrow">The System</span>
       <h3>One controller runs every light.</h3>
@@ -76,11 +75,46 @@
   </div>
 </div>
 
-<script src="app.js"></script>
+<script src="app.js?v=9"></script>
 <script>
 mountChrome("index.html");
+
+/* ---- Hero slideshow ----
+   Add more shots by dropping files in images/ and adding a line here.
+   `pos` is the crop focus (object-position): e.g. "center 56%" frames the
+   whole car; "70% 60%" pulls toward the front fender / fender light. */
+const HERO_IMAGES = [
+  { src:"images/hero.jpg", pos:"center 56%" }
+  // { src:"images/hero-fender.jpg", pos:"68% 60%" },
+  // { src:"images/hero-rear.jpg",   pos:"center 55%" },
+];
+(function buildHero(){
+  const hero = document.querySelector(".hero");
+  const slides = HERO_IMAGES.map((im,i)=>
+    `<img class="hero-slide${i===0?' active':''}" src="${im.src}" alt="" style="object-position:${im.pos||'center 56%'}" ${i>0?'loading="lazy"':''} onerror="this.style.display='none'">`
+  ).join("");
+  const dots = HERO_IMAGES.length>1
+    ? `<div class="hero-dots" id="heroDots">${HERO_IMAGES.map((_,i)=>`<button class="${i===0?'on':''}" data-i="${i}" aria-label="Show hero image ${i+1}"></button>`).join("")}</div>`
+    : "";
+  hero.insertAdjacentHTML("afterbegin", slides + dots);
+  if(HERO_IMAGES.length < 2) return;
+  const slideEls = [...hero.querySelectorAll(".hero-slide")];
+  const dotEls   = [...hero.querySelectorAll(".hero-dots button")];
+  let idx = 0, timer;
+  const go = (n)=>{
+    slideEls[idx].classList.remove("active"); dotEls[idx].classList.remove("on");
+    idx = (n + slideEls.length) % slideEls.length;
+    slideEls[idx].classList.add("active"); dotEls[idx].classList.add("on");
+  };
+  const start = ()=>{ timer = setInterval(()=>go(idx+1), 5500); };
+  const stop  = ()=> clearInterval(timer);
+  dotEls.forEach(d=> d.onclick = ()=>{ stop(); go(+d.dataset.i); start(); });
+  start();
+})();
+
 renderGrid($("gridLineup"),   PRODUCTS.filter(p=>p.section==="lineup"));
 renderGrid($("gridInterior"), PRODUCTS.filter(p=>p.section==="interior"));
+initReveal();
 </script>
 </body>
 </html>

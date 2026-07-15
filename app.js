@@ -251,7 +251,7 @@ function hasVariablePrice(p){
 /* ================= PRODUCT CARD (shared across catalog pages) ================= */
 function cardHTML(p){
   return `
-    <a class="card" href="${productHref(p)}" aria-label="${p.name}">
+    <a class="card reveal" href="${productHref(p)}" aria-label="${p.name}">
       <div class="thumb">
         ${p.img ? `<img src="${p.img}" alt="${p.name}" loading="lazy">`
                 : `<span class="ph">Photo coming soon</span>`}
@@ -543,4 +543,45 @@ function mountChrome(active){
   document.body.insertAdjacentHTML("beforeend", footerHTML() + chromeHTML());
   wireShared();
   initHeaderScroll();
+}
+
+/* ================= SCROLL REVEAL =================
+   Add class "reveal" to any element; it fades/rises in when it enters the
+   viewport. Call initReveal() after a page renders its content. Uses a
+   scroll/resize position check (robust everywhere) plus a safety timeout so
+   content is NEVER left hidden if something goes wrong. */
+function initReveal(){
+  const els = [...document.querySelectorAll(".reveal:not(.in)")];
+  if(!els.length) return;
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+  if(reduce){ els.forEach(e=>e.classList.add("in")); return; }
+
+  // gentle per-parent stagger (grid cascades)
+  const seen = new Map();
+  els.forEach(e=>{
+    const key = e.parentElement;
+    const i = (seen.get(key) || 0);
+    seen.set(key, i + 1);
+    e.style.transitionDelay = Math.min(i * 55, 275) + "ms";
+  });
+
+  const check = ()=>{
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    let remaining = false;
+    els.forEach(e=>{
+      if(e.classList.contains("in")) return;
+      const r = e.getBoundingClientRect();
+      if(r.top < vh * 0.9 && r.bottom > 0) e.classList.add("in");
+      else remaining = true;
+    });
+    if(!remaining){
+      window.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+    }
+  };
+  check(); // reveal whatever is already on screen
+  window.addEventListener("scroll", check, {passive:true});
+  window.addEventListener("resize", check);
+  // safety net: if scroll events never arrive, don't leave anything hidden
+  setTimeout(()=>els.forEach(e=>e.classList.add("in")), 4000);
 }

@@ -13,29 +13,29 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body>
 
 <div class="page-wrap">
-  <section class="sys-intro">
+  <section class="sys-intro reveal">
     <span class="eyebrow">The System</span>
     <h1>One Controller.<br><span class="accent">Every Light.</span></h1>
     <p class="lead">AURACORE is a single connected lighting system, not a box of loose parts. One controller drives all of your addressable RGBW lighting — reflectors, and more as you add them — so every light moves, fades, and changes color together.</p>
   </section>
 
   <div class="sys-steps">
-    <div class="sys-step">
+    <div class="sys-step reveal">
       <span class="n">01</span>
       <h3>Plug in the harness</h3>
       <p>Our harnesses sit inline with your factory connectors. No cutting, no splicing, no soldering into your car — and it all comes back to stock in minutes if you ever want it to.</p>
     </div>
-    <div class="sys-step">
+    <div class="sys-step reveal">
       <span class="n">02</span>
       <h3>Add the controller</h3>
       <p>The AuraCore controller is the brain. One unit powers and runs your whole setup, so you don't need a separate module for every light you add.</p>
     </div>
-    <div class="sys-step">
+    <div class="sys-step reveal">
       <span class="n">03</span>
       <h3>Pick your look</h3>
       <p>Choose solid colors, whites, or animated effects across every light at once. Change it whenever you want — your setup grows with you as you add more AURACORE parts.</p>
@@ -43,27 +43,27 @@
   </div>
 
   <section class="block" style="padding-top:64px">
-    <div class="s-head">
+    <div class="s-head reveal">
       <span class="eyebrow">Why it's built this way</span>
       <h2><b>Designed to add on,</b>and to come back off.</h2>
     </div>
     <div class="sys-points">
-      <div class="sys-point"><span class="dot"></span><div><b>Fully reversible</b><span>Everything is inline and plug-in. Nothing about your car is permanently altered.</span></div></div>
-      <div class="sys-point"><span class="dot"></span><div><b>One brain, many lights</b><span>Add reflectors and future parts to the same controller instead of stacking modules.</span></div></div>
-      <div class="sys-point"><span class="dot"></span><div><b>Addressable RGBW</b><span>True whites plus full color and per-section effects — not just a single static color.</span></div></div>
-      <div class="sys-point"><span class="dot"></span><div><b>Built for weather</b><span>Sealed connectors and potted electronics made to live behind your bumpers and panels.</span></div></div>
+      <div class="sys-point reveal"><span class="dot"></span><div><b>Fully reversible</b><span>Everything is inline and plug-in. Nothing about your car is permanently altered.</span></div></div>
+      <div class="sys-point reveal"><span class="dot"></span><div><b>One brain, many lights</b><span>Add reflectors and future parts to the same controller instead of stacking modules.</span></div></div>
+      <div class="sys-point reveal"><span class="dot"></span><div><b>Addressable RGBW</b><span>True whites plus full color and per-section effects — not just a single static color.</span></div></div>
+      <div class="sys-point reveal"><span class="dot"></span><div><b>Built for weather</b><span>Sealed connectors and potted electronics made to live behind your bumpers and panels.</span></div></div>
     </div>
   </section>
 
   <section class="block" style="padding-top:56px">
-    <div class="s-head">
+    <div class="s-head reveal">
       <span class="eyebrow">The System</span>
       <h2><b>The hardware</b>that runs it.</h2>
     </div>
     <div class="grid" id="gridSystem"></div>
   </section>
 
-  <div class="sys-band">
+  <div class="sys-band reveal">
     <div>
       <h3>Ready to build your setup?</h3>
       <p>Start with a reflector set — the controller is added automatically when you choose an RGBW Smart part.</p>
@@ -72,10 +72,11 @@
   </div>
 </div>
 
-<script src="app.js"></script>
+<script src="app.js?v=9"></script>
 <script>
 mountChrome("system.html");
 renderGrid($("gridSystem"), PRODUCTS.filter(p=>p.section==="system"));
+initReveal();
 </script>
 </body>
 </html>
