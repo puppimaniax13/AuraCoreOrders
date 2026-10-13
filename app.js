@@ -40,7 +40,6 @@ function reflectorOptions(skuPrefix){
       {name:"RGBW",       price:150, sku:skuPrefix+"-RG", lenses:["Frosted","Tinted"]},
       {name:"RGBW Smart", price:250, sku:skuPrefix+"-RS", lenses:["Frosted","Tinted"], soldOut:true}
     ]},
-    {label:"Backing Color", choices:["White","Black"]},
     {label:"Lens Type", choices:["Clear","Frosted","Tinted"]}
   ];
 }
@@ -53,14 +52,11 @@ const PRODUCTS = [
     desc:"Precision 3D-printed fender reflector set. Drop-in replacement with factory-tight tolerances. Sold as a pair — mounting clips included.",
     details:"",
     gallery:[], video:"", reviews:[],
-    photoKey:["Backing Color","Lens Type"],
+    photoKey:["Lens Type"],
     photos:{
-      "White|Clear":"images/fender-white-clear.jpg",
-      "White|Frosted":"images/fender-white-frosted.jpg",
-      "White|Tinted":"images/fender-white-tinted.jpg",
-      "Black|Clear":"images/fender-black-clear.jpg",
-      "Black|Frosted":"images/fender-black-frosted.jpg",
-      "Black|Tinted":"images/fender-black-tinted.jpg"
+      "Clear":"images/fender-white-clear.jpg",
+      "Frosted":"images/fender-white-frosted.jpg",
+      "Tinted":"images/fender-white-tinted.jpg"
     },
     options: reflectorOptions("AVB-RFL-FEN")
   },
@@ -71,14 +67,11 @@ const PRODUCTS = [
     desc:"OEM-fit rear reflector set with factory-profile housings. Sold as a pair.",
     details:"",
     gallery:[], video:"", reviews:[],
-    photoKey:["Backing Color","Lens Type"],
+    photoKey:["Lens Type"],
     photos:{
-      "White|Clear":"images/rear-white-clear.jpg",
-      "White|Frosted":"images/rear-white-frosted.jpg",
-      "White|Tinted":"images/rear-white-tinted.jpg",
-      "Black|Clear":"images/rear-black-clear.jpg",
-      "Black|Frosted":"images/rear-black-frosted.jpg",
-      "Black|Tinted":"images/rear-black-tinted.jpg"
+      "Clear":"images/rear-white-clear.jpg",
+      "Frosted":"images/rear-white-frosted.jpg",
+      "Tinted":"images/rear-white-tinted.jpg"
     },
     options: reflectorOptions("AVB-RFL-RR")
   },
@@ -89,14 +82,11 @@ const PRODUCTS = [
     desc:"Rear vent insert set that turns the WRX's signature vent apertures into a statement. Subtle factory-plus look, or full lighting.",
     details:"",
     gallery:[], video:"", reviews:[],
-    photoKey:["Backing Color","Lens Type"],
+    photoKey:["Lens Type"],
     photos:{
-      "White|Clear":"images/vent-white-clear.jpg",
-      "White|Frosted":"images/vent-white-frosted.jpg",
-      "White|Tinted":"images/vent-white-tinted.jpg",
-      "Black|Clear":"images/vent-black-clear.jpg",
-      "Black|Frosted":"images/vent-black-frosted.jpg",
-      "Black|Tinted":"images/vent-black-tinted.jpg"
+      "Clear":"images/vent-white-clear.jpg",
+      "Frosted":"images/vent-white-frosted.jpg",
+      "Tinted":"images/vent-white-tinted.jpg"
     },
     options: reflectorOptions("AVB-RFL-RV")
   },
@@ -283,7 +273,10 @@ function sanitizeCart(items){
     if(!v) return false;
     if(v.lenses && i.options && i.options["Lens Type"] && !v.lenses.includes(i.options["Lens Type"])) return false;
     i.price = v.price;
-    if(v.led && i.options) i.options["LED Type"] = v.led;
+    if(v.led && i.options){
+      i.options["LED Type"] = v.led;
+      delete i.options["Backing Color"];   // option retired
+    }
     return true;
   });
 }
