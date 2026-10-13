@@ -14,13 +14,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=12">
 </head>
 <body>
 
 <main id="ppMain"></main>
 
-<script src="app.js?v=10"></script>
+<script src="app.js?v=12"></script>
 <script>
 mountChrome("shop.html");
 
@@ -37,7 +37,8 @@ if(!p){
 } else {
   document.title = p.name + " — AUTOVB.WRX";
   let sel = {};
-  (p.options||[]).forEach(o => sel[o.label] = choiceName(optionChoiceList(o)[0]));
+  (p.options||[]).forEach(o => sel[o.label] = choiceName(optionChoiceList(o).find(c=>!c.soldOut) || optionChoiceList(o)[0]));
+  normalizeSel(p, sel);
   let qty = 1;
   let mainOverride = null;   // set when a gallery thumb is clicked; cleared on option change
 
@@ -59,14 +60,15 @@ if(!p){
 
   function optBtn(o, c){
     const name = choiceName(c);
-    const priceTag = (typeof c==="object" && c.price!=null) ? `<small>${fmt(c.price)}</small>` : "";
-    return `<button class="optbtn ${sel[o.label]===name?'sel':''}" data-group="${o.label}" data-choice="${name}">${name}${priceTag}</button>`;
+    const soldOut = typeof c==="object" && c.soldOut;
+    const priceTag = (typeof c==="object" && c.price!=null) ? `<small>${soldOut ? "Out of stock" : fmt(c.price)}</small>` : "";
+    return `<button class="optbtn ${sel[o.label]===name?'sel':''}${soldOut?' soldout':''}" data-group="${o.label}" data-choice="${name}"${soldOut?' disabled aria-disabled="true" title="Out of stock — coming soon"':''}>${name}${priceTag}</button>`;
   }
   function optionsHTML(){
     return (p.options||[]).map(o=>{
       const rows = o.sections
         ? o.sections.map(s=>`<span class="optsub">${s.title}</span><div class="optrow">${s.choices.map(c=>optBtn(o,c)).join("")}</div>`).join("")
-        : `<div class="optrow">${o.choices.map(c=>optBtn(o,c)).join("")}</div>`;
+        : `<div class="optrow">${visibleChoices(p, o, sel).map(c=>optBtn(o,c)).join("")}</div>`;
       return `<div class="optgroup"><span class="optlabel">${o.label}</span>${rows}</div>`;
     }).join("");
   }
@@ -157,10 +159,9 @@ if(!p){
   function bindControls(){
     document.querySelectorAll("#ppOptions .optbtn").forEach(b=>{
       b.onclick = ()=>{
+        if(b.disabled) return;
         sel[b.dataset.group] = b.dataset.choice;
-        if(b.dataset.group === "LED Type" && "Lens Type" in sel && b.dataset.choice !== "No LED"){
-          sel["Lens Type"] = "Frosted";
-        }
+        normalizeSel(p, sel);   // e.g. switching to White LED drops Clear → Frosted
         mainOverride = null;
         render();
       };

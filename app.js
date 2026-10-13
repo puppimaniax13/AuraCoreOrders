@@ -11,7 +11,6 @@ const CONFIG = {
   instagram: "https://instagram.com/autovb.WRX"
 };
 
-const AURA_SKU = "AVB-ELC-AURA";
 const LINK_SKU = "AVB-ACC-LINK";
 
 /* ================= PRODUCT DATA =================
@@ -30,6 +29,22 @@ const BUTTON_PHOTOS_TEMPLATE = {
   "Red":"", "Green":"", "Yellow":"", "Blue":"", "White":""
 };
 
+/* Shared reflector options — every reflector set uses the same LED lineup.
+   `lenses` limits which Lens Type choices show for that LED type;
+   `soldOut` shows the choice grayed out and unselectable. */
+function reflectorOptions(skuPrefix){
+  return [
+    {label:"LED Type", choices:[
+      {name:"No LED",     price:40,  sku:skuPrefix+"-NL", lenses:["Clear","Tinted"]},
+      {name:"White LED",  price:80,  sku:skuPrefix+"-WL", lenses:["Frosted","Tinted"]},
+      {name:"RGBW",       price:150, sku:skuPrefix+"-RG", lenses:["Frosted","Tinted"]},
+      {name:"RGBW Smart", price:250, sku:skuPrefix+"-RS", lenses:["Frosted","Tinted"], soldOut:true}
+    ]},
+    {label:"Backing Color", choices:["White","Black"]},
+    {label:"Lens Type", choices:["Clear","Frosted","Tinted"]}
+  ];
+}
+
 const PRODUCTS = [
   {
     sku:"AVB-RFL-FEN", name:"Fender Reflectors", cat:"Reflectors", section:"lineup",
@@ -47,15 +62,7 @@ const PRODUCTS = [
       "Black|Frosted":"images/fender-black-frosted.jpg",
       "Black|Tinted":"images/fender-black-tinted.jpg"
     },
-    options:[
-      {label:"LED Type", choices:[
-        {name:"No LED", price:40, sku:"AVB-RFL-FEN-NL"},
-        {name:"White LED", price:75, sku:"AVB-RFL-FEN-WL"},
-        {name:"RGBW Smart", price:150, sku:"AVB-RFL-FEN-RG"}
-      ]},
-      {label:"Backing Color", choices:["White","Black"]},
-      {label:"Lens Type", choices:["Clear","Frosted","Tinted"]}
-    ]
+    options: reflectorOptions("AVB-RFL-FEN")
   },
   {
     sku:"AVB-RFL-RR", name:"Rear Reflectors", cat:"Reflectors", section:"lineup",
@@ -73,15 +80,7 @@ const PRODUCTS = [
       "Black|Frosted":"images/rear-black-frosted.jpg",
       "Black|Tinted":"images/rear-black-tinted.jpg"
     },
-    options:[
-      {label:"LED Type", choices:[
-        {name:"No LED", price:40, sku:"AVB-RFL-RR-NL"},
-        {name:"White LED", price:75, sku:"AVB-RFL-RR-WL"},
-        {name:"RGBW Smart", price:150, sku:"AVB-RFL-RR-RG"}
-      ]},
-      {label:"Backing Color", choices:["White","Black"]},
-      {label:"Lens Type", choices:["Clear","Frosted","Tinted"]}
-    ]
+    options: reflectorOptions("AVB-RFL-RR")
   },
   {
     sku:"AVB-RFL-RV", name:"Vent Inserts", cat:"Reflectors", section:"lineup",
@@ -99,15 +98,7 @@ const PRODUCTS = [
       "Black|Frosted":"images/vent-black-frosted.jpg",
       "Black|Tinted":"images/vent-black-tinted.jpg"
     },
-    options:[
-      {label:"LED Type", choices:[
-        {name:"No LED", price:40, sku:"AVB-RFL-RV-NL"},
-        {name:"White LED", price:75, sku:"AVB-RFL-RV-WL"},
-        {name:"RGBW Smart", price:150, sku:"AVB-RFL-RV-RG"}
-      ]},
-      {label:"Backing Color", choices:["White","Black"]},
-      {label:"Lens Type", choices:["Clear","Frosted","Tinted"]}
-    ]
+    options: reflectorOptions("AVB-RFL-RV")
   },
   {
     sku:"AVB-LGT-TRUNK", name:"Trunk Light", cat:"Lighting", section:"interior",
@@ -162,34 +153,6 @@ const PRODUCTS = [
     options:[
       {label:"LED Color", choices:["Red","Green","Yellow","Blue","White"]}
     ]
-  },
-  {
-    sku:AURA_SKU, name:"AuraCore Controller", cat:"Electronics", section:"system",
-    slug:"auracore-controller", fits:"All AURACORE lighting",
-    price:50, img:"",
-    desc:"Custom AuraCore PCB in a 3D-printed housing. Drives all AURACORE addressable RGBW lighting — one controller runs your whole setup.",
-    requires:"Required for any RGBW Smart product.",
-    delayed:"Backordered — current builds ship in about 4 weeks.",
-    details:"",
-    gallery:[], video:"", reviews:[]
-  },
-  {
-    sku:"AVB-ELC-HRN-AURA", name:"AuraCore Inline Harness", cat:"Electronics", section:"system",
-    slug:"auracore-inline-harness", fits:"2022–2026 Subaru WRX",
-    price:20, img:"",
-    desc:"Plug-and-play harness that sits inline with the factory connector. Fully reversible — zero splicing, zero cutting.",
-    delayed:"Backordered — current builds ship in about 4 weeks.",
-    details:"",
-    gallery:[], video:"", reviews:[]
-  },
-  {
-    sku:"AVB-ELC-HRN-REV", name:"Reverse-Light Harness", cat:"Electronics", section:"system",
-    slug:"reverse-light-harness", fits:"2022–2026 Subaru WRX",
-    price:20, img:"",
-    desc:"Plug-in harness for reverse-triggered white LEDs. Pin connectors included.",
-    delayed:"Backordered — current builds ship in about 4 weeks.",
-    details:"",
-    gallery:[], video:"", reviews:[]
   }
 ];
 
@@ -199,10 +162,6 @@ const LINK_PRODUCT = {
   sku:LINK_SKU, name:"Link Two Pieces", price:5,
   desc:"We pre-connect two of your reflector sets so they run as one continuous unit — connector and install included."
 };
-
-/* Harness SKUs (full products in the grid) offered as add-ons too */
-const HARNESS_REV_SKU = "AVB-ELC-HRN-REV";
-const HARNESS_AURA_SKU = "AVB-ELC-HRN-AURA";
 
 /* Free shipping threshold */
 const FREE_SHIP_MIN = 100;
@@ -240,9 +199,28 @@ function selectedSku(p, sel){
 function minPrice(p){
   let prices = [p.price];
   (p.options||[]).forEach(o=>optionChoiceList(o).forEach(c=>{
-    if(typeof c === "object" && c.price != null) prices.push(c.price);
+    if(typeof c === "object" && c.price != null && !c.soldOut) prices.push(c.price);
   }));
   return Math.min(...prices);
+}
+/* Lens choices allowed for the currently selected LED type (null = no limit). */
+function allowedLenses(p, sel){
+  const led = findChoice(p, "LED Type", sel["LED Type"]);
+  return (led && led.lenses) || null;
+}
+/* Which choices of an option should be shown, given the current selection. */
+function visibleChoices(p, opt, sel){
+  const list = opt.choices || [];
+  if(opt.label !== "Lens Type") return list;
+  const allowed = allowedLenses(p, sel);
+  return allowed ? list.filter(c=>allowed.includes(choiceName(c))) : list;
+}
+/* If the selected lens isn't allowed for the selected LED type, snap to the first allowed one. */
+function normalizeSel(p, sel){
+  const allowed = allowedLenses(p, sel);
+  if(allowed && "Lens Type" in sel && !allowed.includes(sel["Lens Type"])){
+    sel["Lens Type"] = allowed[0];
+  }
 }
 function hasVariablePrice(p){
   return (p.options||[]).some(o=>optionChoiceList(o).some(c=>typeof c==="object" && c.price!=null));
@@ -286,7 +264,30 @@ function loadCart(){
 function saveCart(){
   try{ localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); }catch{}
 }
-let cart = loadCart();
+/* Saved carts can outlive product changes. On load, drop anything that no
+   longer exists (or is sold out / an invalid lens combo) and re-price the
+   rest from the current catalog so a stale cart can't submit an old price. */
+function sanitizeCart(items){
+  const index = {};
+  PRODUCTS.forEach(p=>{
+    const led = (p.options||[]).find(o=>o.label==="LED Type");
+    if(led){
+      led.choices.forEach(c=>{ if(!c.soldOut) index[c.sku] = {price:c.price, led:c.name, lenses:c.lenses}; });
+    } else {
+      index[p.sku] = {price:p.price};
+    }
+  });
+  index[LINK_SKU] = {price:LINK_PRODUCT.price};
+  return items.filter(i=>{
+    const v = i && index[i.sku];
+    if(!v) return false;
+    if(v.lenses && i.options && i.options["Lens Type"] && !v.lenses.includes(i.options["Lens Type"])) return false;
+    i.price = v.price;
+    if(v.led && i.options) i.options["LED Type"] = v.led;
+    return true;
+  });
+}
+let cart = sanitizeCart(loadCart());
 
 function updateCartCount(){
   const el = $("cartCount");
@@ -299,23 +300,12 @@ function addToCart(item){
   updateCartCount();
 }
 
-/* ============ required-item logic (AuraCore) ============ */
-function isRGBW(item){ return item.options && item.options["LED Type"]==="RGBW Smart"; }
-function isWhiteLED(item){ return item.options && item.options["LED Type"]==="White LED"; }
-function cartHasRGBW(){ return cart.some(isRGBW); }
-function cartHasWhiteLED(){ return cart.some(isWhiteLED); }
+/* ============ dependent-item logic ============ */
 function reflectorCount(){
   return cart.filter(i=>i.sku.startsWith("AVB-RFL")).reduce((s,i)=>s+i.qty,0);
 }
 function syncRequiredItems(){
-  const hasAura = cart.some(i=>i.sku===AURA_SKU);
-  if(cartHasRGBW() && !hasAura){
-    const aura = PRODUCTS.find(p=>p.sku===AURA_SKU);
-    cart.push({ sku:aura.sku, name:aura.name, price:aura.price, qty:1, options:{}, auto:true });
-  }
-  if(!cartHasRGBW()){
-    cart = cart.filter(i=>!(i.sku===AURA_SKU && i.auto));
-  }
+  // Link add-on only makes sense with 2+ reflector sets
   if(reflectorCount() < 2){
     cart = cart.filter(i=>i.sku!==LINK_SKU);
   }
@@ -348,22 +338,19 @@ function closeDrawer(){
 }
 function lineItemHTML(i, idx){
   const opts = Object.entries(i.options).map(([k,v])=>`${k}: ${v}`).join(" · ");
-  const locked = i.sku===AURA_SKU && cartHasRGBW();
   return `
     <div class="line-item">
       <div>
         <div class="n">${i.name}</div>
         <div class="o">${opts || "—"}</div>
-        ${locked
-          ? `<span class="lock">Required for RGBW items — already have one? Say so in notes.</span>`
-          : `<div class="li-controls">
-              <div class="li-qty">
-                <button data-act="dec" data-idx="${idx}" aria-label="Decrease quantity" ${i.qty<=1?"disabled":""}>−</button>
-                <span>${i.qty}</span>
-                <button data-act="inc" data-idx="${idx}" aria-label="Increase quantity" ${i.qty>=20?"disabled":""}>+</button>
-              </div>
-              <button class="rm" data-idx="${idx}">Remove</button>
-            </div>`}
+        <div class="li-controls">
+          <div class="li-qty">
+            <button data-act="dec" data-idx="${idx}" aria-label="Decrease quantity" ${i.qty<=1?"disabled":""}>−</button>
+            <span>${i.qty}</span>
+            <button data-act="inc" data-idx="${idx}" aria-label="Increase quantity" ${i.qty>=20?"disabled":""}>+</button>
+          </div>
+          <button class="rm" data-idx="${idx}">Remove</button>
+        </div>
       </div>
       <div class="p">${fmt(i.price*i.qty)}</div>
     </div>`;
@@ -402,16 +389,6 @@ function renderShipNote(el){
 function getAddonOffers(){
   const offers = [];
   if(reflectorCount() >= 2 && !cart.some(i=>i.sku===LINK_SKU)) offers.push(LINK_PRODUCT);
-  if(cartHasWhiteLED() && !cart.some(i=>i.sku===HARNESS_REV_SKU)){
-    const h = PRODUCTS.find(p=>p.sku===HARNESS_REV_SKU);
-    offers.push({ sku:h.sku, name:h.name, price:h.price,
-      desc:"Plug-in trigger so your White LED lights up in reverse — no splicing." });
-  }
-  if(cartHasRGBW() && !cart.some(i=>i.sku===HARNESS_AURA_SKU)){
-    const h = PRODUCTS.find(p=>p.sku===HARNESS_AURA_SKU);
-    offers.push({ sku:h.sku, name:h.name, price:h.price,
-      desc:"Plug-and-play power for your AuraCore — sits inline with the factory connector, fully reversible." });
-  }
   return offers;
 }
 function renderAddonOffers(container){
@@ -479,6 +456,7 @@ function wireShared(){
 const NAV_LINKS = [
   {label:"Products",      href:"shop.html"},
   {label:"The System",    href:"system.html", hideSm:true},
+  {label:"One Harness",   href:"harness.html", hideSm:true},
   {label:"Install Guides",href:"guides.html"}
 ];
 const CART_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`;
@@ -504,6 +482,7 @@ function footerHTML(){
         <h4>Links</h4>
         <a href="shop.html">Shop all parts</a>
         <a href="system.html">The System</a>
+        <a href="harness.html">One Harness</a>
         <a href="guides.html">Instructions database</a>
         <a href="https://instagram.com/autovb.WRX" target="_blank" rel="noopener">Instagram</a>
         <a href="#" id="footOrder">Your order</a>
