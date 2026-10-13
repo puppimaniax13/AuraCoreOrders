@@ -381,18 +381,23 @@ function renderShipNote(el){
 }
 function cartTotal(){ return cart.reduce((s,i)=>s+i.price*i.qty,0); }
 
-/* Free-shipping nudge: a White LED set is $80, so a $20 button gets the
-   order to the $100 free-shipping line. Shown only when that's true. */
+/* Free-shipping nudge: on any order under $100, offer a button. If the
+   button gets them to $100 we say "ship free"; otherwise we say how close
+   it gets them (never claim free shipping that the button won't unlock). */
 const BUTTON_SKUS = ["AVB-BTN-UP","AVB-BTN-LO"];
 const BUTTON_ADDON_ID = "ADDON-BUTTON";
 function buttonAddonOffer(){
-  const hasWhiteLED = cart.some(i=>i.options && i.options["LED Type"]==="White LED");
   const btn = PRODUCTS.find(p=>p.sku===BUTTON_SKUS[0]);
-  if(!hasWhiteLED || !btn) return null;
+  if(!btn || !cart.length) return null;
   const total = cartTotal();
-  if(total >= FREE_SHIP_MIN || total + btn.price < FREE_SHIP_MIN) return null;
-  return { sku:BUTTON_ADDON_ID, kind:"button", name:"Add a button, ship free", price:btn.price,
-    desc:`Add a 3D-printed illuminated button for ${fmt(btn.price)} and your order ships free.` };
+  if(total >= FREE_SHIP_MIN) return null;
+  const after = total + btn.price;
+  if(after >= FREE_SHIP_MIN){
+    return { sku:BUTTON_ADDON_ID, kind:"button", name:"Add a button, ship free", price:btn.price,
+      desc:`Add a 3D-printed illuminated button for ${fmt(btn.price)} and your order ships free.` };
+  }
+  return { sku:BUTTON_ADDON_ID, kind:"button", name:"Add a button", price:btn.price,
+    desc:`Add a 3D-printed illuminated button for ${fmt(btn.price)} — you'll be ${fmt(FREE_SHIP_MIN - after)} from free shipping.` };
 }
 
 function getAddonOffers(){

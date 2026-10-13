@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=15">
+<link rel="stylesheet" href="styles.css?v=16">
 </head>
 <body>
 
@@ -46,8 +46,16 @@
           <input id="fEmail" type="email" autocomplete="email" required>
         </div>
       </div>
-      <label class="formlabel" for="fIg">Instagram handle (optional)</label>
-      <input id="fIg" type="text" placeholder="@yourhandle">
+      <div class="formrow">
+        <div>
+          <label class="formlabel" for="fPhone">Phone *</label>
+          <input id="fPhone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(555) 555-5555" required>
+        </div>
+        <div>
+          <label class="formlabel" for="fIg">Instagram handle (optional)</label>
+          <input id="fIg" type="text" placeholder="@yourhandle">
+        </div>
+      </div>
       <label class="formlabel" for="fAddr1">Street address *</label>
       <input id="fAddr1" type="text" autocomplete="address-line1" required>
       <label class="formlabel" for="fAddr2">Apt / suite (optional)</label>
@@ -90,7 +98,7 @@
   </div>
 </section>
 
-<script src="app.js?v=15"></script>
+<script src="app.js?v=16"></script>
 <script>
 mountChrome("checkout.html");
 
@@ -153,6 +161,11 @@ $("sendOrder").onclick = async ()=>{
     status.classList.add("err"); return;
   }
   const ig = $("fIg").value.trim(), notes = $("fNotes").value.trim();
+  const phone = $("fPhone").value.trim();
+  if(phone.replace(/\D/g,"").length < 10){
+    status.textContent = "Please add a phone number so we can reach you about your order.";
+    status.classList.add("err"); return;
+  }
   const payment = $("fPayment").value;
   const paymentHandle = $("fPaymentHandle").value.trim();
   if(!paymentHandle){
@@ -162,7 +175,7 @@ $("sendOrder").onclick = async ()=>{
   const address = `${addr1}${addr2 ? ", "+addr2 : ""}, ${city}, ${state} ${zip}`;
   const summary = orderText();
   const payload = {
-    name, email, instagram: ig || "—",
+    name, email, phone, instagram: ig || "—",
     shipping_address: address,
     preferred_payment: payment,
     payment_handle: paymentHandle,
@@ -197,6 +210,7 @@ $("sendOrder").onclick = async ()=>{
     const body =
 `Order request from ${name}
 Email: ${email}
+Phone: ${phone}
 Instagram: ${ig || "—"}
 Ship to: ${address}
 Preferred payment: ${payment} — ${paymentHandle}
