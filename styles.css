@@ -519,6 +519,12 @@ section.block{padding:88px 0 8px}
   transition:background .15s;
 }
 .addon-add:hover{background:#0b4899}
+.addon-selects{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.addon-card .addon-selects select{
+  width:auto;padding:7px 10px;font-size:13px;font-family:var(--body);
+  border:1px solid #c9d8ee;background:#fff;color:var(--text);
+}
+.addon-card .addon-selects select:focus{outline:none;border-color:var(--wrb);box-shadow:0 0 0 3px rgba(15,92,196,.12)}
 .formrow{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
 .formlabel{
   font-size:12px;font-weight:600;display:block;margin:15px 0 6px;color:var(--text);

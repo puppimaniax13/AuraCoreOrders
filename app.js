@@ -379,10 +379,36 @@ function renderShipNote(el){
     el.textContent = `Add ${fmt(FREE_SHIP_MIN - total)} more for free shipping`;
   }
 }
+function cartTotal(){ return cart.reduce((s,i)=>s+i.price*i.qty,0); }
+
+/* Free-shipping nudge: a White LED set is $80, so a $20 button gets the
+   order to the $100 free-shipping line. Shown only when that's true. */
+const BUTTON_SKUS = ["AVB-BTN-UP","AVB-BTN-LO"];
+const BUTTON_ADDON_ID = "ADDON-BUTTON";
+function buttonAddonOffer(){
+  const hasWhiteLED = cart.some(i=>i.options && i.options["LED Type"]==="White LED");
+  const btn = PRODUCTS.find(p=>p.sku===BUTTON_SKUS[0]);
+  if(!hasWhiteLED || !btn) return null;
+  const total = cartTotal();
+  if(total >= FREE_SHIP_MIN || total + btn.price < FREE_SHIP_MIN) return null;
+  return { sku:BUTTON_ADDON_ID, kind:"button", name:"Add a button, ship free", price:btn.price,
+    desc:`Add a 3D-printed illuminated button for ${fmt(btn.price)} and your order ships free.` };
+}
+
 function getAddonOffers(){
   const offers = [];
   if(reflectorCount() >= 2 && !cart.some(i=>i.sku===LINK_SKU)) offers.push(LINK_PRODUCT);
+  const btnOffer = buttonAddonOffer();
+  if(btnOffer) offers.push(btnOffer);
   return offers;
+}
+function buttonPickerHTML(){
+  const rows = BUTTON_SKUS.map(sku=>PRODUCTS.find(p=>p.sku===sku)).filter(Boolean);
+  const colors = optionChoiceList(rows[0].options.find(o=>o.label==="LED Color")).map(choiceName);
+  return `<div class="addon-selects">
+      <select data-role="row" aria-label="Button row">${rows.map(p=>`<option value="${p.sku}">${p.name.replace(/^Buttons — /,"")}</option>`).join("")}</select>
+      <select data-role="color" aria-label="Button LED color">${colors.map(c=>`<option value="${c}">${c} LED</option>`).join("")}</select>
+    </div>`;
 }
 function renderAddonOffers(container){
   if(!container) return;
@@ -392,13 +418,21 @@ function renderAddonOffers(container){
       <div>
         <div class="t">${o.name} — ${fmt(o.price)}</div>
         <div class="d">${o.desc}</div>
+        ${o.kind==="button" ? buttonPickerHTML() : ``}
       </div>
       <button class="addon-add" data-sku="${o.sku}">+ Add</button>
     </div>`).join("");
   container.querySelectorAll(".addon-add").forEach(btn=>{
     btn.onclick = ()=>{
       const o = offers.find(x=>x.sku===btn.dataset.sku);
-      cart.push({ sku:o.sku, name:o.name, price:o.price, qty:1, options:{} });
+      if(o.kind==="button"){
+        const card = btn.closest(".addon-card");
+        const p = PRODUCTS.find(x=>x.sku===card.querySelector('[data-role="row"]').value);
+        const color = card.querySelector('[data-role="color"]').value;
+        cart.push({ sku:p.sku, name:p.name, price:p.price, qty:1, options:{"LED Color":color} });
+      } else {
+        cart.push({ sku:o.sku, name:o.name, price:o.price, qty:1, options:{} });
+      }
       syncRequiredItems();
       updateCartCount(); renderCheckout(); renderCart();
     };
