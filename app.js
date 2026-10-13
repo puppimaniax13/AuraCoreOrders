@@ -56,7 +56,7 @@ const PRODUCTS = [
     photos:{
       "Clear":"images/fender-white-clear.jpg",
       "Frosted":"images/fender-white-frosted.jpg",
-      "Tinted":"images/fender-white-tinted.jpg"
+      "Tinted":"images/fender-black-tinted.jpg"
     },
     options: reflectorOptions("AVB-RFL-FEN")
   },
@@ -71,7 +71,7 @@ const PRODUCTS = [
     photos:{
       "Clear":"images/rear-white-clear.jpg",
       "Frosted":"images/rear-white-frosted.jpg",
-      "Tinted":"images/rear-white-tinted.jpg"
+      "Tinted":"images/rear-black-tinted.jpg"
     },
     options: reflectorOptions("AVB-RFL-RR")
   },
@@ -86,7 +86,7 @@ const PRODUCTS = [
     photos:{
       "Clear":"images/vent-white-clear.jpg",
       "Frosted":"images/vent-white-frosted.jpg",
-      "Tinted":"images/vent-white-tinted.jpg"
+      "Tinted":"images/vent-black-tinted.jpg"
     },
     options: reflectorOptions("AVB-RFL-RV")
   },
@@ -121,7 +121,7 @@ const PRODUCTS = [
   {
     sku:"AVB-BTN-UP", name:"Buttons — Upper Row", cat:"Buttons", section:"interior",
     slug:"buttons-upper-row", fits:"WRX · Ascent · Impreza · Outback",
-    price:15, img:"images/btn-upper-thumb.jpg",
+    price:20, img:"images/btn-upper-thumb.jpg",
     desc:"Custom printed button housing with an illuminated LED switch, ready to install in the upper dash row.",
     details:"",
     gallery:[], video:"", reviews:[],
@@ -134,7 +134,7 @@ const PRODUCTS = [
   {
     sku:"AVB-BTN-LO", name:"Buttons — Lower Row", cat:"Buttons", section:"interior",
     slug:"buttons-lower-row", fits:"WRX · Ascent · Impreza · Outback",
-    price:15, img:"images/btn-lower-thumb.jpg",
+    price:20, img:"images/btn-lower-thumb.jpg",
     desc:"Custom printed button housing with an illuminated LED switch, sized for the lower dash row.",
     details:"",
     gallery:[], video:"", reviews:[],
