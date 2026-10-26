@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=21">
+<link rel="stylesheet" href="styles.css?v=23">
 </head>
 <body>
 
@@ -65,7 +65,7 @@
   </div>
 </div>
 
-<script src="app.js?v=21"></script>
+<script src="app.js?v=23"></script>
 <script>
 mountChrome("shop.html");
 
@@ -169,10 +169,9 @@ if(!p){
       </div>`;
     if(!gallery.length) return `<section class="pp-section">${head}
       <p class="cg-empty">Installed yours? Add photos when you write a review — once it's approved they show up here.</p></section>`;
-    const wideFirst = gallery.length >= 5 && (gallery.length - 1) % 4 === 0;   // 1 big + rows of 4 fill evenly
     return `<section class="pp-section">${head}
       <div class="cg-grid">${gallery.map((g,i)=>`
-        <button class="cg-item${wideFirst && i===0 ? ' wide' : ''}" data-i="${i}" aria-label="View photo: ${escapeHTML(g.cap)}">
+        <button class="cg-item" data-i="${i}" aria-label="View photo: ${escapeHTML(g.cap)}">
           <img src="${escapeHTML(g.src)}" alt="${escapeHTML(g.cap)}" loading="lazy"><span class="cap">${escapeHTML(g.cap)}</span>
         </button>`).join("")}</div>
     </section>`;

@@ -236,11 +236,33 @@ function shrinkPhoto(file, max = 1600, quality = 0.85){
       c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
       c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
       URL.revokeObjectURL(url);
-      resolve(c.toDataURL("image/jpeg", quality).split(",")[1]);
+      resolve(trimBars(c).toDataURL("image/jpeg", quality).split(",")[1]);
     };
     img.onerror = ()=>{ URL.revokeObjectURL(url); reject(new Error("unreadable")); };
     img.src = url;
   });
+}
+/* Cut solid black/white bars off the edges (screenshots, letterboxed photos).
+   Leaves the photo alone if the bars aren't solid or it would lose too much. */
+function trimBars(c){
+  const w = c.width, h = c.height, d = c.getContext("2d").getImageData(0, 0, w, h).data;
+  const at = (x, y)=>{ const i = (y * w + x) * 4; return [d[i], d[i+1], d[i+2]]; };
+  const ref = at(0, 0), lum = (ref[0] + ref[1] + ref[2]) / 3;
+  if(lum > 40 && lum < 215) return c;                       // corner isn't black or white: no bars
+  const same = p => Math.abs(p[0]-ref[0]) + Math.abs(p[1]-ref[1]) + Math.abs(p[2]-ref[2]) < 36;
+  const row = y => { for(let x = 0; x < w; x += 3) if(!same(at(x, y))) return false; return true; };
+  const col = x => { for(let y = 0; y < h; y += 3) if(!same(at(x, y))) return false; return true; };
+  let t = 0, b = h - 1, l = 0, r = w - 1;
+  while(t < b && row(t)) t++;
+  while(b > t && row(b)) b--;
+  while(l < r && col(l)) l++;
+  while(r > l && col(r)) r--;
+  const nw = r - l + 1, nh = b - t + 1;
+  if(nw * nh > w * h * 0.97 || nw < w * 0.25 || nh < h * 0.25) return c;
+  const out = document.createElement("canvas");
+  out.width = nw; out.height = nh;
+  out.getContext("2d").drawImage(c, l, t, nw, nh, 0, 0, nw, nh);
+  return out;
 }
 /* Send a review (with up to 3 photos) to the sheet's Apps Script. Throws if
    it isn't saved, so the form can say so. */

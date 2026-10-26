@@ -359,9 +359,10 @@ section.block{padding:88px 0 8px}
   padding-bottom:14px;border-bottom:1px solid var(--line-dark);margin-bottom:22px}
 .pp-section .cg-head h2{font-size:22px;font-weight:800;letter-spacing:-.01em;border:none;padding:0;margin:0}
 .cg-head p{font-size:13px;color:var(--gray);margin-top:4px}
-.cg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.cg-item{position:relative;aspect-ratio:1/1;overflow:hidden;background:var(--bg-soft);cursor:zoom-in;border:none;padding:0}
-.cg-item img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+/* masonry: customer photos keep their own shape (portrait or landscape) — no cropping */
+.cg-grid{columns:4;column-gap:10px}
+.cg-item{position:relative;display:block;width:100%;margin:0 0 10px;break-inside:avoid;overflow:hidden;background:var(--bg-soft);cursor:zoom-in;border:none;padding:0;min-height:120px}
+.cg-item img{display:block;width:100%;height:auto;max-height:620px;object-fit:cover;transition:transform .35s ease}
 .cg-item:hover img{transform:scale(1.05)}
 .cg-item .cap{
   position:absolute;left:0;right:0;bottom:0;padding:22px 10px 8px;text-align:left;
@@ -369,7 +370,6 @@ section.block{padding:88px 0 8px}
   font-size:11.5px;font-weight:600;opacity:0;transition:opacity .2s;
 }
 .cg-item:hover .cap,.cg-item:focus-visible .cap{opacity:1}
-.cg-item.wide{grid-column:span 2;grid-row:span 2;aspect-ratio:auto}
 @media(hover:none){.cg-item .cap{opacity:1}}   /* phones: always show captions */
 
 /* ---------- lightbox ---------- */
@@ -444,7 +444,7 @@ section.block{padding:88px 0 8px}
 @media(max-width:860px){
   .rv-wrap{grid-template-columns:1fr;gap:24px}
   .rv-summary{position:static}
-  .cg-grid{grid-template-columns:repeat(2,1fr)}
+  .cg-grid{columns:2}
   .lightbox{padding:60px 12px}
 }
 
