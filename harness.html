@@ -179,13 +179,20 @@
 
     <div class="oh-field-row">
       <div>
-        <label class="formlabel" for="hChassis">Chassis / Year</label>
-        <input id="hChassis" type="text" placeholder="2022 WRX (VB)">
-      </div>
-      <div>
         <label class="formlabel" for="hContact">Instagram / Email *</label>
         <input id="hContact" type="text" placeholder="@handle or email">
       </div>
+      <div>
+        <label class="formlabel" for="hPhone">Phone *</label>
+        <input id="hPhone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(555) 555-5555" required>
+      </div>
+    </div>
+    <div class="oh-field-row">
+      <div>
+        <label class="formlabel" for="hChassis">Chassis / Year</label>
+        <input id="hChassis" type="text" placeholder="2022 WRX (VB)">
+      </div>
+      <div></div>
     </div>
 
     <div>
@@ -214,8 +221,13 @@ $("hSend").onclick = async ()=>{
   const chassis = $("hChassis").value.trim();
   const contact = $("hContact").value.trim();
   const setup = $("hSetup").value.trim();
+  const phone = $("hPhone").value.trim();
   if(!contact){
     status.textContent = "Please include an Instagram handle or email so we can reach you.";
+    status.classList.add("err"); return;
+  }
+  if(phone.replace(/\D/g,"").length < 10){
+    status.textContent = "Please add a phone number so we can reach you about your build.";
     status.classList.add("err"); return;
   }
   if(!setup){
@@ -225,6 +237,7 @@ $("hSend").onclick = async ()=>{
   const payload = {
     chassis: chassis || "—",
     contact,
+    phone,
     setup,
     _subject: `One Harness Build Sheet Request — ${contact}`
   };
@@ -239,7 +252,7 @@ $("hSend").onclick = async ()=>{
     if(r.ok){
       status.textContent = "Request sent! We'll reply with your build sheet and quote.";
       status.classList.add("ok");
-      $("hChassis").value = ""; $("hContact").value = ""; $("hSetup").value = "";
+      $("hChassis").value = ""; $("hContact").value = ""; $("hPhone").value = ""; $("hSetup").value = "";
     } else { throw new Error(); }
   }catch{
     status.textContent = "Couldn't send — try again, or DM us on Instagram.";
