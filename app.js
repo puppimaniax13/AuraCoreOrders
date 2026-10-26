@@ -9,10 +9,13 @@ const CONFIG = {
   // Fallback email — used for a pre-filled mailto if Formspree isn't set:
   email: "becker.gei21@outlook.com",
   instagram: "https://instagram.com/autovb.WRX",
-  // Reviews — submitted to a Google Form, approved in its Google Sheet
-  // (type "yes" in the Approved column), then read back from the sheet's
-  // published "Public" tab (approved rows only, no emails).
+  // Reviews — approved in the Google Sheet, then shown on product pages.
+  // `api` is the sheet's Apps Script web app (review-photos-apps-script.gs):
+  // it takes reviews WITH photos and serves approved ones back. Until it's set,
+  // reviews go to the Google Form (text only) and are read from the published
+  // "Public" tab (csv).
   reviews: {
+    api:  "",
     csv:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vT5q678x_MXVsyXr-1SBaViNgnGfxVDhASzEbjueWGRcj94rAPDhbCtOrbPgqcS_-IgSQksKy_7WvHI/pub?gid=1076886452&single=true&output=csv",
     form: "https://docs.google.com/forms/d/e/1FAIpQLSfl-8I9EnDvegC7eoHeKPUwF72Ia8-uWHLN65Isc_q_Hr69QA/formResponse",
     fields: {
@@ -165,14 +168,15 @@ const PRODUCTS = [
 ];
 
 /* ================= GALLERY =================
-   Real install photos, shown in the "Gallery" section of product pages.
-   Each photo is tagged with the product it shows; a product page shows the
-   photos from its whole section (all reflectors on any reflector page),
-   its own photos first. Add customer photos the same way, e.g.
+   Customer photos only: every photo on an approved review shows in the
+   "Gallery" section of product pages — the product's own photos first, then
+   the rest of its section (all reflectors on any reflector page).
+   To feature a photo of your own again, add it to GALLERY, e.g.
      { src:"images/gallery/jake-rear.jpg", product:"rear-reflectors",
        cap:"@jake.vb · 2023 WRX · White LED / Tinted" },
    Only use photos you have permission to post. */
 const GALLERY = [
+  /* your own photos — off for now, customer photos only
   { src:"images/fender-white-frosted.jpg", product:"fender-reflectors", cap:"Fender Reflectors · Frosted lens" },
   { src:"images/fender-black-tinted.jpg",  product:"fender-reflectors", cap:"Fender Reflectors · Tinted lens" },
   { src:"images/fender-white-clear.jpg",   product:"fender-reflectors", cap:"Fender Reflectors · Clear lens" },
@@ -182,12 +186,20 @@ const GALLERY = [
   { src:"images/vent-white-frosted.jpg",   product:"vent-inserts",      cap:"Vent Inserts · Frosted lens" },
   { src:"images/vent-black-tinted.jpg",    product:"vent-inserts",      cap:"Vent Inserts · Tinted lens" },
   { src:"images/vent-white-clear.jpg",     product:"vent-inserts",      cap:"Vent Inserts · Clear lens" }
+  */
 ];
-function galleryFor(p){
-  const sectionOf = slug => (productBySlug(slug)||{}).section;
-  const mine   = GALLERY.filter(g=>g.product===p.slug);
-  const others = GALLERY.filter(g=>g.product!==p.slug && sectionOf(g.product)===p.section);
-  return mine.length ? mine.concat(others) : [];
+/* reviews = every approved review (all products), as returned by loadSheetReviews() */
+function galleryFor(p, reviews){
+  const bySlug = slug => productBySlug(slug) || {};
+  const byName = name => PRODUCTS.find(x=>x.name.toLowerCase() === String(name).toLowerCase()) || {};
+  const items = GALLERY.map(g=>({ src:g.src, full:g.src, cap:g.cap, slug:g.product, section:bySlug(g.product).section }));
+  (reviews || []).forEach(r=>{
+    const prod = byName(r.product);
+    (r.photos || []).forEach(ph=> items.push({ src:ph.src || ph, full:ph.full || ph.src || ph,
+      cap:[r.who, r.config || prod.name || r.product].filter(Boolean).join(" · "), slug:prod.slug, section:prod.section }));
+  });
+  const mine = items.filter(g=>g.slug===p.slug);
+  return mine.length ? mine.concat(items.filter(g=>g.slug!==p.slug && g.section===p.section)) : [];
 }
 
 /* ================= REVIEWS =================
@@ -228,14 +240,33 @@ function reviewDate(ts){
   if(!m) return "";
   return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+m[1]-1] + " " + m[3];
 }
-/* Approved reviews from the published sheet, newest first. Never throws —
-   if the sheet can't be reached, pages simply show their built-in reviews. */
+/* Customer photos live in Google Drive; these are their public image URLs.
+   Ids come from the sheet and are checked to be plain Drive ids. */
+function driveImg(id, w){ return "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + w; }
+function drivePhoto(id){ return /^[-\w]{20,}$/.test(id) ? { src:driveImg(id, 800), full:driveImg(id, 2000) } : null; }
+/* Approved reviews, newest first. Never throws — if the sheet can't be
+   reached, pages simply show their built-in reviews. */
 let _sheetReviews = null;
 function loadSheetReviews(){
   if(_sheetReviews) return _sheetReviews;
+  const R = CONFIG.reviews || {};
+  const fromApi = ()=> fetch(R.api).then(r=>r.json()).then(d=>{
+    if(!d || !d.ok || !Array.isArray(d.reviews)) throw new Error("bad feed");
+    return d.reviews.map(x=>({
+      product:String(x.product||""), stars:Math.max(1, Math.min(5, parseInt(x.rating,10) || 5)),
+      title:String(x.headline||""), body:String(x.review||""), who:String(x.name||""),
+      date:x.t ? new Date(x.t).toLocaleDateString("en-US",{month:"short", year:"numeric"}) : "",
+      config:String(x.purchased||""), verified:true,
+      photos:(x.photos||[]).map(drivePhoto).filter(Boolean)
+    })).filter(r=>r.product && r.body);
+  });
+  _sheetReviews = R.api ? fromApi().catch(fromCsv) : fromCsv();
+  return _sheetReviews;
+}
+function fromCsv(){
   const url = CONFIG.reviews && CONFIG.reviews.csv;
-  if(!url) return (_sheetReviews = Promise.resolve([]));
-  _sheetReviews = fetch(url).then(r=>r.ok ? r.text() : "").then(text=>{
+  if(!url) return Promise.resolve([]);
+  return fetch(url).then(r=>r.ok ? r.text() : "").then(text=>{
     const rows = parseCSV(text);
     if(rows.length < 2) return [];
     const head = rows[0].map(h=>h.trim().toLowerCase());
@@ -249,12 +280,36 @@ function loadSheetReviews(){
                date:reviewDate(get("ts")), config:get("purchased"), verified:true, photos:[] };
     }).filter(r=>r.product && r.body && parseInt(r.stars,10) >= 1).reverse();
   }).catch(()=>[]);
-  return _sheetReviews;
 }
-/* Send a review to the Google Form. The form can't report success back to a
-   browser (no-cors), so this resolves when the request is sent. */
-function submitReview(data){
-  const R = CONFIG.reviews, body = new URLSearchParams();
+/* Shrink a picked photo to a ~1600px JPEG (phones shoot 12MP+) → base64. */
+function shrinkPhoto(file, max = 1600, quality = 0.85){
+  return new Promise((resolve, reject)=>{
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = ()=>{
+      const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL("image/jpeg", quality).split(",")[1]);
+    };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); reject(new Error("unreadable")); };
+    img.src = url;
+  });
+}
+/* Send a review. With the Apps Script set up it carries photos and reports
+   back; otherwise it goes to the Google Form (no-cors, text only). */
+async function submitReview(data, files){
+  const R = CONFIG.reviews;
+  if(R.api){
+    const photos = [];
+    for(const f of (files || []).slice(0, 3)) photos.push({ type:"image/jpeg", data:await shrinkPhoto(f) });
+    const res = await fetch(R.api, { method:"POST", body:JSON.stringify(Object.assign({}, data, { photos })) });
+    const out = await res.json();
+    if(!out.ok) throw new Error(out.error || "rejected");
+    return out;
+  }
+  const body = new URLSearchParams();
   Object.keys(R.fields).forEach(k=>{ if(data[k] != null) body.append(R.fields[k], String(data[k])); });
   return fetch(R.form, { method:"POST", mode:"no-cors", body });
 }
