@@ -1,1 +1,4 @@
 images/_originals/
+
+# local design mockups — never deploy
+mockup-*.html

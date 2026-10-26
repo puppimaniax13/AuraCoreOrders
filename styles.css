@@ -373,6 +373,10 @@ section.block{padding:88px 0 8px}
   cursor:not-allowed;
 }
 .optbtn.soldout small{color:var(--gray-lt);font-style:italic}
+.optnote{
+  margin-top:10px;padding:9px 12px;font-size:12.5px;color:var(--text);
+  background:var(--wrb-tint);border-left:3px solid var(--wrb);
+}
 .noticebox{
   border:1px solid var(--line);border-left:3px solid var(--wrb);
   padding:12px 14px;font-size:13px;color:var(--gray);margin-bottom:14px;

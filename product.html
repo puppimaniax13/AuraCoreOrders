@@ -14,13 +14,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=16">
+<link rel="stylesheet" href="styles.css?v=17">
 </head>
 <body>
 
 <main id="ppMain"></main>
 
-<script src="app.js?v=16"></script>
+<script src="app.js?v=17"></script>
 <script>
 mountChrome("shop.html");
 
@@ -69,7 +69,9 @@ if(!p){
       const rows = o.sections
         ? o.sections.map(s=>`<span class="optsub">${s.title}</span><div class="optrow">${s.choices.map(c=>optBtn(o,c)).join("")}</div>`).join("")
         : `<div class="optrow">${visibleChoices(p, o, sel).map(c=>optBtn(o,c)).join("")}</div>`;
-      return `<div class="optgroup"><span class="optlabel">${o.label}</span>${rows}</div>`;
+      const picked = findChoice(p, o.label, sel[o.label]);
+      const note = picked && typeof picked==="object" && picked.note ? `<p class="optnote">${picked.note}</p>` : "";
+      return `<div class="optgroup"><span class="optlabel">${o.label}</span>${rows}${note}</div>`;
     }).join("");
   }
   function noticesHTML(){

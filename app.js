@@ -31,13 +31,15 @@ const BUTTON_PHOTOS_TEMPLATE = {
 
 /* Shared reflector options — every reflector set uses the same LED lineup.
    `lenses` limits which Lens Type choices show for that LED type;
-   `soldOut` shows the choice grayed out and unselectable. */
+   `soldOut` shows the choice grayed out and unselectable.
+   `note` shows under the LED Type buttons when that choice is selected. */
 function reflectorOptions(skuPrefix){
   return [
     {label:"LED Type", choices:[
       {name:"No LED",     price:40,  sku:skuPrefix+"-NL", lenses:["Clear","Tinted"]},
       {name:"White LED",  price:80,  sku:skuPrefix+"-WL", lenses:["Frosted","Tinted"]},
-      {name:"RGBW",       price:150, sku:skuPrefix+"-RG", lenses:["Frosted","Tinted"]},
+      {name:"RGBW",       price:200, sku:skuPrefix+"-RG", lenses:["Frosted","Tinted"],
+       note:"Bluetooth app control included — change colors and effects right from your phone."},
       {name:"RGBW Smart", price:250, sku:skuPrefix+"-RS", lenses:["Frosted","Tinted"], soldOut:true}
     ]},
     {label:"Lens Type", choices:["Clear","Frosted","Tinted"]}
@@ -154,7 +156,7 @@ const LINK_PRODUCT = {
 };
 
 /* Free shipping threshold */
-const FREE_SHIP_MIN = 100;
+const FREE_SHIP_MIN = 150;
 
 /* ================= HELPERS ================= */
 const $ = id => document.getElementById(id);
@@ -381,39 +383,100 @@ function renderShipNote(el){
 }
 function cartTotal(){ return cart.reduce((s,i)=>s+i.price*i.qty,0); }
 
-/* Free-shipping nudge: on any order under $100, offer a button. If the
-   button gets them to $100 we say "ship free"; otherwise we say how close
-   it gets them (never claim free shipping that the button won't unlock). */
+/* Free-shipping nudge — on any order under the free-shipping line, offer the
+   ONE add-on that best closes the gap:
+     ≤ button price  → a button
+     ≤ trunk price   → a trunk light
+     otherwise       → another reflector set in the LED type they already
+                       picked (defaulting to a spot they don't have yet),
+                       or a button if they have no reflectors.
+   Copy only says "ships free" when the add-on truly gets them there. */
 const BUTTON_SKUS = ["AVB-BTN-UP","AVB-BTN-LO"];
-const BUTTON_ADDON_ID = "ADDON-BUTTON";
-function buttonAddonOffer(){
-  const btn = PRODUCTS.find(p=>p.sku===BUTTON_SKUS[0]);
-  if(!btn || !cart.length) return null;
+const TRUNK_SKU = "AVB-LGT-TRUNK";
+const NUDGE_ID = "ADDON-NUDGE";
+function reflectorProducts(){ return PRODUCTS.filter(p=>p.sku.startsWith("AVB-RFL")); }
+function ledChoice(product, ledName){ return findChoice(product, "LED Type", ledName); }
+
+function freeShipNudge(){
+  if(!cart.length) return null;
   const total = cartTotal();
   if(total >= FREE_SHIP_MIN) return null;
-  const after = total + btn.price;
-  if(after >= FREE_SHIP_MIN){
-    return { sku:BUTTON_ADDON_ID, kind:"button", name:"Add a button, ship free", price:btn.price,
-      desc:`Add a 3D-printed illuminated button for ${fmt(btn.price)} and your order ships free.` };
+  const gap = FREE_SHIP_MIN - total;
+  const btn = PRODUCTS.find(p=>p.sku===BUTTON_SKUS[0]);
+  const trunk = PRODUCTS.find(p=>p.sku===TRUNK_SKU);
+
+  let offer;
+  if(btn && gap <= btn.price){
+    offer = { kind:"button", price:btn.price, label:"Add a button", pitch:"Add a 3D-printed illuminated button" };
+  } else if(trunk && gap <= trunk.price){
+    offer = { kind:"trunk", price:trunk.price, label:"Add a trunk light", pitch:"Add our plug-in trunk light kit" };
+  } else {
+    const lastRefl = [...cart].reverse().find(i=>i.sku.startsWith("AVB-RFL") && i.options && i.options["LED Type"]);
+    const choice = lastRefl && ledChoice(reflectorProducts()[0], lastRefl.options["LED Type"]);
+    if(choice && !choice.soldOut){
+      offer = { kind:"set", led:choice.name, price:choice.price,
+        label:`Add another ${choice.name} set`, pitch:`Match it on another spot — ${choice.name} reflectors` };
+    } else if(btn){
+      offer = { kind:"button", price:btn.price, label:"Add a button", pitch:"Add a 3D-printed illuminated button" };
+    } else return null;
   }
-  return { sku:BUTTON_ADDON_ID, kind:"button", name:"Add a button", price:btn.price,
-    desc:`Add a 3D-printed illuminated button for ${fmt(btn.price)} — you'll be ${fmt(FREE_SHIP_MIN - after)} from free shipping.` };
+  const after = total + offer.price;
+  const free = after >= FREE_SHIP_MIN;
+  return Object.assign(offer, {
+    sku: NUDGE_ID,
+    name: free ? `${offer.label}, ship free` : offer.label,
+    desc: free ? `${offer.pitch} for ${fmt(offer.price)} and your order ships free.`
+               : `${offer.pitch} for ${fmt(offer.price)} — you'll be ${fmt(FREE_SHIP_MIN - after)} from free shipping.`
+  });
 }
 
 function getAddonOffers(){
   const offers = [];
   if(reflectorCount() >= 2 && !cart.some(i=>i.sku===LINK_SKU)) offers.push(LINK_PRODUCT);
-  const btnOffer = buttonAddonOffer();
-  if(btnOffer) offers.push(btnOffer);
+  const nudge = freeShipNudge();
+  if(nudge) offers.push(nudge);
   return offers;
 }
-function buttonPickerHTML(){
-  const rows = BUTTON_SKUS.map(sku=>PRODUCTS.find(p=>p.sku===sku)).filter(Boolean);
-  const colors = optionChoiceList(rows[0].options.find(o=>o.label==="LED Color")).map(choiceName);
-  return `<div class="addon-selects">
-      <select data-role="row" aria-label="Button row">${rows.map(p=>`<option value="${p.sku}">${p.name.replace(/^Buttons — /,"")}</option>`).join("")}</select>
-      <select data-role="color" aria-label="Button LED color">${colors.map(c=>`<option value="${c}">${c} LED</option>`).join("")}</select>
-    </div>`;
+
+/* pickers shown inside the nudge card */
+const sel_ = (role, label, opts) =>
+  `<select data-role="${role}" aria-label="${label}">${opts.map(([v,t])=>`<option value="${v}">${t}</option>`).join("")}</select>`;
+function nudgePickerHTML(o){
+  if(o.kind==="button"){
+    const rows = BUTTON_SKUS.map(sku=>PRODUCTS.find(p=>p.sku===sku)).filter(Boolean);
+    const colors = optionChoiceList(rows[0].options.find(x=>x.label==="LED Color")).map(choiceName);
+    return `<div class="addon-selects">${sel_("product","Button row", rows.map(p=>[p.sku, p.name.replace(/^Buttons — /,"")]))}${sel_("color","Button LED color", colors.map(c=>[c, c+" LED"]))}</div>`;
+  }
+  if(o.kind==="trunk"){
+    const trunk = PRODUCTS.find(p=>p.sku===TRUNK_SKU);
+    const colors = optionChoiceList(trunk.options.find(x=>x.label==="Color")).map(choiceName);
+    return `<div class="addon-selects">${sel_("color","Trunk light color", colors.map(c=>[c, c]))}</div>`;
+  }
+  if(o.kind==="set"){
+    // default to a spot not already in the cart
+    const have = new Set(cart.map(i=>i.name));
+    const spots = reflectorProducts().slice().sort((a,b)=>have.has(a.name)-have.has(b.name));
+    const lenses = ledChoice(spots[0], o.led).lenses || ["Frosted","Tinted"];
+    return `<div class="addon-selects">${sel_("product","Reflector spot", spots.map(p=>[p.sku, p.name]))}${sel_("lens","Lens type", lenses.map(l=>[l, l+" lens"]))}</div>`;
+  }
+  return "";
+}
+function nudgeItem(o, card){
+  const pick = role => { const el = card.querySelector(`[data-role="${role}"]`); return el ? el.value : null; };
+  if(o.kind==="button"){
+    const p = PRODUCTS.find(x=>x.sku===pick("product"));
+    return { sku:p.sku, name:p.name, price:p.price, qty:1, options:{"LED Color":pick("color")} };
+  }
+  if(o.kind==="trunk"){
+    const p = PRODUCTS.find(x=>x.sku===TRUNK_SKU);
+    return { sku:p.sku, name:p.name, price:p.price, qty:1, options:{"Color":pick("color")} };
+  }
+  if(o.kind==="set"){
+    const p = PRODUCTS.find(x=>x.sku===pick("product"));
+    const c = ledChoice(p, o.led);
+    return { sku:c.sku, name:p.name, price:c.price, qty:1, options:{"LED Type":c.name, "Lens Type":pick("lens")} };
+  }
+  return null;
 }
 function renderAddonOffers(container){
   if(!container) return;
@@ -423,21 +486,18 @@ function renderAddonOffers(container){
       <div>
         <div class="t">${o.name} — ${fmt(o.price)}</div>
         <div class="d">${o.desc}</div>
-        ${o.kind==="button" ? buttonPickerHTML() : ``}
+        ${o.sku===NUDGE_ID ? nudgePickerHTML(o) : ``}
       </div>
       <button class="addon-add" data-sku="${o.sku}">+ Add</button>
     </div>`).join("");
   container.querySelectorAll(".addon-add").forEach(btn=>{
     btn.onclick = ()=>{
       const o = offers.find(x=>x.sku===btn.dataset.sku);
-      if(o.kind==="button"){
-        const card = btn.closest(".addon-card");
-        const p = PRODUCTS.find(x=>x.sku===card.querySelector('[data-role="row"]').value);
-        const color = card.querySelector('[data-role="color"]').value;
-        cart.push({ sku:p.sku, name:p.name, price:p.price, qty:1, options:{"LED Color":color} });
-      } else {
-        cart.push({ sku:o.sku, name:o.name, price:o.price, qty:1, options:{} });
-      }
+      const item = o.sku===NUDGE_ID
+        ? nudgeItem(o, btn.closest(".addon-card"))
+        : { sku:o.sku, name:o.name, price:o.price, qty:1, options:{} };
+      if(!item) return;
+      cart.push(item);
       syncRequiredItems();
       updateCartCount(); renderCheckout(); renderCart();
     };
