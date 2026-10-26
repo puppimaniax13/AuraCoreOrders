@@ -14,13 +14,52 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=17">
+<link rel="stylesheet" href="styles.css?v=18">
 </head>
 <body>
 
 <main id="ppMain"></main>
 
-<script src="app.js?v=17"></script>
+<!-- photo viewer (gallery + review photos) -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button class="lb-close" id="lbClose" aria-label="Close">×</button>
+  <button class="lb-btn lb-prev" id="lbPrev" aria-label="Previous photo">‹</button>
+  <img id="lbImg" alt="">
+  <button class="lb-btn lb-next" id="lbNext" aria-label="Next photo">›</button>
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+
+<!-- write a review -->
+<div class="rv-modal-bg" id="rvModal">
+  <div class="rv-modal" role="dialog" aria-modal="true" aria-labelledby="rvTitle">
+    <h3 id="rvTitle">Write a review</h3>
+    <p class="sub" id="rvSub">Reviews are posted after we match them to your order.</p>
+    <label class="formlabel">Your rating *</label>
+    <div class="star-pick" id="starPick">
+      <button type="button" data-v="1" aria-label="1 star">★</button><button type="button" data-v="2" aria-label="2 stars">★</button><button type="button" data-v="3" aria-label="3 stars">★</button><button type="button" data-v="4" aria-label="4 stars">★</button><button type="button" data-v="5" aria-label="5 stars">★</button>
+    </div>
+    <label class="formlabel" for="rvHeadline">Headline *</label>
+    <input id="rvHeadline" type="text" maxlength="80" placeholder="Sum it up in a few words">
+    <label class="formlabel" for="rvBody">Your review *</label>
+    <textarea id="rvBody" placeholder="How was the fit, the install, the look?"></textarea>
+    <div class="formrow">
+      <div><label class="formlabel" for="rvName">Name (as shown) *</label><input id="rvName" type="text" autocomplete="name" placeholder="First name + last initial"></div>
+      <div><label class="formlabel" for="rvEmail">Order email *</label><input id="rvEmail" type="email" autocomplete="email" placeholder="So we can verify the order"></div>
+    </div>
+    <div id="rvConfigWrap">
+      <label class="formlabel" for="rvConfig">What did you get?</label>
+      <select id="rvConfig"></select>
+    </div>
+    <p class="photo-note">Have install photos? DM them to us on <a href="https://instagram.com/autovb.WRX" target="_blank" rel="noopener" style="color:var(--wrb);font-weight:600">Instagram</a> — we may feature them in the gallery.</p>
+    <div class="actions">
+      <button type="button" class="btn-dark" id="rvCancel">Cancel</button>
+      <button type="button" class="btn-wrb" id="rvSubmit">Submit review</button>
+    </div>
+    <div class="statusmsg" id="rvStatus"></div>
+  </div>
+</div>
+
+<script src="app.js?v=18"></script>
 <script>
 mountChrome("shop.html");
 
@@ -106,20 +145,81 @@ if(!p){
     if(p.details){
       html += `<section class="pp-section"><h2>Details</h2><div class="pp-longtext">${p.details}</div></section>`;
     }
-    if(p.gallery && p.gallery.length){
-      html += `<section class="pp-section"><h2>Gallery</h2><div class="pp-gallery">${p.gallery.map((g,i)=>`<img src="${g}" alt="${p.name} gallery ${i+1}" loading="lazy">`).join("")}</div></section>`;
-    }
+    if(gallery.length) html += galleryHTML();
     if(p.video){
       html += `<section class="pp-section"><h2>Install Video</h2><div class="pp-video"><iframe src="${p.video}" title="${p.name} install video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></section>`;
     }
-    if(p.reviews && p.reviews.length){
-      html += `<section class="pp-section"><h2>Reviews</h2><div class="reviews">${p.reviews.map(r=>`
-        <div class="review">
-          <div class="review-top"><span class="who">${r.who}</span><span class="stars">${"★".repeat(r.stars)}${"☆".repeat(Math.max(0,5-r.stars))}</span></div>
-          <div class="body">${r.body}</div>
-        </div>`).join("")}</div></section>`;
-    }
+    html += reviewsHTML();
     return html;
+  }
+
+  /* ---------- gallery ---------- */
+  const gallery = galleryFor(p);
+  function galleryHTML(){
+    const wideFirst = gallery.length >= 5 && (gallery.length - 1) % 4 === 0;   // 1 big + rows of 4 fill evenly
+    return `<section class="pp-section">
+      <div class="cg-head">
+        <div><h2>Gallery</h2><p>Real installs on real cars. Tag us on Instagram to be featured.</p></div>
+        <a class="btn-dark" href="${CONFIG.instagram}" target="_blank" rel="noopener">Share your build →</a>
+      </div>
+      <div class="cg-grid">${gallery.map((g,i)=>`
+        <button class="cg-item${wideFirst && i===0 ? ' wide' : ''}" data-i="${i}" aria-label="View photo: ${g.cap}">
+          <img src="${g.src}" alt="${g.cap}" loading="lazy"><span class="cap">${g.cap}</span>
+        </button>`).join("")}</div>
+    </section>`;
+  }
+
+  /* ---------- reviews ---------- */
+  const reviews = p.reviews || [];
+  const avg = reviews.length ? reviews.reduce((s,r)=>s+r.stars,0) / reviews.length : 0;
+  const starStr = n => "★".repeat(Math.round(n)) + "☆".repeat(5 - Math.round(n));
+  let rvFilter = "all";
+  function ratingLineHTML(){
+    if(!reviews.length) return "";
+    return `<a class="pp-rating" href="#reviews"><span class="stars" aria-hidden="true">${starStr(avg)}</span><b>${avg.toFixed(1)}</b><span class="count">${reviews.length} review${reviews.length===1?"":"s"}</span></a>`;
+  }
+  function reviewsHTML(){
+    if(!reviews.length){
+      return `<section class="pp-section" id="reviews">
+        <h2>Reviews</h2>
+        <div class="rv-wrap">
+          <aside class="rv-summary">
+            <div class="rv-empty-title">No reviews yet</div>
+            <p class="rv-empty-sub">Bought these? Be the first to tell other owners how they fit and look.</p>
+            <button class="btn-wrb" id="openReview">Write a review</button>
+          </aside>
+        </div>
+      </section>`;
+    }
+    const counts = [5,4,3,2,1].map(s=>reviews.filter(r=>r.stars===s).length);
+    const withPhotos = reviews.filter(r=>r.photos && r.photos.length);
+    const list = rvFilter==="photos" ? withPhotos : reviews;
+    return `<section class="pp-section" id="reviews">
+      <h2>Reviews</h2>
+      <div class="rv-wrap">
+        <aside class="rv-summary">
+          <div class="rv-avg">${avg.toFixed(1)}</div>
+          <div class="stars" aria-label="${avg.toFixed(1)} out of 5 stars">${starStr(avg)}</div>
+          <div class="basis">Based on ${reviews.length} review${reviews.length===1?"":"s"}</div>
+          ${[5,4,3,2,1].map((s,i)=>`<div class="rv-bar"><span>${s} ★</span><span class="track"><span class="fill" style="width:${counts[i]/reviews.length*100}%"></span></span><span>${counts[i]}</span></div>`).join("")}
+          <button class="btn-wrb" id="openReview">Write a review</button>
+        </aside>
+        <div>
+          ${withPhotos.length ? `<div class="rv-filters">
+            <button class="rv-chip ${rvFilter!=="photos"?'on':''}" data-f="all">All reviews (${reviews.length})</button>
+            <button class="rv-chip ${rvFilter==="photos"?'on':''}" data-f="photos">With photos (${withPhotos.length})</button>
+          </div>` : ``}
+          <div class="rv-list">${list.map(r=>`
+            <article class="rv-card">
+              <div class="top"><span class="stars" aria-label="${r.stars} out of 5 stars">${starStr(r.stars)}</span>${r.date?`<span class="date">${r.date}</span>`:``}</div>
+              ${r.title?`<h4>${r.title}</h4>`:``}
+              <div class="body">${r.body}</div>
+              ${r.photos && r.photos.length?`<div class="rv-photos">${r.photos.map(ph=>`<button data-src="${ph}" aria-label="View customer photo"><img src="${ph}" alt="Customer photo" loading="lazy"></button>`).join("")}</div>`:``}
+              <div class="meta"><b>${r.who}</b>${r.verified?`<span class="verified">Verified order</span>`:``}${r.config?`<span class="rv-config">${r.config}</span>`:``}</div>
+            </article>`).join("")}</div>
+        </div>
+      </div>
+    </section>`;
   }
 
   function render(){
@@ -131,6 +231,7 @@ if(!p){
           <div class="pp-info">
             <span class="fits">${p.fits}</span>
             <h1>${p.name}</h1>
+            ${ratingLineHTML()}
             <span class="pp-sku" id="ppSku">${selectedSku(p, sel)}</span>
             <div class="pp-price" id="ppPrice"></div>
             <p class="pp-desc">${p.desc}</p>
@@ -178,7 +279,88 @@ if(!p){
       if(window.matchMedia("(max-width:640px)").matches){ showToast("Added to your order"); }
       else { openDrawer(); }
     };
+    document.querySelectorAll(".cg-item").forEach(b=> b.onclick = ()=> openLB(gallery, +b.dataset.i));
+    document.querySelectorAll(".rv-photos button").forEach(b=> b.onclick = ()=> openLB([{src:b.dataset.src, cap:"Customer photo"}], 0));
+    document.querySelectorAll(".rv-chip").forEach(c=> c.onclick = ()=>{ rvFilter = c.dataset.f; render(); document.getElementById("reviews").scrollIntoView(); });
+    if($("openReview")) $("openReview").onclick = openRV;
   }
+
+  /* ---------- photo viewer ---------- */
+  let lbList = [], lbIdx = 0;
+  function showLB(){ const it = lbList[lbIdx]; $("lbImg").src = it.src; $("lbImg").alt = it.cap || ""; $("lbCap").textContent = it.cap || ""; }
+  function openLB(list, i){
+    lbList = list; lbIdx = i; showLB();
+    $("lbPrev").style.display = $("lbNext").style.display = list.length > 1 ? "" : "none";
+    $("lightbox").classList.add("open"); document.body.style.overflow = "hidden";
+  }
+  function closeLB(){ $("lightbox").classList.remove("open"); document.body.style.overflow = ""; }
+  $("lbClose").onclick = closeLB;
+  $("lbPrev").onclick = ()=>{ lbIdx = (lbIdx - 1 + lbList.length) % lbList.length; showLB(); };
+  $("lbNext").onclick = ()=>{ lbIdx = (lbIdx + 1) % lbList.length; showLB(); };
+  $("lightbox").onclick = e=>{ if(e.target.id === "lightbox") closeLB(); };
+  document.addEventListener("keydown", e=>{
+    if($("lightbox").classList.contains("open")){
+      if(e.key === "Escape") closeLB();
+      if(e.key === "ArrowLeft") $("lbPrev").click();
+      if(e.key === "ArrowRight") $("lbNext").click();
+    } else if($("rvModal").classList.contains("open") && e.key === "Escape") closeRV();
+  });
+
+  /* ---------- write a review (sends to Formspree, like orders) ---------- */
+  function reviewConfigs(){
+    const led = (p.options||[]).find(o=>o.label==="LED Type");
+    if(led){
+      return led.choices.filter(c=>!c.soldOut).flatMap(c=>(c.lenses||[""]).map(l=> l ? `${c.name} · ${l}` : c.name));
+    }
+    const first = (p.options||[])[0];
+    return first ? optionChoiceList(first).map(choiceName) : [];
+  }
+  let rvStars = 0;
+  function setStars(n){ rvStars = n; document.querySelectorAll("#starPick button").forEach(x=>x.classList.toggle("on", +x.dataset.v <= n)); }
+  function openRV(){
+    $("rvSub").textContent = `${p.name} — reviews are posted after we match them to your order.`;
+    const cfgs = reviewConfigs();
+    $("rvConfigWrap").style.display = cfgs.length ? "" : "none";
+    $("rvConfig").innerHTML = `<option value="">Select…</option>` + cfgs.map(c=>`<option>${c}</option>`).join("");
+    $("rvStatus").className = "statusmsg";
+    $("rvModal").classList.add("open"); document.body.style.overflow = "hidden";
+  }
+  function closeRV(){ $("rvModal").classList.remove("open"); document.body.style.overflow = ""; }
+  document.querySelectorAll("#starPick button").forEach(b=> b.onclick = ()=> setStars(+b.dataset.v));
+  $("rvCancel").onclick = closeRV;
+  $("rvModal").onclick = e=>{ if(e.target.id === "rvModal") closeRV(); };
+  $("rvSubmit").onclick = async ()=>{
+    const st = $("rvStatus"); st.className = "statusmsg";
+    const headline = $("rvHeadline").value.trim(), body = $("rvBody").value.trim();
+    const name = $("rvName").value.trim(), email = $("rvEmail").value.trim();
+    const err = msg => { st.textContent = msg; st.classList.add("err"); };
+    if(!rvStars) return err("Please pick a star rating.");
+    if(!headline || !body) return err("Please add a headline and your review.");
+    if(!name) return err("Please add the name you'd like shown.");
+    if(!email.includes("@")) return err("Please add the email you ordered with so we can verify it.");
+    $("rvSubmit").disabled = true; $("rvSubmit").textContent = "Sending…";
+    try{
+      const r = await fetch(CONFIG.formspree, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
+        body: JSON.stringify({
+          _subject: `Product Review — ${p.name} (${rvStars}★)`,
+          form: "review", product: p.name, rating: `${rvStars} / 5`,
+          headline, review: body, name, email,
+          purchased: $("rvConfig").value || "—"
+        })
+      });
+      if(!r.ok) throw new Error();
+      st.textContent = "Thanks! Your review will show up once we match it to your order.";
+      st.classList.add("ok");
+      ["rvHeadline","rvBody","rvName","rvEmail"].forEach(id=> $(id).value = ""); setStars(0);
+      setTimeout(closeRV, 2200);
+    }catch{
+      err("Couldn't send — try again, or DM us on Instagram.");
+    }finally{
+      $("rvSubmit").disabled = false; $("rvSubmit").textContent = "Submit review";
+    }
+  };
 
   render();
 }

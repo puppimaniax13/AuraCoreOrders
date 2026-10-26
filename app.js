@@ -148,6 +148,41 @@ const PRODUCTS = [
   }
 ];
 
+/* ================= GALLERY =================
+   Real install photos, shown in the "Gallery" section of product pages.
+   Each photo is tagged with the product it shows; a product page shows the
+   photos from its whole section (all reflectors on any reflector page),
+   its own photos first. Add customer photos the same way, e.g.
+     { src:"images/gallery/jake-rear.jpg", product:"rear-reflectors",
+       cap:"@jake.vb · 2023 WRX · White LED / Tinted" },
+   Only use photos you have permission to post. */
+const GALLERY = [
+  { src:"images/fender-white-frosted.jpg", product:"fender-reflectors", cap:"Fender Reflectors · Frosted lens" },
+  { src:"images/fender-black-tinted.jpg",  product:"fender-reflectors", cap:"Fender Reflectors · Tinted lens" },
+  { src:"images/fender-white-clear.jpg",   product:"fender-reflectors", cap:"Fender Reflectors · Clear lens" },
+  { src:"images/rear-white-frosted.jpg",   product:"rear-reflectors",   cap:"Rear Reflectors · Frosted lens" },
+  { src:"images/rear-black-tinted.jpg",    product:"rear-reflectors",   cap:"Rear Reflectors · Tinted lens" },
+  { src:"images/rear-white-clear.jpg",     product:"rear-reflectors",   cap:"Rear Reflectors · Clear lens" },
+  { src:"images/vent-white-frosted.jpg",   product:"vent-inserts",      cap:"Vent Inserts · Frosted lens" },
+  { src:"images/vent-black-tinted.jpg",    product:"vent-inserts",      cap:"Vent Inserts · Tinted lens" },
+  { src:"images/vent-white-clear.jpg",     product:"vent-inserts",      cap:"Vent Inserts · Clear lens" }
+];
+function galleryFor(p){
+  const sectionOf = slug => (productBySlug(slug)||{}).section;
+  const mine   = GALLERY.filter(g=>g.product===p.slug);
+  const others = GALLERY.filter(g=>g.product!==p.slug && sectionOf(g.product)===p.section);
+  return mine.length ? mine.concat(others) : [];
+}
+
+/* ================= REVIEWS =================
+   Reviews live on each product as  reviews:[ ... ].  Customers submit them
+   through the "Write a review" form (arrives in Formspree); add the ones you
+   approve here. Format:
+     { stars:5, title:"Fit is perfect", body:"…", who:"Jake M.",
+       date:"Oct 2026", config:"White LED · Tinted", verified:true,
+       photos:["images/reviews/jake-1.jpg"] }
+   `verified` = you matched it to a real order. `photos` is optional. */
+
 /* Link Two Pieces — not shown in the grid; offered at checkout
    when the order has 2+ reflector sets. */
 const LINK_PRODUCT = {
@@ -396,6 +431,11 @@ const TRUNK_SKU = "AVB-LGT-TRUNK";
 const NUDGE_ID = "ADDON-NUDGE";
 function reflectorProducts(){ return PRODUCTS.filter(p=>p.sku.startsWith("AVB-RFL")); }
 function ledChoice(product, ledName){ return findChoice(product, "LED Type", ledName); }
+/* reflector spots (Fender / Rear / Vent) that aren't in the cart yet, in any LED type */
+function openSpots(){
+  const have = new Set(cart.map(i=>i.sku.split("-").slice(0,3).join("-")));   // AVB-RFL-FEN-WL -> AVB-RFL-FEN
+  return reflectorProducts().filter(p=>!have.has(p.sku));
+}
 
 function freeShipNudge(){
   if(!cart.length) return null;
@@ -413,7 +453,7 @@ function freeShipNudge(){
   } else {
     const lastRefl = [...cart].reverse().find(i=>i.sku.startsWith("AVB-RFL") && i.options && i.options["LED Type"]);
     const choice = lastRefl && ledChoice(reflectorProducts()[0], lastRefl.options["LED Type"]);
-    if(choice && !choice.soldOut){
+    if(choice && !choice.soldOut && openSpots().length){
       offer = { kind:"set", led:choice.name, price:choice.price,
         label:`Add another ${choice.name} set`, pitch:`Match it on another spot — ${choice.name} reflectors` };
     } else if(btn){
@@ -453,9 +493,8 @@ function nudgePickerHTML(o){
     return `<div class="addon-selects">${sel_("color","Trunk light color", colors.map(c=>[c, c]))}</div>`;
   }
   if(o.kind==="set"){
-    // default to a spot not already in the cart
-    const have = new Set(cart.map(i=>i.name));
-    const spots = reflectorProducts().slice().sort((a,b)=>have.has(a.name)-have.has(b.name));
+    // only spots they don't already have, so nobody doubles up by accident
+    const spots = openSpots();
     const lenses = ledChoice(spots[0], o.led).lenses || ["Frosted","Tinted"];
     return `<div class="addon-selects">${sel_("product","Reflector spot", spots.map(p=>[p.sku, p.name]))}${sel_("lens","Lens type", lenses.map(l=>[l, l+" lens"]))}</div>`;
   }
