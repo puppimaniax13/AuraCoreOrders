@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=18">
+<link rel="stylesheet" href="styles.css?v=19">
 </head>
 <body>
 
@@ -59,7 +59,7 @@
   </div>
 </div>
 
-<script src="app.js?v=18"></script>
+<script src="app.js?v=19"></script>
 <script>
 mountChrome("shop.html");
 
@@ -170,8 +170,10 @@ if(!p){
   }
 
   /* ---------- reviews ---------- */
-  const reviews = p.reviews || [];
-  const avg = reviews.length ? reviews.reduce((s,r)=>s+r.stars,0) / reviews.length : 0;
+  let reviews = (p.reviews || []).slice();   // built-in reviews; approved sheet reviews are added on load
+  let avg = 0;
+  function recalcAvg(){ avg = reviews.length ? reviews.reduce((s,r)=>s+r.stars,0) / reviews.length : 0; }
+  recalcAvg();
   const starStr = n => "★".repeat(Math.round(n)) + "☆".repeat(5 - Math.round(n));
   let rvFilter = "all";
   function ratingLineHTML(){
@@ -211,11 +213,11 @@ if(!p){
           </div>` : ``}
           <div class="rv-list">${list.map(r=>`
             <article class="rv-card">
-              <div class="top"><span class="stars" aria-label="${r.stars} out of 5 stars">${starStr(r.stars)}</span>${r.date?`<span class="date">${r.date}</span>`:``}</div>
-              ${r.title?`<h4>${r.title}</h4>`:``}
-              <div class="body">${r.body}</div>
+              <div class="top"><span class="stars" aria-label="${r.stars} out of 5 stars">${starStr(r.stars)}</span>${r.date?`<span class="date">${escapeHTML(r.date)}</span>`:``}</div>
+              ${r.title?`<h4>${escapeHTML(r.title)}</h4>`:``}
+              <div class="body">${escapeHTML(r.body)}</div>
               ${r.photos && r.photos.length?`<div class="rv-photos">${r.photos.map(ph=>`<button data-src="${ph}" aria-label="View customer photo"><img src="${ph}" alt="Customer photo" loading="lazy"></button>`).join("")}</div>`:``}
-              <div class="meta"><b>${r.who}</b>${r.verified?`<span class="verified">Verified order</span>`:``}${r.config?`<span class="rv-config">${r.config}</span>`:``}</div>
+              <div class="meta"><b>${escapeHTML(r.who)}</b>${r.verified?`<span class="verified">Verified order</span>`:``}${r.config?`<span class="rv-config">${escapeHTML(r.config)}</span>`:``}</div>
             </article>`).join("")}</div>
         </div>
       </div>
@@ -340,17 +342,10 @@ if(!p){
     if(!email.includes("@")) return err("Please add the email you ordered with so we can verify it.");
     $("rvSubmit").disabled = true; $("rvSubmit").textContent = "Sending…";
     try{
-      const r = await fetch(CONFIG.formspree, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
-        body: JSON.stringify({
-          _subject: `Product Review — ${p.name} (${rvStars}★)`,
-          form: "review", product: p.name, rating: `${rvStars} / 5`,
-          headline, review: body, name, email,
-          purchased: $("rvConfig").value || "—"
-        })
+      await submitReview({
+        product: p.name, rating: rvStars, headline, review: body,
+        name, email, purchased: $("rvConfig").value || ""
       });
-      if(!r.ok) throw new Error();
       st.textContent = "Thanks! Your review will show up once we match it to your order.";
       st.classList.add("ok");
       ["rvHeadline","rvBody","rvName","rvEmail"].forEach(id=> $(id).value = ""); setStars(0);
@@ -363,6 +358,14 @@ if(!p){
   };
 
   render();
+
+  loadSheetReviews().then(list=>{
+    const mine = list.filter(r=>r.product.toLowerCase() === p.name.toLowerCase());
+    if(!mine.length) return;
+    reviews = mine.concat(reviews);
+    recalcAvg();
+    render();
+  });
 }
 </script>
 </body>

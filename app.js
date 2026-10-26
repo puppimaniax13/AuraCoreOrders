@@ -8,7 +8,23 @@ const CONFIG = {
   formspree: "https://formspree.io/f/xvzjdraz",
   // Fallback email — used for a pre-filled mailto if Formspree isn't set:
   email: "becker.gei21@outlook.com",
-  instagram: "https://instagram.com/autovb.WRX"
+  instagram: "https://instagram.com/autovb.WRX",
+  // Reviews — submitted to a Google Form, approved in its Google Sheet
+  // (type "yes" in the Approved column), then read back from the sheet's
+  // published "Public" tab (approved rows only, no emails).
+  reviews: {
+    csv:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vT5q678x_MXVsyXr-1SBaViNgnGfxVDhASzEbjueWGRcj94rAPDhbCtOrbPgqcS_-IgSQksKy_7WvHI/pub?gid=1076886452&single=true&output=csv",
+    form: "https://docs.google.com/forms/d/e/1FAIpQLSfl-8I9EnDvegC7eoHeKPUwF72Ia8-uWHLN65Isc_q_Hr69QA/formResponse",
+    fields: {
+      product:   "entry.712188605",
+      rating:    "entry.883428899",
+      headline:  "entry.646807834",
+      review:    "entry.1343841712",
+      name:      "entry.1790957",
+      email:     "entry.1638652087",
+      purchased: "entry.2000430967"
+    }
+  }
 };
 
 const LINK_SKU = "AVB-ACC-LINK";
@@ -175,13 +191,73 @@ function galleryFor(p){
 }
 
 /* ================= REVIEWS =================
-   Reviews live on each product as  reviews:[ ... ].  Customers submit them
-   through the "Write a review" form (arrives in Formspree); add the ones you
-   approve here. Format:
+   Approved reviews come from the Google Sheet automatically (see
+   CONFIG.reviews). You can also hard-code a review on a product as
+   reviews:[ ... ] — e.g. one sent to you by DM. Format:
      { stars:5, title:"Fit is perfect", body:"…", who:"Jake M.",
        date:"Oct 2026", config:"White LED · Tinted", verified:true,
        photos:["images/reviews/jake-1.jpg"] }
    `verified` = you matched it to a real order. `photos` is optional. */
+
+/* Escape text before putting it in the page — review text comes from the
+   public, so it must never be able to inject HTML or scripts. */
+function escapeHTML(v){
+  return String(v == null ? "" : v).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+/* Minimal CSV parser (handles quoted fields with commas, quotes and newlines). */
+function parseCSV(text){
+  const rows = []; let row = [], field = "", q = false;
+  for(let i = 0; i < text.length; i++){
+    const c = text[i];
+    if(q){
+      if(c === '"'){ if(text[i+1] === '"'){ field += '"'; i++; } else q = false; }
+      else field += c;
+    } else if(c === '"') q = true;
+    else if(c === ",") { row.push(field); field = ""; }
+    else if(c === "\n" || c === "\r"){
+      if(c === "\r" && text[i+1] === "\n") i++;
+      row.push(field); rows.push(row); row = []; field = "";
+    } else field += c;
+  }
+  if(field !== "" || row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r=>r.some(x=>x.trim() !== ""));
+}
+/* Google timestamps look like "10/26/2026 14:03:22" -> "Oct 2026" */
+function reviewDate(ts){
+  const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(String(ts).trim());
+  if(!m) return "";
+  return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+m[1]-1] + " " + m[3];
+}
+/* Approved reviews from the published sheet, newest first. Never throws —
+   if the sheet can't be reached, pages simply show their built-in reviews. */
+let _sheetReviews = null;
+function loadSheetReviews(){
+  if(_sheetReviews) return _sheetReviews;
+  const url = CONFIG.reviews && CONFIG.reviews.csv;
+  if(!url) return (_sheetReviews = Promise.resolve([]));
+  _sheetReviews = fetch(url).then(r=>r.ok ? r.text() : "").then(text=>{
+    const rows = parseCSV(text);
+    if(rows.length < 2) return [];
+    const head = rows[0].map(h=>h.trim().toLowerCase());
+    const col = name => head.indexOf(name);
+    const c = { ts:col("timestamp"), product:col("product"), rating:col("rating"), headline:col("headline"),
+                review:col("review"), name:col("name"), purchased:col("purchased") };
+    return rows.slice(1).map(r=>{
+      const get = k => c[k] >= 0 ? (r[c[k]] || "").trim() : "";
+      const stars = Math.max(1, Math.min(5, parseInt(get("rating"), 10) || 0));
+      return { product:get("product"), stars, title:get("headline"), body:get("review"), who:get("name"),
+               date:reviewDate(get("ts")), config:get("purchased"), verified:true, photos:[] };
+    }).filter(r=>r.product && r.body && parseInt(r.stars,10) >= 1).reverse();
+  }).catch(()=>[]);
+  return _sheetReviews;
+}
+/* Send a review to the Google Form. The form can't report success back to a
+   browser (no-cors), so this resolves when the request is sent. */
+function submitReview(data){
+  const R = CONFIG.reviews, body = new URLSearchParams();
+  Object.keys(R.fields).forEach(k=>{ if(data[k] != null) body.append(R.fields[k], String(data[k])); });
+  return fetch(R.form, { method:"POST", mode:"no-cors", body });
+}
 
 /* Link Two Pieces — not shown in the grid; offered at checkout
    when the order has 2+ reflector sets. */
