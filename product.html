@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20">
+<link rel="stylesheet" href="styles.css?v=21">
 </head>
 <body>
 
@@ -50,13 +50,12 @@
       <label class="formlabel" for="rvConfig">What did you get?</label>
       <select id="rvConfig"></select>
     </div>
-    <div id="rvPhotoWrap" style="display:none">
+    <div id="rvPhotoWrap">
       <label class="formlabel">Install photos <span class="opt">(optional · up to 3)</span></label>
       <div class="rv-pick" id="rvPick"></div>
       <input type="file" id="rvFiles" accept="image/*" multiple hidden>
       <p class="rv-pick-hint">Once your review is approved, your photos show in the gallery on this page.</p>
     </div>
-    <p class="photo-note" id="rvPhotoNote">Have install photos? DM them to us on <a href="https://instagram.com/autovb.WRX" target="_blank" rel="noopener" style="color:var(--wrb);font-weight:600">Instagram</a> — we may feature them in the gallery.</p>
     <input type="text" id="rvWebsite" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
     <div class="actions">
       <button type="button" class="btn-dark" id="rvCancel">Cancel</button>
@@ -66,7 +65,7 @@
   </div>
 </div>
 
-<script src="app.js?v=20"></script>
+<script src="app.js?v=21"></script>
 <script>
 mountChrome("shop.html");
 
@@ -152,7 +151,7 @@ if(!p){
     if(p.details){
       html += `<section class="pp-section"><h2>Details</h2><div class="pp-longtext">${p.details}</div></section>`;
     }
-    if(gallery.length || (photoReviews && reviewsLoaded)) html += galleryHTML();
+    if(gallery.length || reviewsLoaded) html += galleryHTML();
     if(p.video){
       html += `<section class="pp-section"><h2>Install Video</h2><div class="pp-video"><iframe src="${p.video}" title="${p.name} install video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></section>`;
     }
@@ -161,14 +160,12 @@ if(!p){
   }
 
   /* ---------- gallery: customer photos from approved reviews ---------- */
-  const photoReviews = !!(CONFIG.reviews && CONFIG.reviews.api);   // review form takes photos
   let reviewsLoaded = false;
   let gallery = galleryFor(p, []);
   function galleryHTML(){
     const head = `<div class="cg-head">
         <div><h2>Gallery</h2><p>${gallery.length ? "Real installs from real owners." : "No customer photos yet — yours could be the first."}</p></div>
-        ${photoReviews ? `<button class="btn-dark" id="galleryShare">Share your install →</button>`
-                       : `<a class="btn-dark" href="${CONFIG.instagram}" target="_blank" rel="noopener">Share your build →</a>`}
+        <button class="btn-dark" id="galleryShare">Share your install →</button>
       </div>`;
     if(!gallery.length) return `<section class="pp-section">${head}
       <p class="cg-empty">Installed yours? Add photos when you write a review — once it's approved they show up here.</p></section>`;
@@ -324,7 +321,7 @@ if(!p){
     } else if($("rvModal").classList.contains("open") && e.key === "Escape") closeRV();
   });
 
-  /* ---------- write a review (Apps Script with photos, or the Google Form) ---------- */
+  /* ---------- write a review (to the review sheet, with photos) ---------- */
   function reviewConfigs(){
     const led = (p.options||[]).find(o=>o.label==="LED Type");
     if(led){
@@ -341,8 +338,6 @@ if(!p){
     $("rvConfigWrap").style.display = cfgs.length ? "" : "none";
     $("rvConfig").innerHTML = `<option value="">Select…</option>` + cfgs.map(c=>`<option>${c}</option>`).join("");
     $("rvStatus").className = "statusmsg";
-    $("rvPhotoWrap").style.display = photoReviews ? "" : "none";
-    $("rvPhotoNote").style.display = photoReviews ? "none" : "";
     renderPicks();
     $("rvModal").classList.add("open"); document.body.style.overflow = "hidden";
   }
@@ -375,7 +370,7 @@ if(!p){
     if(!headline || !body) return err("Please add a headline and your review.");
     if(!name) return err("Please add the name you'd like shown.");
     if(!email.includes("@")) return err("Please add the email you ordered with so we can verify it.");
-    const files = photoReviews ? rvFiles.map(f=>f.file) : [];
+    const files = rvFiles.map(f=>f.file);
     $("rvSubmit").disabled = true; $("rvSubmit").textContent = files.length ? "Uploading photos…" : "Sending…";
     try{
       await submitReview({
@@ -403,7 +398,7 @@ if(!p){
     const mine = list.filter(r=>r.product.toLowerCase() === p.name.toLowerCase());
     reviews = mine.concat(reviews);
     recalcAvg();
-    if(mine.length || gallery.length || photoReviews) render();
+    render();
   });
 }
 </script>

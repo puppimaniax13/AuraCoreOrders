@@ -428,7 +428,6 @@ section.block{padding:88px 0 8px}
 .star-pick{display:flex;gap:4px}
 .star-pick button{background:none;border:none;font-size:28px;color:#d1d5db;padding:0 2px;line-height:1}
 .star-pick button.on{color:var(--wrb)}
-.rv-modal .photo-note{font-size:12.5px;color:var(--gray);margin-top:14px;padding:12px;background:var(--bg-soft);border:1px solid var(--line)}
 .rv-modal .opt{font-weight:400;color:var(--gray);text-transform:none;letter-spacing:0}
 .rv-pick{display:flex;gap:10px;flex-wrap:wrap}
 .rv-pick .pick{position:relative;width:84px;height:84px;border:1px solid var(--line);background:var(--bg-soft);overflow:hidden}

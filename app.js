@@ -9,24 +9,11 @@ const CONFIG = {
   // Fallback email — used for a pre-filled mailto if Formspree isn't set:
   email: "becker.gei21@outlook.com",
   instagram: "https://instagram.com/autovb.WRX",
-  // Reviews — approved in the Google Sheet, then shown on product pages.
-  // `api` is the sheet's Apps Script web app (review-photos-apps-script.gs):
-  // it takes reviews WITH photos and serves approved ones back. Until it's set,
-  // reviews go to the Google Form (text only) and are read from the published
-  // "Public" tab (csv).
+  // Reviews — the review sheet's Apps Script web app (review-photos-apps-script.gs).
+  // It takes reviews with photos into the sheet's "Reviews" tab and serves the
+  // approved ones (tick "Approved") back to product pages.
   reviews: {
-    api:  "https://script.google.com/macros/s/AKfycbxb5knAPLb1fdBr07V9qm-9aEtyoQ2NJai4AqPcJqwEr8qFnl_jLxz0_4RmUgco25lPDg/exec",
-    csv:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vT5q678x_MXVsyXr-1SBaViNgnGfxVDhASzEbjueWGRcj94rAPDhbCtOrbPgqcS_-IgSQksKy_7WvHI/pub?gid=1076886452&single=true&output=csv",
-    form: "https://docs.google.com/forms/d/e/1FAIpQLSfl-8I9EnDvegC7eoHeKPUwF72Ia8-uWHLN65Isc_q_Hr69QA/formResponse",
-    fields: {
-      product:   "entry.712188605",
-      rating:    "entry.883428899",
-      headline:  "entry.646807834",
-      review:    "entry.1343841712",
-      name:      "entry.1790957",
-      email:     "entry.1638652087",
-      purchased: "entry.2000430967"
-    }
+    api: "https://script.google.com/macros/s/AKfycbxb5knAPLb1fdBr07V9qm-9aEtyoQ2NJai4AqPcJqwEr8qFnl_jLxz0_4RmUgco25lPDg/exec"
   }
 };
 
@@ -216,30 +203,6 @@ function galleryFor(p, reviews){
 function escapeHTML(v){
   return String(v == null ? "" : v).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
-/* Minimal CSV parser (handles quoted fields with commas, quotes and newlines). */
-function parseCSV(text){
-  const rows = []; let row = [], field = "", q = false;
-  for(let i = 0; i < text.length; i++){
-    const c = text[i];
-    if(q){
-      if(c === '"'){ if(text[i+1] === '"'){ field += '"'; i++; } else q = false; }
-      else field += c;
-    } else if(c === '"') q = true;
-    else if(c === ",") { row.push(field); field = ""; }
-    else if(c === "\n" || c === "\r"){
-      if(c === "\r" && text[i+1] === "\n") i++;
-      row.push(field); rows.push(row); row = []; field = "";
-    } else field += c;
-  }
-  if(field !== "" || row.length){ row.push(field); rows.push(row); }
-  return rows.filter(r=>r.some(x=>x.trim() !== ""));
-}
-/* Google timestamps look like "10/26/2026 14:03:22" -> "Oct 2026" */
-function reviewDate(ts){
-  const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(String(ts).trim());
-  if(!m) return "";
-  return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+m[1]-1] + " " + m[3];
-}
 /* Customer photos live in Google Drive; these are their public image URLs.
    Ids come from the sheet and are checked to be plain Drive ids. */
 function driveImg(id, w){ return "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + w; }
@@ -249,9 +212,10 @@ function drivePhoto(id){ return /^[-\w]{20,}$/.test(id) ? { src:driveImg(id, 800
 let _sheetReviews = null;
 function loadSheetReviews(){
   if(_sheetReviews) return _sheetReviews;
-  const R = CONFIG.reviews || {};
-  const fromApi = ()=> fetch(R.api).then(r=>r.json()).then(d=>{
-    if(!d || !d.ok || !Array.isArray(d.reviews)) throw new Error("bad feed");
+  const api = CONFIG.reviews && CONFIG.reviews.api;
+  if(!api) return (_sheetReviews = Promise.resolve([]));
+  _sheetReviews = fetch(api).then(r=>r.json()).then(d=>{
+    if(!d || !d.ok || !Array.isArray(d.reviews)) return [];
     return d.reviews.map(x=>({
       product:String(x.product||""), stars:Math.max(1, Math.min(5, parseInt(x.rating,10) || 5)),
       title:String(x.headline||""), body:String(x.review||""), who:String(x.name||""),
@@ -259,27 +223,8 @@ function loadSheetReviews(){
       config:String(x.purchased||""), verified:true,
       photos:(x.photos||[]).map(drivePhoto).filter(Boolean)
     })).filter(r=>r.product && r.body);
-  });
-  _sheetReviews = R.api ? fromApi().catch(fromCsv) : fromCsv();
-  return _sheetReviews;
-}
-function fromCsv(){
-  const url = CONFIG.reviews && CONFIG.reviews.csv;
-  if(!url) return Promise.resolve([]);
-  return fetch(url).then(r=>r.ok ? r.text() : "").then(text=>{
-    const rows = parseCSV(text);
-    if(rows.length < 2) return [];
-    const head = rows[0].map(h=>h.trim().toLowerCase());
-    const col = name => head.indexOf(name);
-    const c = { ts:col("timestamp"), product:col("product"), rating:col("rating"), headline:col("headline"),
-                review:col("review"), name:col("name"), purchased:col("purchased") };
-    return rows.slice(1).map(r=>{
-      const get = k => c[k] >= 0 ? (r[c[k]] || "").trim() : "";
-      const stars = Math.max(1, Math.min(5, parseInt(get("rating"), 10) || 0));
-      return { product:get("product"), stars, title:get("headline"), body:get("review"), who:get("name"),
-               date:reviewDate(get("ts")), config:get("purchased"), verified:true, photos:[] };
-    }).filter(r=>r.product && r.body && parseInt(r.stars,10) >= 1).reverse();
   }).catch(()=>[]);
+  return _sheetReviews;
 }
 /* Shrink a picked photo to a ~1600px JPEG (phones shoot 12MP+) → base64. */
 function shrinkPhoto(file, max = 1600, quality = 0.85){
@@ -297,21 +242,15 @@ function shrinkPhoto(file, max = 1600, quality = 0.85){
     img.src = url;
   });
 }
-/* Send a review. With the Apps Script set up it carries photos and reports
-   back; otherwise it goes to the Google Form (no-cors, text only). */
+/* Send a review (with up to 3 photos) to the sheet's Apps Script. Throws if
+   it isn't saved, so the form can say so. */
 async function submitReview(data, files){
-  const R = CONFIG.reviews;
-  if(R.api){
-    const photos = [];
-    for(const f of (files || []).slice(0, 3)) photos.push({ type:"image/jpeg", data:await shrinkPhoto(f) });
-    const res = await fetch(R.api, { method:"POST", body:JSON.stringify(Object.assign({}, data, { photos })) });
-    const out = await res.json();
-    if(!out.ok) throw new Error(out.error || "rejected");
-    return out;
-  }
-  const body = new URLSearchParams();
-  Object.keys(R.fields).forEach(k=>{ if(data[k] != null) body.append(R.fields[k], String(data[k])); });
-  return fetch(R.form, { method:"POST", mode:"no-cors", body });
+  const photos = [];
+  for(const f of (files || []).slice(0, 3)) photos.push({ type:"image/jpeg", data:await shrinkPhoto(f) });
+  const res = await fetch(CONFIG.reviews.api, { method:"POST", body:JSON.stringify(Object.assign({}, data, { photos })) });
+  const out = await res.json();
+  if(!out.ok) throw new Error(out.error || "rejected");
+  return out;
 }
 
 /* Link Two Pieces — not shown in the grid; offered at checkout
