@@ -15,7 +15,7 @@ const CONFIG = {
   // reviews go to the Google Form (text only) and are read from the published
   // "Public" tab (csv).
   reviews: {
-    api:  "",
+    api:  "https://script.google.com/macros/s/AKfycbxb5knAPLb1fdBr07V9qm-9aEtyoQ2NJai4AqPcJqwEr8qFnl_jLxz0_4RmUgco25lPDg/exec",
     csv:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vT5q678x_MXVsyXr-1SBaViNgnGfxVDhASzEbjueWGRcj94rAPDhbCtOrbPgqcS_-IgSQksKy_7WvHI/pub?gid=1076886452&single=true&output=csv",
     form: "https://docs.google.com/forms/d/e/1FAIpQLSfl-8I9EnDvegC7eoHeKPUwF72Ia8-uWHLN65Isc_q_Hr69QA/formResponse",
     fields: {
