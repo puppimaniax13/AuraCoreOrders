@@ -282,8 +282,26 @@ const LINK_PRODUCT = {
   desc:"We pre-connect two of your reflector sets so they run as one continuous unit — connector and install included."
 };
 
-/* Free shipping threshold */
+/* Shipping — US only. Lower 48 (+ DC): flat rate, free over FREE_SHIP_MIN.
+   Alaska, Hawaii, territories and APO/FPO: one flat rate, never free (postage there runs ~$16+). */
 const FREE_SHIP_MIN = 150;
+const SHIP_RATE = 10;
+const SHIP_RATE_FAR = 20;
+const US_STATES = [["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],["CO","Colorado"],
+  ["CT","Connecticut"],["DE","Delaware"],["DC","District of Columbia"],["FL","Florida"],["GA","Georgia"],["HI","Hawaii"],
+  ["ID","Idaho"],["IL","Illinois"],["IN","Indiana"],["IA","Iowa"],["KS","Kansas"],["KY","Kentucky"],["LA","Louisiana"],
+  ["ME","Maine"],["MD","Maryland"],["MA","Massachusetts"],["MI","Michigan"],["MN","Minnesota"],["MS","Mississippi"],
+  ["MO","Missouri"],["MT","Montana"],["NE","Nebraska"],["NV","Nevada"],["NH","New Hampshire"],["NJ","New Jersey"],
+  ["NM","New Mexico"],["NY","New York"],["NC","North Carolina"],["ND","North Dakota"],["OH","Ohio"],["OK","Oklahoma"],
+  ["OR","Oregon"],["PA","Pennsylvania"],["RI","Rhode Island"],["SC","South Carolina"],["SD","South Dakota"],
+  ["TN","Tennessee"],["TX","Texas"],["UT","Utah"],["VT","Vermont"],["VA","Virginia"],["WA","Washington"],
+  ["WV","West Virginia"],["WI","Wisconsin"],["WY","Wyoming"],
+  ["PR","Puerto Rico"],["GU","Guam"],["VI","U.S. Virgin Islands"],["AS","American Samoa"],["MP","Northern Mariana Islands"],
+  ["AA","Armed Forces Americas (AA)"],["AE","Armed Forces Europe (AE)"],["AP","Armed Forces Pacific (AP)"]];
+const FAR_STATES = new Set(["AK","HI","PR","GU","VI","AS","MP","AA","AE","AP"]);
+let shipState = "";   /* set by the checkout's State field; "" = not picked yet (assume lower 48) */
+const isFarState = st => FAR_STATES.has(st);
+const shipCost = (subtotal, st) => isFarState(st) ? SHIP_RATE_FAR : (subtotal >= FREE_SHIP_MIN ? 0 : SHIP_RATE);
 
 /* ================= HELPERS ================= */
 const $ = id => document.getElementById(id);
@@ -500,7 +518,10 @@ function renderShipNote(el){
   if(!el) return;
   if(!cart.length){ el.className = "shipnote"; el.textContent = ""; return; }
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  if(total >= FREE_SHIP_MIN){
+  if(isFarState(shipState)){
+    el.className = "shipnote on";
+    el.textContent = `Free shipping over ${fmt(FREE_SHIP_MIN)} covers the lower 48`;
+  } else if(total >= FREE_SHIP_MIN){
     el.className = "shipnote on unlocked";
     el.textContent = "✓ Free shipping unlocked";
   } else {
@@ -509,6 +530,18 @@ function renderShipNote(el){
   }
 }
 function cartTotal(){ return cart.reduce((s,i)=>s+i.price*i.qty,0); }
+/* Items / Shipping / Estimated total — used by the cart drawer and the checkout */
+function renderTotals(el){
+  if(!el) return;
+  if(!cart.length){ el.style.display = "none"; el.innerHTML = ""; return; }
+  const sub = cartTotal(), ship = shipCost(sub, shipState);
+  const where = isFarState(shipState) ? "Alaska, Hawaii &amp; U.S. territories"
+    : shipState ? "Lower 48" : `Lower 48 · ${fmt(SHIP_RATE_FAR)} to AK, HI &amp; U.S. territories`;
+  el.innerHTML = `<div class="trow"><span>Items</span><span>${fmt(sub)}</span></div>
+    <div class="trow"><span>Shipping<small>${where}</small></span><span>${ship ? fmt(ship) : "Free"}</span></div>
+    <div class="trow grand"><span>Estimated total</span><span>${fmt(sub + ship)}</span></div>`;
+  el.style.display = "block";
+}
 
 /* Free-shipping nudge — on any order under the free-shipping line, offer the
    ONE add-on that best closes the gap:
@@ -532,7 +565,7 @@ function openSpots(){
 function freeShipNudge(){
   if(!cart.length) return null;
   const total = cartTotal();
-  if(total >= FREE_SHIP_MIN) return null;
+  if(total >= FREE_SHIP_MIN || isFarState(shipState)) return null;
   const gap = FREE_SHIP_MIN - total;
   const btn = PRODUCTS.find(p=>p.sku===BUTTON_SKUS[0]);
   const trunk = PRODUCTS.find(p=>p.sku===TRUNK_SKU);
@@ -639,16 +672,14 @@ function renderCart(){
   if(!wrap) return;
   if(!cart.length){
     wrap.innerHTML = `<div class="empty">Your order is empty.<br>Add parts from the catalog to get started.</div>`;
-    if($("subtotalRow")) $("subtotalRow").style.display = "none";
+    renderTotals($("subtotalRow"));
     renderShipNote($("shipNote"));
     if($("cartAddon")) $("cartAddon").innerHTML = "";
     return;
   }
   wrap.innerHTML = cart.map((i,idx)=>lineItemHTML(i,idx)).join("");
   bindLineItems(wrap);
-  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  if($("subtotalVal")) $("subtotalVal").textContent = fmt(total);
-  if($("subtotalRow")) $("subtotalRow").style.display = "flex";
+  renderTotals($("subtotalRow"));
   renderShipNote($("shipNote"));
   renderAddonOffers($("cartAddon"));
 }
@@ -720,11 +751,11 @@ function chromeHTML(){
     <div class="drawer-head"><h2 id="dTitle">Your Order</h2><button class="xbtn" id="closeDrawer" aria-label="Close">×</button></div>
     <div class="drawer-body">
       <div id="cartItems"></div>
-      <div class="subtotal" id="subtotalRow" style="display:none"><span>Estimated total</span><span id="subtotalVal"></span></div>
+      <div class="totals" id="subtotalRow" style="display:none"></div>
       <div class="shipnote" id="shipNote"></div>
       <div id="cartAddon"></div>
     </div>
-    <div class="drawer-foot"><button class="sendbtn" id="toCheckout">Continue to checkout</button><p class="finehint">Shipping info collected at checkout. Invoice sent after we confirm.</p></div>
+    <div class="drawer-foot"><button class="sendbtn" id="toCheckout">Continue to checkout</button><p class="finehint">U.S. shipping only. Invoice sent after we confirm.</p></div>
   </div>
   <div class="toast" id="toast"></div>`;
 }

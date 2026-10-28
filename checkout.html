@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=23">
+<link rel="stylesheet" href="styles.css?v=24">
 </head>
 <body>
 
@@ -29,9 +29,7 @@
       <h3>Your items</h3>
       <div id="coItems"></div>
       <div id="coAddon"></div>
-      <div class="subtotal" id="coSubtotalRow" style="display:none">
-        <span>Estimated total</span><span id="coSubtotalVal"></span>
-      </div>
+      <div class="totals" id="coSubtotalRow" style="display:none"></div>
       <div class="shipnote" id="coShipNote"></div>
     </div>
     <div class="co-panel">
@@ -67,16 +65,17 @@
         </div>
         <div>
           <label class="formlabel" for="fState">State *</label>
-          <input id="fState" type="text" autocomplete="address-level1" required>
+          <select id="fState" autocomplete="address-level1" required><option value="">Select…</option></select>
         </div>
       </div>
       <div class="formrow">
         <div>
           <label class="formlabel" for="fZip">ZIP *</label>
-          <input id="fZip" type="text" inputmode="numeric" autocomplete="postal-code" required>
+          <input id="fZip" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="10" required>
         </div>
         <div></div>
       </div>
+      <p class="fieldhint">We ship within the U.S. only — sorry, no international orders yet.</p>
       <label class="formlabel" for="fPayment">Preferred payment method</label>
       <select id="fPayment">
         <option value="Zelle">Zelle (preferred)</option>
@@ -98,26 +97,28 @@
   </div>
 </section>
 
-<script src="app.js?v=23"></script>
+<script src="app.js?v=24"></script>
 <script>
 mountChrome("checkout.html");
 
 function renderCheckout(){
   if(!cart.length){
     $("coItems").innerHTML = `<div class="empty">Your order is empty.<br><a href="shop.html" style="color:var(--wrb)">Head to the catalog →</a></div>`;
-    $("coSubtotalRow").style.display = "none";
+    renderTotals($("coSubtotalRow"));
     $("coAddon").innerHTML = "";
     renderShipNote($("coShipNote"));
     return;
   }
   $("coItems").innerHTML = cart.map((i,idx)=>lineItemHTML(i,idx)).join("");
   bindLineItems($("coItems"));
-  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  $("coSubtotalVal").textContent = fmt(total);
-  $("coSubtotalRow").style.display = "flex";
+  renderTotals($("coSubtotalRow"));
   renderShipNote($("coShipNote"));
   renderAddonOffers($("coAddon"));
 }
+
+/* ---- state picker: US only; AK / HI / territories ship at the far rate ---- */
+$("fState").insertAdjacentHTML("beforeend", US_STATES.map(([v,n])=>`<option value="${v}">${n}</option>`).join(""));
+$("fState").onchange = ()=>{ shipState = $("fState").value; renderCheckout(); };
 
 /* ---- payment handle field: label/placeholder swap per method ---- */
 const PAYMENT_META = {
@@ -140,8 +141,9 @@ function orderText(){
     const opts = Object.entries(i.options).map(([k,v])=>`${k}: ${v}`).join(", ");
     return `• ${i.name} [${i.sku}] x${i.qty}${opts ? " — "+opts : ""} — ${fmt(i.price*i.qty)}`;
   });
-  const ship = total >= FREE_SHIP_MIN ? " (qualifies for free shipping)" : "";
-  return lines.join("\n") + `\n\nEstimated total: ${fmt(total)}${ship}`;
+  const ship = shipCost(total, shipState);
+  const where = isFarState(shipState) ? "AK / HI / U.S. territories" : "lower 48";
+  return lines.join("\n") + `\n\nItems: ${fmt(total)}\nShipping (${where}): ${ship ? fmt(ship) : "Free"}\nEstimated total: ${fmt(total + ship)}`;
 }
 
 $("sendOrder").onclick = async ()=>{
@@ -158,6 +160,10 @@ $("sendOrder").onclick = async ()=>{
   }
   if(!addr1 || !city || !state || !zip){
     status.textContent = "Please complete the shipping address.";
+    status.classList.add("err"); return;
+  }
+  if(!/^\d{5}(-?\d{4})?$/.test(zip)){
+    status.textContent = "Please enter a 5-digit U.S. ZIP code.";
     status.classList.add("err"); return;
   }
   const ig = $("fIg").value.trim(), notes = $("fNotes").value.trim();
